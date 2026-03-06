@@ -20,7 +20,6 @@ public class AlunoService {
     }
 
     public void cadastrarAluno(Aluno aluno) {
-        // Aqui você pode adicionar validações específicas para o aluno, se necessário
         ValidationUtils.validarCampoObrigatorio(aluno, "Aluno");
         ValidationUtils.validarCampoStringObrigatorio(aluno.getNome(), "Nome do Aluno");
         ValidationUtils.validarCampoObrigatorio(aluno.getDataNascimento(), "Data de Nascimento do Aluno");
