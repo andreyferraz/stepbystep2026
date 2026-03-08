@@ -253,6 +253,127 @@ class FileUploadServiceTest {
         assertEquals("falha leitura", ex.getCause().getMessage());
     }
 
+        @Test
+        @DisplayName("Deve salvar documento PDF")
+        void deveSalvarDocumentoPdf() {
+        MultipartFile documento = new MockMultipartFile(
+            "arquivo",
+            "documento.pdf",
+            "application/pdf",
+            "conteudo pdf".getBytes());
+
+        String nomeArquivo = fileUploadService.salvarDocumento(documento);
+
+        assertNotNull(nomeArquivo);
+        assertTrue(nomeArquivo.endsWith(".pdf"));
+        assertTrue(fileUploadService.arquivoExiste(nomeArquivo));
+        }
+
+        @Test
+        @DisplayName("Deve salvar documento DOCX")
+        void deveSalvarDocumentoDocx() {
+        MultipartFile documento = new MockMultipartFile(
+            "arquivo",
+            "documento.docx",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "conteudo docx".getBytes());
+
+        String nomeArquivo = fileUploadService.salvarDocumento(documento);
+
+        assertNotNull(nomeArquivo);
+        assertTrue(nomeArquivo.endsWith(".docx"));
+        assertTrue(fileUploadService.arquivoExiste(nomeArquivo));
+        }
+
+        @Test
+        @DisplayName("Deve aceitar extensão em maiúsculo no upload de documento")
+        void deveAceitarExtensaoMaiusculaNoUploadDeDocumento() {
+        MultipartFile documento = new MockMultipartFile(
+            "arquivo",
+            "DOCUMENTO.PDF",
+            "application/pdf",
+            "conteudo".getBytes());
+
+        String nomeArquivo = fileUploadService.salvarDocumento(documento);
+
+        assertTrue(nomeArquivo.endsWith(".pdf"));
+        }
+
+        @Test
+        @DisplayName("Deve lançar exceção quando documento tem extensão inválida")
+        void deveLancarExcecaoQuandoDocumentoTemExtensaoInvalida() {
+        MultipartFile documento = new MockMultipartFile(
+            "arquivo",
+            "documento.txt",
+            "text/plain",
+            "conteudo".getBytes());
+
+        FileUploadException ex = assertThrows(FileUploadException.class,
+            () -> fileUploadService.salvarDocumento(documento));
+
+        assertTrue(ex.getMessage().contains("Apenas PDF e DOCX"));
+        }
+
+        @Test
+        @DisplayName("Deve lançar exceção quando documento não tem extensão")
+        void deveLancarExcecaoQuandoDocumentoNaoTemExtensao() {
+        MultipartFile documento = new MockMultipartFile(
+            "arquivo",
+            "documento",
+            "application/octet-stream",
+            "conteudo".getBytes());
+
+        FileUploadException ex = assertThrows(FileUploadException.class,
+            () -> fileUploadService.salvarDocumento(documento));
+
+        assertTrue(ex.getMessage().contains("Apenas PDF e DOCX"));
+        }
+
+        @Test
+        @DisplayName("Deve lançar exceção quando nome do documento é nulo")
+        void deveLancarExcecaoQuandoNomeDocumentoNulo() {
+        MultipartFile documento = new MockMultipartFile(
+            "arquivo",
+            null,
+            "application/pdf",
+            "conteudo".getBytes());
+
+        FileUploadException ex = assertThrows(FileUploadException.class,
+            () -> fileUploadService.salvarDocumento(documento));
+
+        assertTrue(ex.getMessage().contains("Nome do arquivo"));
+        }
+
+        @Test
+        @DisplayName("Deve lançar exceção quando nome do documento é vazio")
+        void deveLancarExcecaoQuandoNomeDocumentoVazio() {
+        MultipartFile documento = new MockMultipartFile(
+            "arquivo",
+            "   ",
+            "application/pdf",
+            "conteudo".getBytes());
+
+        FileUploadException ex = assertThrows(FileUploadException.class,
+            () -> fileUploadService.salvarDocumento(documento));
+
+        assertTrue(ex.getMessage().contains("Nome do arquivo"));
+        }
+
+        @Test
+        @DisplayName("Deve encapsular IOException ao salvar documento")
+        void deveEncapsularIOExceptionAoSalvarDocumento() throws IOException {
+        MultipartFile multipartFile = Mockito.mock(MultipartFile.class);
+        Mockito.when(multipartFile.getOriginalFilename()).thenReturn("documento.pdf");
+        Mockito.when(multipartFile.getInputStream()).thenThrow(new IOException("falha leitura documento"));
+
+        FileUploadException ex = assertThrows(FileUploadException.class,
+            () -> fileUploadService.salvarDocumento(multipartFile));
+
+        assertTrue(ex.getMessage().contains("Não foi possível salvar o documento"));
+        assertNotNull(ex.getCause());
+        assertEquals("falha leitura documento", ex.getCause().getMessage());
+        }
+
     private byte[] criarPngValido() throws IOException {
         BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_RGB);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.imageio.IIOImage;
@@ -60,6 +61,42 @@ public class FileUploadService {
 
         } catch (IOException e) {
             throw new FileUploadException("Não foi possível salvar a imagem. Erro: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Salva um documento PDF ou DOCX no diretório configurado.
+     *
+     * @param arquivo O arquivo MultipartFile a ser salvo
+     * @return O nome do arquivo gerado (UUID.extensao)
+     * @throws FileUploadException Se o arquivo for inválido ou não conseguir salvar
+     */
+    public String salvarDocumento(MultipartFile arquivo) {
+        try {
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String nomeOriginal = arquivo.getOriginalFilename();
+            if (nomeOriginal == null || nomeOriginal.isBlank()) {
+                throw new FileUploadException("Nome do arquivo não pode ser nulo ou vazio");
+            }
+
+            String extensao = extrairExtensao(nomeOriginal);
+            if (!"pdf".equals(extensao) && !"docx".equals(extensao)) {
+                throw new FileUploadException("Formato de arquivo inválido. Apenas PDF e DOCX são permitidos");
+            }
+
+            String nomeArquivo = UUID.randomUUID().toString() + "." + extensao;
+            Path caminhoArquivo = uploadPath.resolve(nomeArquivo);
+            try (InputStream inputStream = arquivo.getInputStream()) {
+                Files.copy(inputStream, caminhoArquivo);
+            }
+
+            return nomeArquivo;
+        } catch (IOException e) {
+            throw new FileUploadException("Não foi possível salvar o documento. Erro: " + e.getMessage(), e);
         }
     }
 
@@ -136,4 +173,13 @@ public class FileUploadService {
             writer.dispose();
         }
     }
+
+    private String extrairExtensao(String nomeArquivo) {
+        int ultimoPonto = nomeArquivo.lastIndexOf('.');
+        if (ultimoPonto <= 0 || ultimoPonto == nomeArquivo.length() - 1) {
+            return "";
+        }
+        return nomeArquivo.substring(ultimoPonto + 1).toLowerCase(Locale.ROOT);
+    }
+
 }
