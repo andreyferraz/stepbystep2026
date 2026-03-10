@@ -8,4 +8,6 @@ import com.stepbystep.school.model.PreInscricao;
 
 public interface PreInscricaoRepository extends JpaRepository<PreInscricao, UUID> {
 
+	java.util.List<PreInscricao> findAllByOrderByDataLeadDesc();
+
 }
