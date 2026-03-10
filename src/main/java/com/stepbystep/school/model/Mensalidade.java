@@ -2,6 +2,7 @@ package com.stepbystep.school.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.stepbystep.school.enums.StatusMensalidade;
@@ -37,6 +38,8 @@ public class Mensalidade {
 
     @Enumerated(EnumType.STRING)
     private StatusMensalidade status;
+
+    private LocalDateTime dataPagamento;
 
     @Column(columnDefinition = "TEXT")
     private String pixCopiaECola;
