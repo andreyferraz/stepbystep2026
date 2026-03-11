@@ -13,7 +13,7 @@
     <div class="site-shell">
         <header class="site-header" id="topo">
             <div class="header-container">
-                <a class="brand" href="#topo" aria-label="Ir para o topo">
+                <a class="brand" th:href="@{/}" href="/" aria-label="Ir para o topo">
                     <img th:src="@{/img/logo-transparente.png}" src="/img/logo-transparente.png" alt="Step By Step">
                 </a>
 
@@ -24,12 +24,12 @@
                 </button>
 
                 <nav class="site-nav" data-menu>
-                    <a href="#topo">Home</a>
-                    <a href="#escola">A Escola</a>
-                    <a href="#blog">Blog da Teacher</a>
-                    <a href="#galeria">Galeria</a>
-                    <a href="#livros">Livros</a>
-                    <a href="#contato">Contato</a>
+                    <a th:href="@{/}" href="/">Home</a>
+                    <a th:href="@{/escola}" href="/escola">A Escola</a>
+                    <a th:href="@{/blog}" href="/blog">Blog da Teacher</a>
+                    <a th:href="@{/galeria}" href="/galeria">Galeria</a>
+                    <a th:href="@{/livros}" href="/livros">Livros</a>
+                    <a th:href="@{/contato}" href="/contato">Contato</a>
                 </nav>
 
                 <a class="cta-aluno" th:href="@{/login}" href="/login">Área do Aluno</a>

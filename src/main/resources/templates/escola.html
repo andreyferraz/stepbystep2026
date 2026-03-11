@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+	  th:replace="~{fragments/layout :: layout(~{::main})}">
+<head>
+	<title>A Escola - Step By Step</title>
+</head>
+<main>
+	<section class="inner-hero school-purpose">
+		<div class="inner-hero-copy">
+			<p class="section-kicker">A Escola</p>
+			<h1>Muito mais que ingles, uma nova forma de ver o mundo.</h1>
+			<p>
+				Focada em conversacao, literatura e no desenvolvimento real do aluno,
+				a Step By Step oferece uma experiencia de aprendizado acolhedora,
+				pratica e conectada com a vida fora da sala de aula.
+			</p>
+		</div>
+
+		<figure class="inner-hero-media">
+			<img th:src="@{/img/teacher.png}" src="/img/teacher.png"
+				 alt="Teacher sorrindo e segurando material didatico">
+		</figure>
+	</section>
+
+	<section class="school-story">
+		<div class="school-story-main">
+			<p class="section-kicker">A Historia da Teacher</p>
+			<h2>Autora e Professora: ensino com proposito e sensibilidade</h2>
+			<p>
+				A trajetoria da Teacher comecou com uma paixao genuina por idiomas e com o desejo
+				de ver pessoas se comunicando com confianca. O que iniciou em pequenas aulas de apoio
+				se transformou em uma carreira solida, com anos de experiencia em turmas de diferentes
+				niveis, participacao em formacoes continuadas e certificacoes voltadas para metodologias
+				de ensino comunicativo. Ao longo desse caminho, ela percebeu que ensinar ingles vai muito
+				alem de gramatica: envolve escuta, acolhimento e estrategias praticas para cada aluno.
+			</p>
+			<p>
+				Hoje, sua maior motivacao e acompanhar de perto a evolucao de cada estudante,
+				celebrando conquistas reais como falar em publico, realizar entrevistas e viajar com
+				seguranca no idioma.
+			</p>
+		</div>
+
+		<aside class="school-story-writing">
+			<h3>A conexao com a escrita</h3>
+			<p>
+				A paixao pela literatura e pela escrita de livros esta presente em cada aula. Essa vivencia
+				como autora amplia o repertorio cultural, fortalece o dominio da linguagem e torna o ensino
+				mais criativo, com narrativas, contexto e vocabulario vivo. O aluno nao aprende apenas regras:
+				aprende a interpretar, se expressar e construir significado em ingles.
+			</p>
+		</aside>
+	</section>
+
+	<section class="school-methodology">
+		<div class="methodology-header">
+			<p class="section-kicker">Nossa Metodologia</p>
+			<h2>Como ensinamos na pratica</h2>
+			<p>
+				Uma metodologia clara, aplicada no dia a dia das aulas para gerar resultado real
+				e evolucao consistente no ingles.
+			</p>
+		</div>
+
+		<div class="methodology-grid" aria-label="Pilares da metodologia de ensino">
+			<article class="method-card">
+				<div class="method-icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24">
+						<path d="M4 5h16v10H7l-3 4V5z"></path>
+						<path d="M8 9h8"></path>
+						<path d="M8 12h5"></path>
+					</svg>
+				</div>
+				<h3>Foco do Ensino</h3>
+				<p>
+					Foco em conversacao para situacoes reais, com trilhas complementares para viagens,
+					exames e objetivos academicos/profissionais.
+				</p>
+			</article>
+
+			<article class="method-card">
+				<div class="method-icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24">
+						<circle cx="8" cy="9" r="3"></circle>
+						<circle cx="16" cy="9" r="3"></circle>
+						<path d="M3 19c0-2.4 2.2-4 5-4s5 1.6 5 4"></path>
+						<path d="M11 19c0-2.4 2.2-4 5-4 1.5 0 2.8.4 3.8 1.3"></path>
+					</svg>
+				</div>
+				<h3>Tamanho das Turmas</h3>
+				<p>
+					Turmas reduzidas para acompanhamento proximo e opcao de atendimento VIP/particular
+					para metas especificas.
+				</p>
+			</article>
+
+			<article class="method-card">
+				<div class="method-icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24">
+						<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3V4z"></path>
+						<path d="M8 20a3 3 0 0 1 3-3h8"></path>
+						<path d="M9 9h7"></path>
+						<path d="M9 12h7"></path>
+					</svg>
+				</div>
+				<h3>Material Didatico</h3>
+				<p>
+					Combinacao de material proprio, referencias dos livros da Teacher e apoio de editoras
+					consagradas como Oxford e Cambridge.
+				</p>
+			</article>
+
+			<article class="method-card">
+				<div class="method-icon" aria-hidden="true">
+					<svg viewBox="0 0 24 24">
+						<path d="M12 3l2.7 5.4 6 .9-4.4 4.2 1 5.9-5.3-2.8-5.3 2.8 1-5.9L3.3 9.3l6-.9L12 3z"></path>
+					</svg>
+				</div>
+				<h3>Dinamica das Aulas</h3>
+				<p>
+					Aulas interativas com musica, filmes, leitura guiada e atividades praticas para manter
+					o aluno engajado e ativo no processo.
+				</p>
+			</article>
+		</div>
+	</section>
+
+	<section class="school-space">
+		<div class="space-header">
+			<p class="section-kicker">O Espaco</p>
+			<h2>Onde o aprendizado acontece</h2>
+			<p>
+				Um olhar para os ambientes que acolhem os alunos: salas de aula,
+				recepcao e cantinho da leitura.
+			</p>
+		</div>
+
+		<div class="space-carousel" data-space-carousel>
+			<div class="space-track" data-space-track>
+				<figure class="space-slide is-active">
+					<img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Sala de aula da escola">
+					<figcaption>Salas de aula</figcaption>
+				</figure>
+
+				<figure class="space-slide">
+					<img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Recepcao da escola">
+					<figcaption>Recepcao</figcaption>
+				</figure>
+
+				<figure class="space-slide">
+					<img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Cantinho da leitura da escola">
+					<figcaption>Cantinho da leitura</figcaption>
+				</figure>
+
+				<figure class="space-slide">
+					<img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Ambiente de convivio dos alunos">
+					<figcaption>Ambiente de convivio</figcaption>
+				</figure>
+			</div>
+
+			<div class="space-carousel-controls">
+				<button type="button" class="space-nav prev" data-space-prev aria-label="Foto anterior">&#10094;</button>
+				<div class="space-dots" data-space-dots aria-label="Selecionar foto"></div>
+				<button type="button" class="space-nav next" data-space-next aria-label="Proxima foto">&#10095;</button>
+			</div>
+		</div>
+	</section>
+
+	<section class="school-testimonials">
+		<div class="testimonials-header">
+			<p class="section-kicker">Depoimentos</p>
+			<h2>O que os alunos dizem sobre a experiencia</h2>
+			<p>Relatos reais que mostram a evolucao de quem vive a metodologia Step By Step.</p>
+		</div>
+
+		<div class="testimonials-grid" aria-label="Depoimentos de alunos e ex-alunos">
+			<article class="testimonial-card">
+				<div class="testimonial-student">
+					<img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Foto da aluna Mariana Costa">
+					<strong>Mariana Costa</strong>
+				</div>
+				<blockquote>
+					Depois das aulas, perdi o medo de falar ingles no trabalho. Hoje conduzo reunioes com muito mais seguranca.
+				</blockquote>
+			</article>
+
+			<article class="testimonial-card">
+				<div class="testimonial-student">
+					<img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Foto do aluno Rafael Nogueira">
+					<strong>Rafael Nogueira</strong>
+				</div>
+				<blockquote>
+					A dinamica com conversacao e filmes fez toda diferenca. Em poucos meses senti uma evolucao muito clara.
+				</blockquote>
+			</article>
+
+			<article class="testimonial-card">
+				<div class="testimonial-student">
+					<img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Foto da aluna Juliana Pereira">
+					<strong>Juliana Pereira</strong>
+				</div>
+				<blockquote>
+					As turmas reduzidas me deram atencao individual. Consegui retomar meus estudos e finalmente me destravar.
+				</blockquote>
+			</article>
+
+			<article class="testimonial-card">
+				<div class="testimonial-student">
+					<img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Foto do aluno Felipe Araujo">
+					<strong>Felipe Araujo</strong>
+				</div>
+				<blockquote>
+					A teacher consegue explicar de forma leve e profunda ao mesmo tempo. Aprendi ingles de um jeito pratico e humano.
+				</blockquote>
+			</article>
+		</div>
+	</section>
+
+	<section class="school-final-cta">
+		<div class="final-cta-content">
+			<h2>Pronto para comecar sua jornada bilingue?</h2>
+			<a class="final-cta-btn" href="/#pre-inscricao">Ir para Pre-Inscricao</a>
+		</div>
+	</section>
+</main>
+</html>
