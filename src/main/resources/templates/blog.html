@@ -1,10 +1,227 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
-	  th:replace="~{fragments/layout :: layout(~{::main})}">
+      th:replace="~{fragments/layout :: layout(~{::main})}">
 <head>
-	<title>Blog - Step By Step</title>
+    <title>Blog da Teacher - Step By Step</title>
 </head>
 <main>
+    <section class="inner-hero blog-hero">
+        <div class="inner-hero-copy">
+            <p class="section-kicker">Blog da Teacher</p>
+            <h1>Dicas, cultura e reflexões para aprender inglês com mais sentido.</h1>
+            <p>
+                Conteúdos sobre inglês, literatura, vocabulário, aprendizagem e o universo
+                da escrita para acompanhar sua evolução dentro e fora da sala de aula.
+            </p>
+        </div>
 
+        <figure class="inner-hero-media">
+            <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                 alt="Teacher escrevendo e organizando conteúdos do blog">
+        </figure>
+    </section>
+
+    <section class="blog-feed-layout">
+        <div class="blog-feed-content">
+            <div class="blog-feed-header">
+                <p class="section-kicker">Últimas publicações</p>
+                <h2>Escolha seu próximo texto</h2>
+                <p>
+                    Artigos pensados para quem quer aprender inglês com profundidade,
+                    sensibilidade e aplicação prática.
+                </p>
+            </div>
+
+            <div class="blog-list-grid" aria-label="Lista de postagens do blog">
+                <article class="post-card">
+                    <a class="post-card-media" th:href="@{/blog/como-estudar-ingles-todos-os-dias}" href="/blog/como-estudar-ingles-todos-os-dias">
+                        <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                             alt="Caderno aberto com anotações de inglês">
+                    </a>
+
+                    <div class="post-card-content">
+                        <p class="post-card-date">12 de março de 2026</p>
+                        <h3>
+                            <a th:href="@{/blog/como-estudar-ingles-todos-os-dias}" href="/blog/como-estudar-ingles-todos-os-dias">
+                                Como estudar inglês todos os dias sem cair na rotina
+                            </a>
+                        </h3>
+                        <p class="post-card-excerpt">
+                            Criar constância no inglês não precisa ser cansativo. Neste artigo, você vai ver
+                            formas leves e realistas de estudar um pouco por dia com mais prazer e resultado.
+                        </p>
+                        <a class="blog-btn" th:href="@{/blog/como-estudar-ingles-todos-os-dias}" href="/blog/como-estudar-ingles-todos-os-dias">
+                            Ler mais
+                        </a>
+                    </div>
+                </article>
+
+                <article class="post-card">
+                    <a class="post-card-media" th:href="@{/blog/literatura-ajuda-no-ingles}" href="/blog/literatura-ajuda-no-ingles">
+                        <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                             alt="Livros empilhados sobre uma mesa de estudos">
+                    </a>
+
+                    <div class="post-card-content">
+                        <p class="post-card-date">05 de março de 2026</p>
+                        <h3>
+                            <a th:href="@{/blog/literatura-ajuda-no-ingles}" href="/blog/literatura-ajuda-no-ingles">
+                                Como a literatura pode acelerar seu aprendizado em inglês
+                            </a>
+                        </h3>
+                        <p class="post-card-excerpt">
+                            Ler vai além de ampliar vocabulário. A literatura ajuda a desenvolver interpretação,
+                            repertório cultural e sensibilidade para compreender o idioma em contexto.
+                        </p>
+                        <a class="blog-btn" th:href="@{/blog/literatura-ajuda-no-ingles}" href="/blog/literatura-ajuda-no-ingles">
+                            Ler mais
+                        </a>
+                    </div>
+                </article>
+
+                <article class="post-card">
+                    <a class="post-card-media" th:href="@{/blog/erros-comuns-na-conversacao}" href="/blog/erros-comuns-na-conversacao">
+                        <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                             alt="Pessoa conversando em aula de inglês">
+                    </a>
+
+                    <div class="post-card-content">
+                        <p class="post-card-date">27 de fevereiro de 2026</p>
+                        <h3>
+                            <a th:href="@{/blog/erros-comuns-na-conversacao}" href="/blog/erros-comuns-na-conversacao">
+                                7 erros comuns na conversação em inglês e como destravar
+                            </a>
+                        </h3>
+                        <p class="post-card-excerpt">
+                            Muitos alunos travam não por falta de conhecimento, mas por medo, excesso de autocorreção
+                            e pouca exposição oral. Veja como ajustar isso na prática.
+                        </p>
+                        <a class="blog-btn" th:href="@{/blog/erros-comuns-na-conversacao}" href="/blog/erros-comuns-na-conversacao">
+                            Ler mais
+                        </a>
+                    </div>
+                </article>
+
+                <article class="post-card">
+                    <a class="post-card-media" th:href="@{/blog/vocabulario-para-viagem}" href="/blog/vocabulario-para-viagem">
+                        <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                             alt="Passaporte e itens de viagem sobre uma mesa">
+                    </a>
+
+                    <div class="post-card-content">
+                        <p class="post-card-date">19 de fevereiro de 2026</p>
+                        <h3>
+                            <a th:href="@{/blog/vocabulario-para-viagem}" href="/blog/vocabulario-para-viagem">
+                                Vocabulário essencial para quem quer viajar com mais segurança
+                            </a>
+                        </h3>
+                        <p class="post-card-excerpt">
+                            Aeroporto, hotel, restaurante, deslocamento e situações inesperadas: um guia inicial
+                            com expressões úteis para levar seu inglês para a vida real.
+                        </p>
+                        <a class="blog-btn" th:href="@{/blog/vocabulario-para-viagem}" href="/blog/vocabulario-para-viagem">
+                            Ler mais
+                        </a>
+                    </div>
+                </article>
+
+                <article class="post-card">
+                    <a class="post-card-media" th:href="@{/blog/escrever-melhor-em-ingles}" href="/blog/escrever-melhor-em-ingles">
+                        <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                             alt="Pessoa escrevendo em um caderno">
+                    </a>
+
+                    <div class="post-card-content">
+                        <p class="post-card-date">10 de fevereiro de 2026</p>
+                        <h3>
+                            <a th:href="@{/blog/escrever-melhor-em-ingles}" href="/blog/escrever-melhor-em-ingles">
+                                Como escrever melhor em inglês com mais clareza e naturalidade
+                            </a>
+                        </h3>
+                        <p class="post-card-excerpt">
+                            Escrever bem exige estrutura, repertório e prática guiada. Descubra hábitos simples
+                            que ajudam a melhorar sua produção textual de forma consistente.
+                        </p>
+                        <a class="blog-btn" th:href="@{/blog/escrever-melhor-em-ingles}" href="/blog/escrever-melhor-em-ingles">
+                            Ler mais
+                        </a>
+                    </div>
+                </article>
+
+                <article class="post-card">
+                    <a class="post-card-media" th:href="@{/blog/aprender-com-filmes}" href="/blog/aprender-com-filmes">
+                        <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                             alt="Tela com filme e material de estudo">
+                    </a>
+
+                    <div class="post-card-content">
+                        <p class="post-card-date">02 de fevereiro de 2026</p>
+                        <h3>
+                            <a th:href="@{/blog/aprender-com-filmes}" href="/blog/aprender-com-filmes">
+                                Aprender inglês com filmes funciona mesmo?
+                            </a>
+                        </h3>
+                        <p class="post-card-excerpt">
+                            Filmes podem ser excelentes aliados quando usados com estratégia. Veja como transformar
+                            entretenimento em aprendizagem ativa sem depender só da legenda.
+                        </p>
+                        <a class="blog-btn" th:href="@{/blog/aprender-com-filmes}" href="/blog/aprender-com-filmes">
+                            Ler mais
+                        </a>
+                    </div>
+                </article>
+            </div>
+
+            <nav class="blog-pagination" aria-label="Paginação do blog">
+                <a class="pagination-btn is-disabled" href="#" aria-disabled="true">Página anterior</a>
+                <div class="pagination-pages">
+                    <a class="page-number is-current" href="#">1</a>
+                    <a class="page-number" href="#">2</a>
+                    <a class="page-number" href="#">3</a>
+                </div>
+                <a class="pagination-btn" href="#">Próxima página</a>
+            </nav>
+        </div>
+
+        <aside class="blog-sidebar" aria-label="Barra lateral do blog">
+            <section class="sidebar-card">
+                <h3>Buscar posts</h3>
+                <form class="sidebar-search" th:action="@{/blog}" method="get">
+                    <label class="sr-only" for="search">Buscar por palavra-chave</label>
+                    <input id="search" type="search" name="q" placeholder="Ex: conversação, livros, gramática">
+                    <button type="submit">Buscar</button>
+                </form>
+            </section>
+
+            <section class="sidebar-card">
+                <h3>Categorias</h3>
+                <ul class="sidebar-list">
+                    <li><a th:href="@{/blog(categoria='gramatica')}" href="/blog?categoria=gramatica">Gramática</a></li>
+                    <li><a th:href="@{/blog(categoria='vocabulario')}" href="/blog?categoria=vocabulario">Vocabulário</a></li>
+                    <li><a th:href="@{/blog(categoria='conversacao')}" href="/blog?categoria=conversacao">Conversação</a></li>
+                    <li><a th:href="@{/blog(categoria='literatura')}" href="/blog?categoria=literatura">Literatura</a></li>
+                    <li><a th:href="@{/blog(categoria='meus-livros')}" href="/blog?categoria=meus-livros">Meus Livros</a></li>
+                </ul>
+            </section>
+
+            <section class="sidebar-card sidebar-highlight">
+                <p class="section-kicker">Destaque</p>
+                <h3>Pré-inscrições abertas</h3>
+                <p>
+                    Garanta seu interesse nas próximas turmas e receba novidades da escola em primeira mão.
+                </p>
+                <a class="sidebar-highlight-btn" href="/#pre-inscricao">Quero me pré-inscrever</a>
+            </section>
+
+            <section class="sidebar-card sidebar-highlight alt">
+                <p class="section-kicker">Leitura em destaque</p>
+                <h3>Conheça os livros da autora</h3>
+                <p>
+                    Uma seleção especial de títulos para quem ama leitura, sensibilidade e formação cultural.
+                </p>
+                <a class="sidebar-highlight-btn" th:href="@{/livros}" href="/livros">Ver livros</a>
+            </section>
+        </aside>
+    </section>
 </main>
 </html>
