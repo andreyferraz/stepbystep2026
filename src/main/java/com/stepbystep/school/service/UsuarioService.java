@@ -1,0 +1,83 @@
+package com.stepbystep.school.service;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+
+import com.stepbystep.school.enums.Role;
+import com.stepbystep.school.model.Usuario;
+import com.stepbystep.school.repository.UsuarioRepository;
+import com.stepbystep.school.util.ValidationUtils;
+
+@Service
+public class UsuarioService {
+
+    private final UsuarioRepository usuarioRepository;
+
+    public UsuarioService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+    }
+
+    public Usuario criarUsuario(Usuario usuario) {
+        ValidationUtils.validarCampoObrigatorio(usuario, "Usuário");
+        ValidationUtils.validarCampoStringObrigatorio(usuario.getNome(), "Nome do Usuário");
+        ValidationUtils.validarCampoStringObrigatorio(usuario.getEmail(), "E-mail do Usuário");
+        ValidationUtils.validarCampoStringObrigatorio(usuario.getSenha(), "Senha do Usuário");
+        ValidationUtils.validarCampoObrigatorio(usuario.getRole(), "Perfil do Usuário");
+
+        if (usuario.getRole() == Role.ALUNO) {
+            ValidationUtils.validarCampoObrigatorio(usuario.getAluno(), "Aluno do Usuário");
+        }
+
+        usuario.setId(null);
+        usuario.setNome(usuario.getNome().trim());
+        usuario.setEmail(usuario.getEmail().trim().toLowerCase(Locale.ROOT));
+        usuario.setSenha(usuario.getSenha().trim());
+
+        return usuarioRepository.save(usuario);
+    }
+
+    public Usuario editarUsuario(UUID id, Usuario usuarioAtualizado) {
+        ValidationUtils.validarCampoObrigatorio(id, "ID do Usuário");
+        ValidationUtils.validarCampoObrigatorio(usuarioAtualizado, "Usuário");
+        ValidationUtils.validarCampoStringObrigatorio(usuarioAtualizado.getNome(), "Nome do Usuário");
+        ValidationUtils.validarCampoStringObrigatorio(usuarioAtualizado.getEmail(), "E-mail do Usuário");
+        ValidationUtils.validarCampoStringObrigatorio(usuarioAtualizado.getSenha(), "Senha do Usuário");
+        ValidationUtils.validarCampoObrigatorio(usuarioAtualizado.getRole(), "Perfil do Usuário");
+
+        if (usuarioAtualizado.getRole() == Role.ALUNO) {
+            ValidationUtils.validarCampoObrigatorio(usuarioAtualizado.getAluno(), "Aluno do Usuário");
+        }
+
+        Usuario usuarioExistente = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com ID: " + id));
+
+        usuarioExistente.setNome(usuarioAtualizado.getNome().trim());
+        usuarioExistente.setEmail(usuarioAtualizado.getEmail().trim().toLowerCase(Locale.ROOT));
+        usuarioExistente.setSenha(usuarioAtualizado.getSenha().trim());
+        usuarioExistente.setRole(usuarioAtualizado.getRole());
+        usuarioExistente.setAtivo(usuarioAtualizado.isAtivo());
+
+        if (usuarioAtualizado.getRole() == Role.ALUNO) {
+            usuarioExistente.setAluno(usuarioAtualizado.getAluno());
+        } else {
+            usuarioExistente.setAluno(null);
+        }
+
+        return usuarioRepository.save(usuarioExistente);
+    }
+
+    public void excluirUsuario(UUID id) {
+        ValidationUtils.validarCampoObrigatorio(id, "ID do Usuário");
+        Usuario usuarioExistente = usuarioRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com ID: " + id));
+
+        usuarioRepository.delete(usuarioExistente);
+    }
+
+    public List<Usuario> listarUsuarios() {
+        return usuarioRepository.findAll();
+    }
+}
