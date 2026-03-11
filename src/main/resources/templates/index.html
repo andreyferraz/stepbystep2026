@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{fragments/layout :: layout(~{::main})}">
+<head>
+    <title>Step By Step</title>
+</head>
+<main>
+    <section id="topo" class="hero" th:style="|background-image: linear-gradient(105deg, rgba(15,58,95,0.86), rgba(29,95,146,0.7)), url('@{/img/banner.png}');|">
+        <div class="hero-content">
+            <p class="hero-eyebrow">Step By Step Escola de Ingles</p>
+            <h1>Ingles que transforma, historias que inspiram</h1>
+            <p class="hero-subtitle">
+                Aprendizagem acolhedora, metodologia ativa e conteudo que conecta o aluno
+                ao ingles real para viver, estudar e conquistar novas oportunidades.
+            </p>
+            <div class="hero-actions">
+                <a class="hero-btn hero-btn-primary" href="#pre-inscricao">Fazer Pre-Inscricao</a>
+                <a class="hero-btn hero-btn-secondary" href="#livros">Conhecer os Livros</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="escola" class="about-school">
+        <div class="about-grid">
+            <article class="about-teacher">
+                <p class="section-kicker">Sobre a Escola e Metodologia</p>
+                <h2>Quem e a Teacher</h2>
+                <p>
+                    Teacher com formacao em Letras Ingles e mais de 10 anos de experiencia em sala de aula,
+                    com foco em desenvolvimento da fluencia, pronuncia e confianca para comunicacao real.
+                    A metodologia combina pratica guiada, conversacao contextual e acompanhamento individual.
+                </p>
+            </article>
+
+            <div class="about-cards" aria-label="Diferenciais da escola">
+                <article class="diff-card">
+                    <div class="diff-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <circle cx="8" cy="9" r="3"></circle>
+                            <circle cx="16" cy="9" r="3"></circle>
+                            <path d="M3 19c0-2.4 2.2-4 5-4s5 1.6 5 4"></path>
+                            <path d="M11 19c0-2.4 2.2-4 5-4 1.5 0 2.8.4 3.8 1.3"></path>
+                        </svg>
+                    </div>
+                    <h3>Turmas Reduzidas</h3>
+                    <p>Atencao personalizada para acelerar aprendizado e corrigir pontos-chave.</p>
+                </article>
+
+                <article class="diff-card">
+                    <div class="diff-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M4 5h16v10H7l-3 4V5z"></path>
+                            <path d="M8 9h8"></path>
+                            <path d="M8 12h5"></path>
+                        </svg>
+                    </div>
+                    <h3>Foco em Conversacao</h3>
+                    <p>Aulas com situacoes reais para falar ingles com seguranca no dia a dia.</p>
+                </article>
+
+                <article class="diff-card">
+                    <div class="diff-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3V4z"></path>
+                            <path d="M8 20a3 3 0 0 1 3-3h8"></path>
+                            <path d="M9 9h7"></path>
+                            <path d="M9 12h7"></path>
+                        </svg>
+                    </div>
+                    <h3>Material Proprio</h3>
+                    <p>Conteudo exclusivo, organizado por nivel e objetivo de cada turma.</p>
+                </article>
+
+                <article class="diff-card">
+                    <div class="diff-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M12 3l2.7 5.4 6 .9-4.4 4.2 1 5.9-5.3-2.8-5.3 2.8 1-5.9L3.3 9.3l6-.9L12 3z"></path>
+                        </svg>
+                    </div>
+                    <h3>Metodo Humanizado</h3>
+                    <p>Acompanhamento proximo para desenvolver autonomia e manter motivacao.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <section id="livros" class="writer-space">
+        <div class="writer-space-header">
+            <p class="section-kicker">O Espaco da Escritora</p>
+            <h2>Vitrine de Livros</h2>
+            <p>
+                Obras que unem ensino e inspiracao. Esta secao esta estatica por enquanto,
+                mas ja preparada para receber os dados vindos do backend.
+            </p>
+        </div>
+
+        <div class="books-grid" aria-label="Catalogo de livros da teacher">
+            <article class="book-card">
+                <div class="book-cover book-cover-1" aria-hidden="true">
+                    <span>Book 01</span>
+                </div>
+                <h3>Palavras que Libertam</h3>
+                <p>Uma jornada leve sobre como o ingles pode abrir portas na vida pessoal e profissional.</p>
+                <div class="book-actions">
+                    <a class="book-btn" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">Comprar</a>
+                </div>
+            </article>
+
+            <article class="book-card">
+                <div class="book-cover book-cover-2" aria-hidden="true">
+                    <span>Book 02</span>
+                </div>
+                <h3>Conversas Sem Medo</h3>
+                <p>Estrategias praticas para ganhar fluencia e se comunicar com seguranca em situacoes reais.</p>
+                <div class="book-actions">
+                    <a class="book-btn" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">Saiba mais</a>
+                </div>
+            </article>
+
+            <article class="book-card">
+                <div class="book-cover book-cover-3" aria-hidden="true">
+                    <span>Book 03</span>
+                </div>
+                <h3>Metodo Step by Step</h3>
+                <p>Do basico ao avancado: um guia objetivo com rotina de estudos e pratica de speaking.</p>
+                <div class="book-actions">
+                    <a class="book-btn" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">Comprar</a>
+                </div>
+            </article>
+
+            <article class="book-card">
+                <div class="book-cover book-cover-4" aria-hidden="true">
+                    <span>Book 04</span>
+                </div>
+                <h3>Historias que Ensinam</h3>
+                <p>Contos curtos bilinguais para leitura prazerosa e ampliacao de vocabulario contextualizado.</p>
+                <div class="book-actions">
+                    <a class="book-btn" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">Saiba mais</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section id="blog" class="blog-news">
+        <div class="blog-header">
+            <p class="section-kicker">Blog da Teacher</p>
+            <h2>Ultimas Noticias</h2>
+            <p>
+                Conteudos recentes com dicas de ingles, bastidores da escola e orientacoes
+                para evoluir nos estudos de forma constante.
+            </p>
+        </div>
+
+        <div class="blog-grid" aria-label="Tres ultimas noticias do blog">
+            <article class="blog-card">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Noticia sobre conversacao em ingles">
+                <div class="blog-card-content">
+                    <h3>5 Habitos para destravar a conversacao em ingles</h3>
+                    <p>Tecnicas simples para praticar speaking todos os dias e ganhar confianca ao falar.</p>
+                    <a class="blog-btn" href="#">Leia mais</a>
+                </div>
+            </article>
+
+            <article class="blog-card">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Noticia sobre rotina de estudos">
+                <div class="blog-card-content">
+                    <h3>Como montar uma rotina de estudos eficiente em 30 minutos</h3>
+                    <p>Aprenda a organizar revisao, vocabulario e escuta ativa mesmo com pouco tempo.</p>
+                    <a class="blog-btn" href="#">Leia mais</a>
+                </div>
+            </article>
+
+            <article class="blog-card">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Noticia sobre erros comuns no ingles">
+                <div class="blog-card-content">
+                    <h3>Erros comuns de quem aprende ingles e como evitar</h3>
+                    <p>Veja os principais pontos de atencao que aceleram seu progresso e evitam bloqueios.</p>
+                    <a class="blog-btn" href="#">Leia mais</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section id="pre-inscricao" class="lead-section">
+        <div class="lead-grid">
+            <div class="lead-copy">
+                <p class="section-kicker">Pre-Inscricao</p>
+                <h2>Comece sua jornada no ingles hoje</h2>
+                <p>
+                    Preencha os dados abaixo para demonstrar seu interesse. Em breve, entraremos em contato
+                    para orientar a melhor turma para o seu momento.
+                </p>
+            </div>
+
+            <form class="lead-form" action="#" method="post">
+                <div class="form-field">
+                    <label for="lead-nome">Nome</label>
+                    <input id="lead-nome" name="nome" type="text" placeholder="Digite seu nome" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="lead-whatsapp">WhatsApp</label>
+                    <input id="lead-whatsapp" name="whatsapp" type="tel" placeholder="(11) 99999-9999" required>
+                </div>
+
+                <div class="form-field">
+                    <label for="lead-nivel">Nivel de Ingles</label>
+                    <select id="lead-nivel" name="nivel" required>
+                        <option value="" disabled selected>Selecione seu nivel</option>
+                        <option value="iniciante">Iniciante</option>
+                        <option value="basico">Basico</option>
+                        <option value="intermediario">Intermediario</option>
+                        <option value="avancado">Avancado</option>
+                    </select>
+                </div>
+
+                <div class="form-field form-field-full">
+                    <label for="lead-duvidas">Duvidas</label>
+                    <textarea id="lead-duvidas" name="duvidas" rows="4" placeholder="Escreva aqui suas duvidas ou objetivos..."></textarea>
+                </div>
+
+                <button class="lead-submit" type="submit">Enviar Interesse</button>
+            </form>
+        </div>
+    </section>
+    <section id="galeria" class="gallery-section">
+        <div class="gallery-header">
+            <p class="section-kicker">Galeria</p>
+            <h2>Ultimas Fotos da Escola</h2>
+            <p>Momentos recentes das aulas e atividades que fazem parte da nossa jornada.</p>
+        </div>
+
+        <div class="gallery-grid" aria-label="Ultimas quatro fotos adicionadas">
+            <figure class="gallery-card">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Alunos em atividade de conversacao" class="photo-pos-1">
+            </figure>
+
+            <figure class="gallery-card">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Aula com material didatico" class="photo-pos-2">
+            </figure>
+
+            <figure class="gallery-card">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Ambiente da escola" class="photo-pos-3">
+            </figure>
+
+            <figure class="gallery-card">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Momento de leitura em ingles" class="photo-pos-4">
+            </figure>
+        </div>
+    </section>
+</main>
+</html>
