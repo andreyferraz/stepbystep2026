@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::main})}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Step By Step</title>
+
+</head>
+
+<body class="login-page">
+    <main class="login-shell">
+        <section class="login-screen">
+            <div class="login-brand-side">
+                <a class="login-brand" th:href="@{/}" href="/" aria-label="Voltar para a home">
+                    <img th:src="@{/img/logo-transparente.png}" src="/img/logo-transparente.png" alt="Step By Step">
+                </a>
+
+                <div class="login-brand-content">
+                    <p class="section-kicker login-kicker">Área Restrita</p>
+                    <h1>Bem-vindo(a) à Área do Aluno</h1>
+                    <p>
+                        Um espaço pensado para acompanhar sua jornada de aprendizagem
+                        com mais praticidade, organização e proximidade.
+                    </p>
+
+                    <ul class="login-brand-points">
+                        <li>Acesse conteúdos e materiais</li>
+                        <li>Consulte informações da sua jornada</li>
+                        <li>Mantenha seu contato com a escola centralizado</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="login-form-side">
+                <div class="login-card">
+                    <a class="login-back-link" th:href="@{/}" href="/">
+                        ← Voltar para o site
+                    </a>
+
+                    <div class="login-card-header">
+                        <img class="login-card-logo" th:src="@{/img/logo-transparente.png}"
+                            src="/img/logo-transparente.png" alt="Step By Step">
+                        <h2>Acesse sua conta</h2>
+                        <p>
+                            Entre com seus dados para acessar a área restrita.
+                        </p>
+                    </div>
+
+                    <div class="login-alert login-alert-error" th:if="${param.error}">
+                        Usuário ou senha inválidos.
+                    </div>
+
+                    <div class="login-alert login-alert-success" th:if="${param.logout}">
+                        Você saiu do sistema com sucesso.
+                    </div>
+
+                    <form class="login-form" th:action="@{/login}" action="/login" method="post">
+                        <div class="login-field">
+                            <label for="username">E-mail</label>
+                            <div class="login-input-wrap">
+                                <span class="login-input-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M4 6h16v12H4z"></path>
+                                        <path d="M4 7l8 6 8-6"></path>
+                                    </svg>
+                                </span>
+                                <input type="email" id="username" name="username" placeholder="voce@email.com"
+                                    autocomplete="username">
+                            </div>
+                        </div>
+
+                        <div class="login-field">
+                            <label for="password">Senha</label>
+                            <div class="login-input-wrap">
+                                <span class="login-input-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24">
+                                        <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+                                        <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+                                    </svg>
+                                </span>
+                                <input type="password" id="password" name="password" placeholder="Digite sua senha"
+                                    autocomplete="current-password">
+                                <button type="button" class="login-password-toggle" data-password-toggle
+                                    aria-label="Mostrar ou ocultar senha">
+                                    <svg class="icon-eye" viewBox="0 0 24 24">
+                                        <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="login-submit-btn">
+                            Entrar
+                        </button>
+                    </form>
+
+                    <div class="login-support-links">
+                        <a href="https://wa.me/5588999999999?text=Olá,%20esqueci%20a%20senha%20do%20meu%20portal."
+                            target="_blank" rel="noopener noreferrer">
+                            Esqueci minha senha
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script th:src="@{/js/layout.js}" src="/js/layout.js"></script>
+</body>
+
+</html>

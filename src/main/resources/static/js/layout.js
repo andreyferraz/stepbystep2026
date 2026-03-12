@@ -195,9 +195,26 @@
         applyFilter(activeFilter);
     }
 
+    function initPasswordToggle() {
+    var toggle = document.querySelector('[data-password-toggle]');
+    var passwordInput = document.querySelector('#password');
+
+    if (!toggle || !passwordInput) {
+        return;
+    }
+
+    toggle.addEventListener('click', function () {
+        var isPassword = passwordInput.getAttribute('type') === 'password';
+        passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+        toggle.setAttribute('aria-label', isPassword ? 'Ocultar senha' : 'Mostrar ou ocultar senha');
+    });
+}
+
     initSpaceCarousel();
 
     initGallery();
+
+    initPasswordToggle();
 
     if (!toggle || !menu) {
         return;
