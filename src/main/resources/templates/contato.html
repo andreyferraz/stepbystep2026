@@ -1,10 +1,200 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
-	  th:replace="~{fragments/layout :: layout(~{::main})}">
+      th:replace="~{fragments/layout :: layout(~{::main})}">
 <head>
-	<title>Contato - Step By Step</title>
+    <title>Contato - Step By Step</title>
 </head>
 <main>
+    <section class="inner-hero contact-hero">
+        <div class="inner-hero-copy">
+            <p class="section-kicker">Contato</p>
+            <h1>Fale Conosco</h1>
+            <p>
+                Estamos aqui para tirar suas dúvidas e ajudar no seu aprendizado.
+            </p>
+        </div>
 
+        <figure class="inner-hero-media">
+            <img th:src="@{/img/teacher.png}" src="/img/teacher.png"
+                 alt="Teacher pronta para atender alunos e responsáveis">
+        </figure>
+    </section>
+
+    <section class="contact-section">
+        <div class="contact-layout">
+            <aside class="contact-info-panel">
+                <p class="section-kicker">Atendimento</p>
+                <h2>Entre em contato da forma que preferir</h2>
+                <p class="contact-info-intro">
+                    Estamos disponíveis para esclarecer dúvidas sobre aulas, matrículas,
+                    horários, materiais e demais informações da escola.
+                </p>
+
+                <div class="contact-info-list">
+                    <div class="contact-info-card contact-highlight">
+                        <span class="contact-label">WhatsApp</span>
+                        <strong>(88) 99999-9999</strong>
+                        <p>Fale conosco de forma rápida e prática.</p>
+                        <a class="contact-whatsapp-btn"
+                           href="https://wa.me/5588999999999"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Chamar no WhatsApp
+                        </a>
+                    </div>
+
+                    <div class="contact-info-card">
+                        <span class="contact-label">E-mail</span>
+                        <strong>contato@stepbystep.com.br</strong>
+                        <p>
+                            <a href="mailto:contato@stepbystep.com.br">contato@stepbystep.com.br</a>
+                        </p>
+                    </div>
+
+                    <div class="contact-info-card">
+                        <span class="contact-label">Endereço</span>
+                        <strong>Rua Exemplo, 123 - Centro</strong>
+                        <p>Teixeira de Freitas - BA</p>
+                    </div>
+
+                    <div class="contact-info-card">
+                        <span class="contact-label">Horário de funcionamento</span>
+                        <strong>Segunda a Sexta</strong>
+                        <p>Das 08h às 20h</p>
+                        <strong>Sábado</strong>
+                        <p>Das 08h às 12h</p>
+                    </div>
+
+                    <div class="contact-info-card">
+                        <span class="contact-label">Redes sociais</span>
+                        <div class="contact-socials">
+                            <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a>
+                            <a href="https://facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
+                            <a href="https://linkedin.com/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="contact-form-panel">
+                <p class="section-kicker">Envie uma mensagem</p>
+                <h2>Preencha o formulário</h2>
+                <p class="contact-form-intro">
+                    Se preferir, mande sua mensagem diretamente por aqui.
+                </p>
+
+                <form class="contact-form" action="#" method="post">
+                    <div class="contact-form-grid">
+                        <div class="contact-field full">
+                            <label for="nome">Nome Completo</label>
+                            <input type="text" id="nome" name="nome" placeholder="Digite seu nome completo">
+                        </div>
+
+                        <div class="contact-field">
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" name="email" placeholder="voce@email.com">
+                        </div>
+
+                        <div class="contact-field">
+                            <label for="telefone">Telefone / WhatsApp <span>(opcional)</span></label>
+                            <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000">
+                        </div>
+
+                        <div class="contact-field full">
+                            <label for="assunto">Assunto</label>
+                            <select id="assunto" name="assunto">
+                                <option value="">Selecione um assunto</option>
+                                <option value="duvidas">Dúvidas</option>
+                                <option value="financeiro">Financeiro</option>
+                                <option value="sugestoes">Sugestões</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+
+                        <div class="contact-field full">
+                            <label for="mensagem">Mensagem</label>
+                            <textarea id="mensagem" name="mensagem" rows="7" placeholder="Escreva sua mensagem aqui"></textarea>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="contact-submit-btn">
+                        Enviar Mensagem
+                    </button>
+                </form>
+            </section>
+        </div>
+    </section>
+
+    <section class="contact-map-section">
+        <div class="contact-map-header">
+            <p class="section-kicker">Localização</p>
+            <h2>Onde estamos</h2>
+            <p>
+                Encontre a escola com facilidade e venha nos visitar.
+            </p>
+        </div>
+
+        <div class="contact-map-card">
+            <iframe
+                src="https://www.google.com/maps?q=Teixeira%20de%20Freitas%20BA&output=embed"
+                loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade"
+                allowfullscreen
+                title="Mapa da localização da escola">
+            </iframe>
+        </div>
+    </section>
+
+    <section class="contact-faq-section">
+        <div class="contact-faq-header">
+            <p class="section-kicker">Perguntas Frequentes</p>
+            <h2>Dúvidas comuns</h2>
+            <p>
+                Algumas respostas rápidas para facilitar o seu primeiro contato.
+            </p>
+        </div>
+
+        <div class="contact-faq-list">
+            <details class="faq-item">
+                <summary>A partir de qual idade a escola aceita alunos?</summary>
+                <div class="faq-answer">
+                    <p>
+                        A escola atende diferentes faixas etárias. Entre em contato para
+                        entendermos a idade do aluno e indicarmos a melhor turma.
+                    </p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary>Os materiais didáticos estão inclusos na mensalidade?</summary>
+                <div class="faq-answer">
+                    <p>
+                        Isso pode variar conforme a turma e a proposta do curso.
+                        Consulte a equipe para receber as informações completas.
+                    </p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary>A teacher dá aulas particulares?</summary>
+                <div class="faq-answer">
+                    <p>
+                        Dependendo da agenda e da disponibilidade, podem existir opções
+                        de acompanhamento individual. Fale conosco para verificar.
+                    </p>
+                </div>
+            </details>
+
+            <details class="faq-item">
+                <summary>Há turmas presenciais e online?</summary>
+                <div class="faq-answer">
+                    <p>
+                        A disponibilidade pode variar conforme o período e a organização
+                        da escola. Entre em contato para saber as modalidades abertas.
+                    </p>
+                </div>
+            </details>
+        </div>
+    </section>
 </main>
 </html>

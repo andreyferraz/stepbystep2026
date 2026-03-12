@@ -1,0 +1,328 @@
+.contact-section {
+    margin-top: 28px;
+}
+
+.contact-layout {
+    display: grid;
+    grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.15fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.contact-info-panel,
+.contact-form-panel,
+.contact-map-card,
+.contact-faq-section {
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(15, 58, 95, 0.08);
+}
+
+.contact-info-panel,
+.contact-form-panel {
+    padding: clamp(22px, 3vw, 30px);
+}
+
+.contact-info-panel h2,
+.contact-form-panel h2,
+.contact-map-header h2,
+.contact-faq-header h2 {
+    margin: 8px 0 10px;
+    color: var(--brand-900);
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    line-height: 1.2;
+}
+
+.contact-info-intro,
+.contact-form-intro,
+.contact-map-header p,
+.contact-faq-header p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+}
+
+.contact-info-list {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.contact-info-card {
+    padding: 18px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: linear-gradient(160deg, #ffffff, rgba(235, 246, 255, 0.6));
+}
+
+.contact-info-card strong {
+    display: block;
+    margin: 4px 0 8px;
+    color: var(--brand-900);
+    font-size: 1rem;
+    line-height: 1.4;
+}
+
+.contact-info-card p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.65;
+}
+
+.contact-info-card p + strong {
+    margin-top: 14px;
+}
+
+.contact-label {
+    display: inline-block;
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--brand-700);
+}
+
+.contact-highlight {
+    background: linear-gradient(160deg, rgba(37, 211, 102, 0.08), rgba(255, 255, 255, 1));
+}
+
+.contact-whatsapp-btn {
+    display: inline-block;
+    margin-top: 14px;
+    text-decoration: none;
+    padding: 12px 18px;
+    border-radius: 12px;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    transition: transform 180ms ease, filter 180ms ease;
+}
+
+.contact-whatsapp-btn:hover,
+.contact-whatsapp-btn:focus-visible {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+    outline: none;
+}
+
+.contact-info-card a {
+    color: var(--brand-700);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.contact-info-card a:hover,
+.contact-info-card a:focus-visible {
+    color: var(--brand-900);
+    outline: none;
+}
+
+.contact-socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.contact-socials a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(43, 126, 191, 0.08);
+    color: var(--brand-700);
+    font-weight: 800;
+    text-decoration: none;
+    transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
+}
+
+.contact-socials a:hover,
+.contact-socials a:focus-visible {
+    background: rgba(43, 126, 191, 0.14);
+    color: var(--brand-900);
+    transform: translateY(-1px);
+    outline: none;
+}
+
+.contact-form {
+    margin-top: 18px;
+}
+
+.contact-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.contact-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.contact-field.full {
+    grid-column: 1 / -1;
+}
+
+.contact-field label {
+    color: var(--brand-900);
+    font-weight: 800;
+    font-size: 0.95rem;
+}
+
+.contact-field label span {
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.contact-field input,
+.contact-field select,
+.contact-field textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font: inherit;
+    color: var(--ink);
+    background: #fff;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.contact-field textarea {
+    resize: vertical;
+    min-height: 160px;
+}
+
+.contact-field input:focus,
+.contact-field select:focus,
+.contact-field textarea:focus {
+    border-color: var(--brand-500);
+    box-shadow: 0 0 0 3px rgba(43, 126, 191, 0.12);
+    outline: none;
+}
+
+.contact-submit-btn {
+    margin-top: 18px;
+    border: none;
+    border-radius: 14px;
+    padding: 14px 20px;
+    font: inherit;
+    font-weight: 800;
+    color: #fff;
+    background: linear-gradient(130deg, var(--accent), var(--accent-strong));
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 180ms ease, filter 180ms ease;
+}
+
+.contact-submit-btn:hover,
+.contact-submit-btn:focus-visible {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+    outline: none;
+}
+
+.contact-map-section {
+    margin-top: 28px;
+    padding: clamp(22px, 3vw, 30px);
+}
+
+.contact-map-header,
+.contact-faq-header {
+    margin-bottom: 14px;
+}
+
+.contact-map-card {
+    overflow: hidden;
+}
+
+.contact-map-card iframe {
+    width: 100%;
+    height: 420px;
+    border: 0;
+    display: block;
+}
+
+.contact-faq-section {
+    margin-top: 28px;
+    padding: clamp(22px, 3vw, 30px);
+}
+
+.contact-faq-list {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.faq-item {
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(160deg, #ffffff, rgba(235, 246, 255, 0.58));
+    overflow: hidden;
+}
+
+.faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 18px 20px;
+    font-weight: 800;
+    color: var(--brand-900);
+    position: relative;
+    line-height: 1.5;
+}
+
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+
+.faq-item summary::after {
+    content: "+";
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.3rem;
+    color: var(--brand-700);
+}
+
+.faq-item[open] summary::after {
+    content: "−";
+}
+
+.faq-answer {
+    padding: 0 20px 18px;
+}
+
+.faq-answer p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+@media (max-width: 960px) {
+    .contact-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .contact-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .contact-map-card iframe {
+        height: 320px;
+    }
+
+    .contact-info-panel,
+    .contact-form-panel,
+    .contact-map-section,
+    .contact-faq-section {
+        padding: 20px;
+        border-radius: 18px;
+    }
+}
