@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" th:fragment="layout(content)">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,14 +39,38 @@
                     <a th:href="@{/contato}" href="/contato">Contato</a>
                 </nav>
 
-                <a class="cta-aluno" th:href="@{/login}" href="/login">
-                    <span class="cta-aluno-icon" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" focusable="false">
-                            <path d="M12 12.5a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Zm0 2.25c-4.1 0-7.5 2.68-8.34 6.25a.75.75 0 0 0 .73.92h15.22a.75.75 0 0 0 .73-.92c-.84-3.57-4.24-6.25-8.34-6.25Z" fill="currentColor"/>
-                        </svg>
-                    </span>
-                    <span>Área do Aluno</span>
-                </a>
+                <div class="header-actions">
+                    <a class="cta-aluno" sec:authorize="isAnonymous()" th:href="@{/login}" href="/login">
+                        <span class="cta-aluno-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false">
+                                <path d="M12 12.5a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Zm0 2.25c-4.1 0-7.5 2.68-8.34 6.25a.75.75 0 0 0 .73.92h15.22a.75.75 0 0 0 .73-.92c-.84-3.57-4.24-6.25-8.34-6.25Z" fill="currentColor"/>
+                            </svg>
+                        </span>
+                        <span>Área do Aluno</span>
+                    </a>
+
+                    <a class="cta-aluno" sec:authorize="hasRole('ADMIN')" th:href="@{/admin/dashboard}" href="/admin/dashboard">
+                        <span class="cta-aluno-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false">
+                                <path d="M10 3h4a1 1 0 0 1 1 1v1.2c.52.2 1 .47 1.44.8l1.05-.6a1 1 0 0 1 1.37.37l2 3.46a1 1 0 0 1-.37 1.37l-1.05.6c.04.28.06.56.06.84s-.02.56-.06.84l1.05.6a1 1 0 0 1 .37 1.37l-2 3.46a1 1 0 0 1-1.37.37l-1.05-.6c-.44.33-.92.6-1.44.8V20a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-1.2a6.9 6.9 0 0 1-1.44-.8l-1.05.6a1 1 0 0 1-1.37-.37l-2-3.46a1 1 0 0 1 .37-1.37l1.05-.6A5.83 5.83 0 0 1 4.5 12c0-.28.02-.56.06-.84l-1.05-.6a1 1 0 0 1-.37-1.37l2-3.46a1 1 0 0 1 1.37-.37l1.05.6c.44-.33.92-.6 1.44-.8V4a1 1 0 0 1 1-1Zm2 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" fill="currentColor"/>
+                            </svg>
+                        </span>
+                        <span>Painel</span>
+                    </a>
+
+                    <a class="cta-aluno" sec:authorize="hasRole('ALUNO')" th:href="@{/aluno/dashboard}" href="/aluno/dashboard">
+                        <span class="cta-aluno-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" focusable="false">
+                                <path d="M10 3h4a1 1 0 0 1 1 1v1.2c.52.2 1 .47 1.44.8l1.05-.6a1 1 0 0 1 1.37.37l2 3.46a1 1 0 0 1-.37 1.37l-1.05.6c.04.28.06.56.06.84s-.02.56-.06.84l1.05.6a1 1 0 0 1 .37 1.37l-2 3.46a1 1 0 0 1-1.37.37l-1.05-.6c-.44.33-.92.6-1.44.8V20a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-1.2a6.9 6.9 0 0 1-1.44-.8l-1.05.6a1 1 0 0 1-1.37-.37l-2-3.46a1 1 0 0 1 .37-1.37l1.05-.6A5.83 5.83 0 0 1 4.5 12c0-.28.02-.56.06-.84l-1.05-.6a1 1 0 0 1-.37-1.37l2-3.46a1 1 0 0 1 1.37-.37l1.05.6c.44-.33.92-.6 1.44-.8V4a1 1 0 0 1 1-1Zm2 5a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z" fill="currentColor"/>
+                            </svg>
+                        </span>
+                        <span>Painel</span>
+                    </a>
+
+                    <form class="cta-logout-form" sec:authorize="isAuthenticated()" th:action="@{/logout}" action="/logout" method="post">
+                        <button type="submit" class="cta-logout-btn">Sair</button>
+                    </form>
+                </div>
             </div>
         </header>
 

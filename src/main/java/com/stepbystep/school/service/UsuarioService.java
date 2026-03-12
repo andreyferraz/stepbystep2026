@@ -5,6 +5,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.stepbystep.school.enums.Role;
 import com.stepbystep.school.model.Usuario;
@@ -15,9 +16,11 @@ import com.stepbystep.school.util.ValidationUtils;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Usuario criarUsuario(Usuario usuario) {
@@ -34,7 +37,7 @@ public class UsuarioService {
         usuario.setId(null);
         usuario.setNome(usuario.getNome().trim());
         usuario.setEmail(usuario.getEmail().trim().toLowerCase(Locale.ROOT));
-        usuario.setSenha(usuario.getSenha().trim());
+        usuario.setSenha(encodeIfNeeded(usuario.getSenha()));
 
         return usuarioRepository.save(usuario);
     }
@@ -56,7 +59,7 @@ public class UsuarioService {
 
         usuarioExistente.setNome(usuarioAtualizado.getNome().trim());
         usuarioExistente.setEmail(usuarioAtualizado.getEmail().trim().toLowerCase(Locale.ROOT));
-        usuarioExistente.setSenha(usuarioAtualizado.getSenha().trim());
+        usuarioExistente.setSenha(encodeIfNeeded(usuarioAtualizado.getSenha()));
         usuarioExistente.setRole(usuarioAtualizado.getRole());
         usuarioExistente.setAtivo(usuarioAtualizado.isAtivo());
 
@@ -79,5 +82,15 @@ public class UsuarioService {
 
     public List<Usuario> listarUsuarios() {
         return usuarioRepository.findAll();
+    }
+
+    private String encodeIfNeeded(String senha) {
+        String senhaLimpa = senha.trim();
+
+        if (senhaLimpa.startsWith("$2a$") || senhaLimpa.startsWith("$2b$") || senhaLimpa.startsWith("$2y$")) {
+            return senhaLimpa;
+        }
+
+        return passwordEncoder.encode(senhaLimpa);
     }
 }

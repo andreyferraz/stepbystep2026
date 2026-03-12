@@ -54,6 +54,14 @@ body {
     gap: 22px;
 }
 
+.header-actions {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    white-space: nowrap;
+}
+
 .brand {
     display: inline-flex;
     align-items: center;
@@ -99,6 +107,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
     text-decoration: none;
     color: #fff;
     background: linear-gradient(130deg, var(--accent), var(--accent-strong));
@@ -123,6 +132,35 @@ body {
 
 .cta-aluno:hover,
 .cta-aluno:focus-visible {
+    transform: translateY(-1px);
+    filter: brightness(1.04);
+    outline: none;
+}
+
+.cta-logout-form {
+    margin: 0;
+}
+
+.cta-logout-btn {
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    text-decoration: none;
+    color: #fff;
+    background: linear-gradient(130deg, #c2410c, #9a3412);
+    font: inherit;
+    font-weight: 800;
+    padding: 11px 16px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    cursor: pointer;
+    transition: transform 180ms ease, filter 180ms ease;
+}
+
+.cta-logout-btn:hover,
+.cta-logout-btn:focus-visible {
     transform: translateY(-1px);
     filter: brightness(1.04);
     outline: none;
@@ -1159,9 +1197,10 @@ body {
 
 @media (max-width: 960px) {
     .header-container {
-        grid-template-columns: auto auto auto;
+        grid-template-columns: auto auto 1fr;
         justify-content: space-between;
         position: relative;
+        gap: 12px;
     }
 
     .menu-toggle {
@@ -1194,6 +1233,16 @@ body {
     }
 
     .cta-aluno {
+        padding: 10px 12px;
+        font-size: 0.92rem;
+    }
+
+    .header-actions {
+        gap: 8px;
+        justify-self: end;
+    }
+
+    .cta-logout-btn {
         padding: 10px 12px;
         font-size: 0.92rem;
     }
@@ -1247,6 +1296,16 @@ body {
     .header-container {
         gap: 10px;
         padding-inline: 14px;
+    }
+
+    .header-actions {
+        gap: 6px;
+    }
+
+    .cta-aluno,
+    .cta-logout-btn {
+        padding: 9px 10px;
+        font-size: 0.86rem;
     }
 
     .site-main {
