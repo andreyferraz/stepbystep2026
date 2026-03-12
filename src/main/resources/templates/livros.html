@@ -1,10 +1,168 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xmlns:th="http://www.thymeleaf.org"
-	  th:replace="~{fragments/layout :: layout(~{::main})}">
+      th:replace="~{fragments/layout :: layout(~{::main})}">
 <head>
-	<title>Livros - Step By Step</title>
+    <title>Livros - Step By Step</title>
 </head>
 <main>
+    <section class="inner-hero books-hero">
+        <div class="inner-hero-copy">
+            <p class="section-kicker">Obras Publicadas</p>
+            <h1>Conheça meus livros</h1>
+            <p>
+                Histórias que inspiram e ajudam a expandir o vocabulário,
+                a sensibilidade leitora e a imaginação dentro e fora da sala de aula.
+            </p>
+        </div>
 
+        <figure class="inner-hero-media">
+            <img th:src="@{/img/teacher.png}" src="/img/teacher.png"
+                 alt="Teacher com livros publicados">
+        </figure>
+    </section>
+
+    <section class="books-showcase">
+        <article class="book-feature">
+            <figure class="book-feature-cover">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                     alt="Capa do livro Entre Palavras e Horizontes">
+            </figure>
+
+            <div class="book-feature-content">
+                <div class="book-feature-heading">
+                    <h2>Entre Palavras e Horizontes</h2>
+                    <span class="book-year">2024</span>
+                </div>
+
+                <p class="book-feature-lead">
+                    Um romance delicado sobre descobertas, linguagem e as pontes
+                    que a leitura constrói entre pessoas, memórias e mundos possíveis.
+                </p>
+
+                <p>
+                    Em uma narrativa sensível e envolvente, a obra acompanha personagens
+                    que encontram na linguagem uma forma de reconstruir afetos, compreender
+                    a si mesmos e enxergar novas possibilidades. O texto convida o leitor a
+                    mergulhar em temas como identidade, imaginação e crescimento pessoal.
+                </p>
+
+                <p>
+                    É um livro que dialoga com quem ama literatura e também com quem entende
+                    que aprender novas palavras é, muitas vezes, aprender novas formas de ver a vida.
+                </p>
+
+                <div class="book-feature-actions">
+                    <a class="book-btn book-btn-primary" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">
+                        Comprar na Amazon
+                    </a>
+                    <a class="book-btn book-btn-secondary" href="/pdf/capitulo-1-entre-palavras-e-horizontes.pdf" target="_blank" rel="noopener noreferrer">
+                        Ler 1º Capítulo
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <article class="book-feature is-reverse">
+            <figure class="book-feature-cover">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                     alt="Capa do livro O Jardim das Leituras">
+            </figure>
+
+            <div class="book-feature-content">
+                <div class="book-feature-heading">
+                    <h2>O Jardim das Leituras</h2>
+                    <span class="book-year">2022</span>
+                </div>
+
+                <p class="book-feature-lead">
+                    Uma obra que celebra o encontro entre leitura, formação humana
+                    e o prazer de descobrir significados em cada página.
+                </p>
+
+                <p>
+                    Com uma escrita acolhedora, o livro apresenta personagens, situações
+                    e reflexões que despertam empatia e curiosidade. A narrativa foi pensada
+                    para tocar leitores de diferentes idades, valorizando o poder transformador
+                    das histórias no desenvolvimento do pensamento e da imaginação.
+                </p>
+
+                <p>
+                    Ao mesmo tempo, a obra reforça como a leitura pode ampliar repertório,
+                    enriquecer vocabulário e fortalecer a capacidade de interpretação.
+                </p>
+
+                <div class="book-feature-actions">
+                    <a class="book-btn book-btn-primary" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">
+                        Comprar na Amazon
+                    </a>
+                    <a class="book-btn book-btn-secondary" href="/pdf/capitulo-1-o-jardim-das-leituras.pdf" target="_blank" rel="noopener noreferrer">
+                        Ler 1º Capítulo
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <article class="book-feature">
+            <figure class="book-feature-cover">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                     alt="Capa do livro Cartas para Aprender e Sentir">
+            </figure>
+
+            <div class="book-feature-content">
+                <div class="book-feature-heading">
+                    <h2>Cartas para Aprender e Sentir</h2>
+                    <span class="book-year">2020</span>
+                </div>
+
+                <p class="book-feature-lead">
+                    Uma coletânea literária que une emoção, linguagem e formação leitora
+                    em textos que convidam à pausa e à reflexão.
+                </p>
+
+                <p>
+                    A obra reúne escritos que transitam entre memória, afeto e descoberta,
+                    propondo uma leitura que toca tanto o coração quanto a mente. Cada texto
+                    foi construído para provocar identificação e ampliar o olhar sobre o mundo.
+                </p>
+
+                <p>
+                    É uma leitura ideal para quem acredita que a literatura tem papel essencial
+                    no amadurecimento da linguagem, na construção de repertório e no fortalecimento
+                    da expressão pessoal.
+                </p>
+
+                <div class="book-feature-actions">
+                    <a class="book-btn book-btn-primary" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">
+                        Comprar na Amazon
+                    </a>
+                    <a class="book-btn book-btn-secondary" href="/pdf/capitulo-1-cartas-para-aprender-e-sentir.pdf" target="_blank" rel="noopener noreferrer">
+                        Ler 1º Capítulo
+                    </a>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="books-author-note">
+        <div class="books-author-note-media">
+            <img th:src="@{/img/teacher.png}" src="/img/teacher.png"
+                 alt="Teacher escrevendo e segurando um livro">
+        </div>
+
+        <div class="books-author-note-content">
+            <p class="section-kicker">Sobre a autora</p>
+            <h2>Quando a sala de aula encontra a escrita</h2>
+            <p>
+                A vivência em sala de aula inspira diretamente as minhas histórias.
+                Cada encontro com os alunos, cada descoberta linguística e cada conversa
+                sobre leitura reforçam a certeza de que ensinar e escrever caminham juntos.
+            </p>
+            <p>
+                Meus livros nascem desse desejo de ampliar horizontes: formar leitores,
+                estimular sensibilidade, enriquecer vocabulário e criar experiências que
+                continuem ecoando muito além da aula.
+            </p>
+        </div>
+    </section>
 </main>
 </html>
