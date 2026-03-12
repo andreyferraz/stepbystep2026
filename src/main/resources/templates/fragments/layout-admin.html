@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" th:fragment="layoutAdmin(content, pageTitle)">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle} ?: 'Painel Administrativo - Step By Step'">Painel Administrativo - Step By Step</title>
+    <link rel="icon" type="image/png" th:href="@{/img/icone.png}" href="/img/icone.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}" href="/css/admin-dashboard.css">
+</head>
+<body class="admin-body">
+    <div class="admin-shell">
+        <aside class="admin-sidebar" id="adminSidebar">
+            <div class="admin-brand">
+                <img th:src="@{/img/icone-branco.png}" src="/img/icone-branco.png" alt="Step By Step">
+                <span>Painel Admin</span>
+            </div>
+
+            <nav class="admin-nav" aria-label="Navegação administrativa">
+                <section class="admin-nav-group">
+                    <p class="admin-nav-label">Visão Geral</p>
+                    <button type="button" class="admin-nav-link is-active" data-panel-target="overview" data-panel-title="Visão Geral">
+                        Visão Geral
+                    </button>
+                </section>
+
+                <section class="admin-nav-group">
+                    <p class="admin-nav-label">Módulo Acadêmico</p>
+                    <button type="button" class="admin-nav-link" data-panel-target="alunos" data-panel-title="Gestão de Alunos">Alunos</button>
+                    <button type="button" class="admin-nav-link" data-panel-target="turmas" data-panel-title="Gestão de Turmas">Turmas</button>
+                    <button type="button" class="admin-nav-link" data-panel-target="materiais" data-panel-title="Materiais de Estudo">Materiais de Estudo</button>
+                    <button type="button" class="admin-nav-link" data-panel-target="notas" data-panel-title="Notas e Presença">Notas/Presença</button>
+                </section>
+
+                <section class="admin-nav-group">
+                    <p class="admin-nav-label">Módulo Financeiro</p>
+                    <button type="button" class="admin-nav-link" data-panel-target="mensalidades" data-panel-title="Gestão de Mensalidades">Gestão de Mensalidades</button>
+                    <button type="button" class="admin-nav-link" data-panel-target="inadimplencia" data-panel-title="Inadimplência">Inadimplência</button>
+                </section>
+
+                <section class="admin-nav-group">
+                    <p class="admin-nav-label">Site e Marketing</p>
+                    <button type="button" class="admin-nav-link" data-panel-target="pre-inscricoes" data-panel-title="Pré-inscrições">Pré-inscrições</button>
+                    <button type="button" class="admin-nav-link" data-panel-target="blog" data-panel-title="Postagens do Blog">Postagens do Blog</button>
+                    <button type="button" class="admin-nav-link" data-panel-target="livros" data-panel-title="Obras Literárias">Obras Literárias</button>
+                    <button type="button" class="admin-nav-link" data-panel-target="galeria" data-panel-title="Galeria de Fotos">Galeria de Fotos</button>
+                </section>
+            </nav>
+        </aside>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <div class="admin-topbar-left">
+                    <button type="button" class="admin-menu-toggle" id="adminMenuToggle" aria-label="Abrir ou fechar menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <div>
+                        <p class="admin-topbar-kicker">Painel Step By Step</p>
+                        <h1 id="panelHeading">Visão Geral</h1>
+                    </div>
+                </div>
+
+                <div class="admin-topbar-right">
+                    <p class="admin-teacher-name">Profª Elza</p>
+                    <a class="admin-topbar-btn" th:href="@{/}" href="/" target="_blank" rel="noopener noreferrer">Ver Site</a>
+                    <button type="button" class="admin-bell-btn" aria-label="Notificações">
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 3a5 5 0 0 0-5 5v2.34c0 .8-.24 1.58-.7 2.24L4.5 15.2A1 1 0 0 0 5.32 17h13.36a1 1 0 0 0 .82-1.8l-1.8-2.62a3.96 3.96 0 0 1-.7-2.24V8a5 5 0 0 0-5-5Zm0 18a3 3 0 0 0 2.82-2h-5.64A3 3 0 0 0 12 21Z" fill="currentColor"/>
+                        </svg>
+                        <span class="admin-bell-badge">3</span>
+                    </button>
+                    <form class="admin-logout-form" th:action="@{/logout}" action="/logout" method="post">
+                        <button type="submit" class="admin-logout-btn">Sair</button>
+                    </form>
+                </div>
+            </header>
+
+            <main class="admin-content" th:replace="${content}">
+                <section>
+                    <h2>Conteúdo do painel</h2>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script th:src="@{/js/admin-dashboard.js}" src="/js/admin-dashboard.js"></script>
+</body>
+</html>

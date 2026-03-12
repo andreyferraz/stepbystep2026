@@ -1,11 +1,574 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::main})}">
-
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout-admin :: layoutAdmin(~{::main}, 'Painel Administrativo - Step By Step')}">
 <head>
     <title>Painel Administrativo - Step By Step</title>
 </head>
 <main>
+    <section class="admin-panel is-active" data-panel="overview">
+        <div class="metric-grid">
+            <article class="metric-card metric-blue">
+                <h3>Total de alunos ativos</h3>
+                <strong>248</strong>
+            </article>
+            <article class="metric-card metric-green">
+                <h3>Mensalidades recebidas no mês</h3>
+                <strong>R$ 38.420</strong>
+            </article>
+            <article class="metric-card metric-red">
+                <h3>Mensalidades em atraso</h3>
+                <strong>17</strong>
+                <a href="#">Ver devedores</a>
+            </article>
+            <article class="metric-card metric-yellow">
+                <h3>Pré-inscrições pendentes</h3>
+                <strong>12</strong>
+            </article>
+        </div>
 
+        <div class="admin-summary-grid">
+            <article class="admin-card">
+                <header class="admin-card-header">
+                    <h2>Últimos alunos matriculados</h2>
+                </header>
+                <div class="admin-card-content">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Turma</th>
+                                <th>Data</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ana Clara</td>
+                                <td>Kids 1</td>
+                                <td>10/03/2026</td>
+                                <td><span class="status-chip success">Ativo</span></td>
+                            </tr>
+                            <tr>
+                                <td>João Pedro</td>
+                                <td>Teens 2</td>
+                                <td>09/03/2026</td>
+                                <td><span class="status-chip success">Ativo</span></td>
+                            </tr>
+                            <tr>
+                                <td>Maria Luísa</td>
+                                <td>Adults 1</td>
+                                <td>07/03/2026</td>
+                                <td><span class="status-chip success">Ativo</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+
+            <article class="admin-card">
+                <header class="admin-card-header">
+                    <h2>Próximos vencimentos</h2>
+                </header>
+                <div class="admin-card-content">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Vencimento</th>
+                                <th>Valor</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Gabriel Souza</td>
+                                <td>15/03/2026</td>
+                                <td>R$ 290</td>
+                                <td><span class="status-chip warn">A vencer</span></td>
+                            </tr>
+                            <tr>
+                                <td>Isabela Rocha</td>
+                                <td>16/03/2026</td>
+                                <td>R$ 320</td>
+                                <td><span class="status-chip warn">A vencer</span></td>
+                            </tr>
+                            <tr>
+                                <td>Matheus Lima</td>
+                                <td>17/03/2026</td>
+                                <td>R$ 280</td>
+                                <td><span class="status-chip warn">A vencer</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <section class="admin-panel" data-panel="alunos">
+        <article class="admin-card">
+            <div class="admin-card-content">
+                <div class="section-head">
+                    <h2>Gestão de Alunos</h2>
+                    <button type="button" class="admin-primary-btn" data-open-modal="aluno-novo">Adicionar Novo</button>
+                </div>
+
+                <output class="admin-feedback" id="alunoFormFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="alunoSenhaFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="alunoEditFeedback" aria-live="polite"></output>
+
+                <div class="admin-search-row">
+                    <input type="search" class="admin-search" placeholder="Pesquisar por nome, turma ou telefone">
+                    <button type="button" class="admin-secondary-btn" data-open-modal="pagamento">Registrar Pagamento</button>
+                </div>
+
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Aluno</th>
+                            <th>Turma</th>
+                            <th>Responsável</th>
+                            <th>Status</th>
+                            <th>Acesso</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Rafael Alves</td>
+                            <td>Kids 2</td>
+                            <td>Luciana Alves</td>
+                            <td><span class="status-chip success">Ativo</span></td>
+                            <td>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="aluno-senha" data-aluno-nome="Rafael Alves">Redefinir senha</button>
+                            </td>
+                            <td>
+                                <div class="action-icons">
+                                    <button class="icon-btn" type="button" aria-label="Editar"
+                                        data-open-modal="aluno-editar"
+                                        data-aluno-id="1"
+                                        data-aluno-nome="Rafael Alves"
+                                        data-aluno-turma="2"
+                                        data-aluno-responsavel="Luciana Alves"
+                                        data-aluno-telefone="(88) 99881-2211"
+                                        data-aluno-email="rafael.alves@email.com"
+                                        data-aluno-login="rafael.alves"
+                                        data-aluno-status="ATIVO"
+                                        data-aluno-observacoes="Prefere aulas aos sabados.">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18 9.5 14.5 6 4 16.5Zm15.7-9.8a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 0L15.3 5.3 18.8 8.8l.9-2.1Z" fill="currentColor"/></svg>
+                                    </button>
+                                    <button class="icon-btn" type="button" aria-label="Visualizar"
+                                        data-open-modal="aluno-visualizar"
+                                        data-aluno-id="1"
+                                        data-aluno-nome="Rafael Alves"
+                                        data-aluno-data-nascimento="2013-04-19"
+                                        data-aluno-turma-label="Kids 2"
+                                        data-aluno-nivel-label="Basico"
+                                        data-aluno-responsavel="Luciana Alves"
+                                        data-aluno-telefone="(88) 99881-2211"
+                                        data-aluno-email="rafael.alves@email.com"
+                                        data-aluno-login="rafael.alves"
+                                        data-aluno-status-label="Ativo"
+                                        data-aluno-observacoes="Prefere aulas aos sabados.">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5.6 0 9.4 5.4 9.6 5.6a1 1 0 0 1 0 .8C21.4 11.6 17.6 17 12 17S2.6 11.6 2.4 11.4a1 1 0 0 1 0-.8C2.6 10.4 6.4 5 12 5Zm0 2c-3.6 0-6.5 2.9-6.9 3.6.4.7 3.3 3.6 6.9 3.6s6.5-2.9 6.9-3.6C18.5 9.9 15.6 7 12 7Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="currentColor"/></svg>
+                                    </button>
+                                    <button class="icon-btn danger" type="button" aria-label="Excluir">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Z" fill="currentColor"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Helena Martins</td>
+                            <td>Adults 2</td>
+                            <td>Próprio aluno</td>
+                            <td><span class="status-chip success">Ativo</span></td>
+                            <td>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="aluno-senha" data-aluno-nome="Helena Martins">Redefinir senha</button>
+                            </td>
+                            <td>
+                                <div class="action-icons">
+                                    <button class="icon-btn" type="button" aria-label="Editar"
+                                        data-open-modal="aluno-editar"
+                                        data-aluno-id="2"
+                                        data-aluno-nome="Helena Martins"
+                                        data-aluno-turma="4"
+                                        data-aluno-responsavel="Proprio aluno"
+                                        data-aluno-telefone="(88) 99922-1133"
+                                        data-aluno-email="helena.martins@email.com"
+                                        data-aluno-login="helena.martins"
+                                        data-aluno-status="ATIVO"
+                                        data-aluno-observacoes="Disponivel para aulas extras no periodo noturno.">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18 9.5 14.5 6 4 16.5Zm15.7-9.8a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 0L15.3 5.3 18.8 8.8l.9-2.1Z" fill="currentColor"/></svg>
+                                    </button>
+                                    <button class="icon-btn" type="button" aria-label="Visualizar"
+                                        data-open-modal="aluno-visualizar"
+                                        data-aluno-id="2"
+                                        data-aluno-nome="Helena Martins"
+                                        data-aluno-data-nascimento="2006-11-02"
+                                        data-aluno-turma-label="Adults 2"
+                                        data-aluno-nivel-label="Intermediario"
+                                        data-aluno-responsavel="Proprio aluno"
+                                        data-aluno-telefone="(88) 99922-1133"
+                                        data-aluno-email="helena.martins@email.com"
+                                        data-aluno-login="helena.martins"
+                                        data-aluno-status-label="Ativo"
+                                        data-aluno-observacoes="Disponivel para aulas extras no periodo noturno.">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5.6 0 9.4 5.4 9.6 5.6a1 1 0 0 1 0 .8C21.4 11.6 17.6 17 12 17S2.6 11.6 2.4 11.4a1 1 0 0 1 0-.8C2.6 10.4 6.4 5 12 5Zm0 2c-3.6 0-6.5 2.9-6.9 3.6.4.7 3.3 3.6 6.9 3.6s6.5-2.9 6.9-3.6C18.5 9.9 15.6 7 12 7Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="currentColor"/></svg>
+                                    </button>
+                                    <button class="icon-btn danger" type="button" aria-label="Excluir">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Z" fill="currentColor"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="pagination">
+                    <button type="button">Anterior</button>
+                    <span>Página 1 de 8</span>
+                    <button type="button">Próxima</button>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="admin-panel" data-panel="turmas"><div class="placeholder-box">Tela estática de Turmas. Aqui você poderá listar, criar e editar turmas.</div></section>
+    <section class="admin-panel" data-panel="materiais"><div class="placeholder-box">Tela estática de Materiais de Estudo. Área para upload e organização por turma.</div></section>
+    <section class="admin-panel" data-panel="notas"><div class="placeholder-box">Tela estática de Notas/Presença. Ideal para lançamento rápido em modal.</div></section>
+    <section class="admin-panel" data-panel="mensalidades"><div class="placeholder-box">Tela estática de Gestão de Mensalidades com filtros por status e vencimento.</div></section>
+    <section class="admin-panel" data-panel="inadimplencia"><div class="placeholder-box">Tela estática de Inadimplência com ações de cobrança e contato.</div></section>
+    <section class="admin-panel" data-panel="pre-inscricoes"><div class="placeholder-box">Tela estática de Pré-inscrições para acompanhar leads (Pendente, Contatado, Matriculado).</div></section>
+    <section class="admin-panel" data-panel="blog"><div class="placeholder-box">Tela estática de Postagens do Blog com editor e calendário editorial.</div></section>
+    <section class="admin-panel" data-panel="livros"><div class="placeholder-box">Tela estática de Obras Literárias para catálogo e gerenciamento.</div></section>
+    <section class="admin-panel" data-panel="galeria"><div class="placeholder-box">Tela estática de Galeria de Fotos para upload e organização por álbum.</div></section>
+
+    <dialog class="modal-overlay" data-modal="aluno-novo" aria-labelledby="modalNovoAlunoTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalNovoAlunoTitulo">Adicionar novo aluno</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formNovoAluno" th:action="@{/admin/alunos}" action="/admin/alunos" method="post" data-static-submit="true" data-feedback-target="alunoFormFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label for="alunoNome">Nome completo</label>
+                        <input id="alunoNome" name="nome" type="text" placeholder="Ex.: João da Silva" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoDataNascimento">Data de nascimento</label>
+                        <input id="alunoDataNascimento" name="dataNascimento" type="date" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoTurma">Turma</label>
+                        <select id="alunoTurma" name="turmaId" required>
+                            <option value="">Selecione</option>
+                            <option value="1">Kids 1</option>
+                            <option value="2">Kids 2</option>
+                            <option value="3">Teens 1</option>
+                            <option value="4">Adults 1</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoNivel">Nível</label>
+                        <select id="alunoNivel" name="nivel" required>
+                            <option value="">Selecione</option>
+                            <option value="BASICO">Básico</option>
+                            <option value="INTERMEDIARIO">Intermediário</option>
+                            <option value="AVANCADO">Avançado</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoResponsavel">Responsável</label>
+                        <input id="alunoResponsavel" name="responsavel" type="text" placeholder="Nome do responsável">
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoTelefone">Telefone / WhatsApp</label>
+                        <input id="alunoTelefone" name="telefone" type="tel" placeholder="(00) 00000-0000" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoEmail">E-mail</label>
+                        <input id="alunoEmail" name="email" type="email" placeholder="aluno@email.com" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <p class="modal-section-title">Acesso ao portal do aluno</p>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoLogin">Login de acesso</label>
+                        <input id="alunoLogin" name="usuarioLogin" type="text" placeholder="Ex.: joao.silva" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoSenha">Senha</label>
+                        <input id="alunoSenha" name="usuarioSenha" type="password" placeholder="Mínimo 8 caracteres" minlength="8" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoSenhaConfirmacao">Confirmar senha</label>
+                        <input id="alunoSenhaConfirmacao" name="usuarioSenhaConfirmacao" type="password" placeholder="Repita a senha" minlength="8" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoStatus">Status</label>
+                        <select id="alunoStatus" name="status" required>
+                            <option value="ATIVO">Ativo</option>
+                            <option value="INATIVO">Inativo</option>
+                            <option value="PENDENTE">Pendente</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="alunoObservacoes">Observações</label>
+                        <textarea id="alunoObservacoes" name="observacoes" rows="3" placeholder="Informações adicionais do aluno"></textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Os campos de login e senha já estão prontos para integração com backend de autenticação.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar aluno</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="aluno-senha" aria-labelledby="modalAlunoSenhaTitulo">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h3 id="modalAlunoSenhaTitulo">Redefinir senha do aluno</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formRedefinirSenhaAluno" th:action="@{/admin/alunos/redefinir-senha}" action="/admin/alunos/redefinir-senha" method="post" data-static-submit="true" data-feedback-target="alunoSenhaFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="alunoSenhaNome">Aluno</label>
+                        <input id="alunoSenhaNome" name="alunoNome" type="text" readonly>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="alunoSenhaLogin">Login atual</label>
+                        <input id="alunoSenhaLogin" name="usuarioLogin" type="text" placeholder="login.aluno" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoNovaSenha">Nova senha</label>
+                        <input id="alunoNovaSenha" name="novaSenha" type="password" minlength="8" placeholder="Mínimo 8 caracteres" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="alunoNovaSenhaConfirmacao">Confirmar nova senha</label>
+                        <input id="alunoNovaSenhaConfirmacao" name="novaSenhaConfirmacao" type="password" minlength="8" placeholder="Repita a nova senha" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Segurança: a senha atual não é exibida no painel. O fluxo correto é redefinir para uma nova senha.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar nova senha</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="aluno-editar" aria-labelledby="modalEditarAlunoTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalEditarAlunoTitulo">Editar aluno</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formEditarAluno" th:action="@{/admin/alunos/editar}" action="/admin/alunos/editar" method="post" data-static-submit="true" data-feedback-target="alunoEditFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" id="editarAlunoId" name="alunoId">
+
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label for="editarAlunoNome">Nome completo</label>
+                        <input id="editarAlunoNome" name="nome" type="text" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarAlunoTurma">Turma</label>
+                        <select id="editarAlunoTurma" name="turmaId" required>
+                            <option value="">Selecione</option>
+                            <option value="1">Kids 1</option>
+                            <option value="2">Kids 2</option>
+                            <option value="3">Teens 1</option>
+                            <option value="4">Adults 1</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarAlunoResponsavel">Responsável</label>
+                        <input id="editarAlunoResponsavel" name="responsavel" type="text">
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarAlunoTelefone">Telefone / WhatsApp</label>
+                        <input id="editarAlunoTelefone" name="telefone" type="tel" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarAlunoEmail">E-mail</label>
+                        <input id="editarAlunoEmail" name="email" type="email" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarAlunoLogin">Login de acesso</label>
+                        <input id="editarAlunoLogin" name="usuarioLogin" type="text" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarAlunoStatus">Status</label>
+                        <select id="editarAlunoStatus" name="status" required>
+                            <option value="ATIVO">Ativo</option>
+                            <option value="INATIVO">Inativo</option>
+                            <option value="PENDENTE">Pendente</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="editarAlunoObservacoes">Observações</label>
+                        <textarea id="editarAlunoObservacoes" name="observacoes" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="aluno-visualizar" aria-labelledby="modalVisualizarAlunoTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalVisualizarAlunoTitulo">Visualizar aluno</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label for="visualizarAlunoId">ID</label>
+                    <input id="visualizarAlunoId" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarAlunoNome">Nome completo</label>
+                    <input id="visualizarAlunoNome" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarAlunoDataNascimento">Data de nascimento</label>
+                    <input id="visualizarAlunoDataNascimento" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarAlunoTurma">Turma</label>
+                    <input id="visualizarAlunoTurma" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarAlunoNivel">Nivel</label>
+                    <input id="visualizarAlunoNivel" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarAlunoStatus">Status</label>
+                    <input id="visualizarAlunoStatus" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarAlunoResponsavel">Responsavel</label>
+                    <input id="visualizarAlunoResponsavel" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarAlunoTelefone">Telefone / WhatsApp</label>
+                    <input id="visualizarAlunoTelefone" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarAlunoEmail">E-mail</label>
+                    <input id="visualizarAlunoEmail" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarAlunoLogin">Login</label>
+                    <input id="visualizarAlunoLogin" type="text" readonly>
+                </div>
+
+                <div class="modal-field modal-field-full">
+                    <label for="visualizarAlunoObservacoes">Observacoes</label>
+                    <textarea id="visualizarAlunoObservacoes" rows="3" readonly></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="admin-secondary-btn" data-close-modal>Fechar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="pagamento" aria-labelledby="modalPagamentoTitulo">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h3 id="modalPagamentoTitulo">Registrar pagamento</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label for="alunoPagamento">Aluno</label>
+                    <select id="alunoPagamento">
+                        <option>Rafael Alves</option>
+                        <option>Helena Martins</option>
+                        <option>Gabriel Souza</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label for="valorPagamento">Valor</label>
+                    <input id="valorPagamento" type="text" value="290,00">
+                </div>
+                <div class="modal-field">
+                    <label for="competenciaPagamento">Competência</label>
+                    <input id="competenciaPagamento" type="month" value="2026-03">
+                </div>
+                <div class="modal-field">
+                    <label for="metodoPagamento">Método</label>
+                    <select id="metodoPagamento">
+                        <option>PIX</option>
+                        <option>Cartão</option>
+                        <option>Boleto</option>
+                        <option>Dinheiro</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                <button type="button" class="admin-primary-btn" data-close-modal>Salvar</button>
+            </div>
+        </div>
+    </dialog>
 </main>
-
 </html>
