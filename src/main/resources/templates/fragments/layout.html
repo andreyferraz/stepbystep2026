@@ -39,7 +39,14 @@
                     <a th:href="@{/contato}" href="/contato">Contato</a>
                 </nav>
 
-                <a class="cta-aluno" th:href="@{/login}" href="/login">Área do Aluno</a>
+                <a class="cta-aluno" th:href="@{/login}" href="/login">
+                    <span class="cta-aluno-icon" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" focusable="false">
+                            <path d="M12 12.5a4.25 4.25 0 1 0 0-8.5 4.25 4.25 0 0 0 0 8.5Zm0 2.25c-4.1 0-7.5 2.68-8.34 6.25a.75.75 0 0 0 .73.92h15.22a.75.75 0 0 0 .73-.92c-.84-3.57-4.24-6.25-8.34-6.25Z" fill="currentColor"/>
+                        </svg>
+                    </span>
+                    <span>Área do Aluno</span>
+                </a>
             </div>
         </header>
 
