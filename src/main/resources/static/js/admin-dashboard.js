@@ -113,6 +113,77 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                 }
 
+                if (target === "turma-editar") {
+                    var turmaEditMap = {
+                        "#editarTurmaId": "data-turma-id",
+                        "#editarTurmaNome": "data-turma-nome",
+                        "#editarTurmaNivel": "data-turma-nivel",
+                        "#editarTurmaTeacher": "data-turma-teacher",
+                        "#editarTurmaVagasTotal": "data-turma-vagas-total",
+                        "#editarTurmaVagasOcupadas": "data-turma-vagas-ocupadas",
+                        "#editarTurmaDias": "data-turma-dias",
+                        "#editarTurmaHorario": "data-turma-horario",
+                        "#editarTurmaStatus": "data-turma-status",
+                        "#editarTurmaObservacoes": "data-turma-observacoes"
+                    };
+
+                    Object.keys(turmaEditMap).forEach(function (selector) {
+                        var field = modal.querySelector(selector);
+                        if (field) {
+                            field.value = button.getAttribute(turmaEditMap[selector]) || "";
+                        }
+                    });
+                }
+
+                if (target === "turma-visualizar") {
+                    var turmaViewMap = {
+                        "#visualizarTurmaId": "data-turma-id",
+                        "#visualizarTurmaNome": "data-turma-nome",
+                        "#visualizarTurmaNivel": "data-turma-nivel-label",
+                        "#visualizarTurmaTeacher": "data-turma-teacher",
+                        "#visualizarTurmaVagas": "data-turma-vagas",
+                        "#visualizarTurmaStatus": "data-turma-status-label",
+                        "#visualizarTurmaDias": "data-turma-dias",
+                        "#visualizarTurmaHorario": "data-turma-horario",
+                        "#visualizarTurmaObservacoes": "data-turma-observacoes"
+                    };
+
+                    Object.keys(turmaViewMap).forEach(function (selector) {
+                        var field = modal.querySelector(selector);
+                        if (field) {
+                            field.value = button.getAttribute(turmaViewMap[selector]) || "";
+                        }
+                    });
+                }
+
+                if (target === "turma-excluir") {
+                    var turmaIdField = modal.querySelector("#excluirTurmaId");
+                    var turmaNomeField = modal.querySelector("#excluirTurmaNome");
+                    var avisoRegra = modal.querySelector("#excluirTurmaRegraAviso");
+                    var confirmarExcluirBtn = modal.querySelector("#confirmarExcluirTurmaBtn");
+                    var vagasOcupadas = Number(button.getAttribute("data-turma-vagas-ocupadas") || "0");
+
+                    if (turmaIdField) {
+                        turmaIdField.value = button.getAttribute("data-turma-id") || "";
+                    }
+
+                    if (turmaNomeField) {
+                        turmaNomeField.value = button.getAttribute("data-turma-nome") || "";
+                    }
+
+                    if (confirmarExcluirBtn) {
+                        confirmarExcluirBtn.disabled = vagasOcupadas > 0;
+                    }
+
+                    if (avisoRegra) {
+                        if (vagasOcupadas > 0) {
+                            avisoRegra.textContent = "Exclusão bloqueada: existem " + vagasOcupadas + " aluno(s) vinculado(s) a esta turma.";
+                        } else {
+                            avisoRegra.textContent = "Turma sem alunos vinculados. Exclusão liberada.";
+                        }
+                    }
+                }
+
                 modal.classList.add("is-open");
                 if (typeof modal.showModal === "function" && !modal.open) {
                     modal.showModal();
@@ -175,6 +246,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     feedback.textContent = "Nova senha preparada para atualização. Integre este formulário ao backend para salvar a redefinição.";
                 } else if (feedbackTarget === "alunoEditFeedback") {
                     feedback.textContent = "Dados do aluno preparados para atualização. Integre este formulário ao backend para persistir as alterações.";
+                } else if (feedbackTarget === "turmaFormFeedback") {
+                    feedback.textContent = "Turma preparada para cadastro. Integre este formulário ao backend para persistir no banco.";
+                } else if (feedbackTarget === "turmaEditFeedback") {
+                    feedback.textContent = "Dados da turma preparados para atualização. Integre este formulário ao backend para persistir as alterações.";
+                } else if (feedbackTarget === "turmaDeleteFeedback") {
+                    feedback.textContent = "Exclusão da turma preparada. Integre este formulário ao backend para efetivar a remoção.";
                 } else {
                     feedback.textContent = "Aluno e credenciais de acesso preparados para cadastro. Integre este formulário ao backend para persistir no banco.";
                 }

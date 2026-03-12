@@ -399,6 +399,12 @@ body.admin-body {
     cursor: pointer;
 }
 
+.admin-primary-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    filter: grayscale(0.15);
+}
+
 .admin-secondary-btn {
     border: 1px solid var(--admin-line);
     border-radius: 10px;

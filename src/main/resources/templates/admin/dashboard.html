@@ -233,7 +233,138 @@
         </article>
     </section>
 
-    <section class="admin-panel" data-panel="turmas"><div class="placeholder-box">Tela estática de Turmas. Aqui você poderá listar, criar e editar turmas.</div></section>
+    <section class="admin-panel" data-panel="turmas">
+        <article class="admin-card">
+            <div class="admin-card-content">
+                <div class="section-head">
+                    <h2>Gestão de Turmas</h2>
+                    <button type="button" class="admin-primary-btn" data-open-modal="turma-nova">Adicionar Nova</button>
+                </div>
+
+                <output class="admin-feedback" id="turmaFormFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="turmaEditFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="turmaDeleteFeedback" aria-live="polite"></output>
+
+                <div class="admin-search-row">
+                    <input type="search" class="admin-search" placeholder="Pesquisar por nome da turma, nível ou teacher">
+                </div>
+
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Turma</th>
+                            <th>Nível</th>
+                            <th>Teacher</th>
+                            <th>Vagas</th>
+                            <th>Horário</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Kids 2 - Manhã</td>
+                            <td>Básico</td>
+                            <td>Profª Elza</td>
+                            <td>14/18</td>
+                            <td>Seg e Qua 09:00</td>
+                            <td><span class="status-chip success">Ativa</span></td>
+                            <td>
+                                <div class="action-icons">
+                                    <button class="icon-btn" type="button" aria-label="Editar"
+                                        data-open-modal="turma-editar"
+                                        data-turma-id="1"
+                                        data-turma-nome="Kids 2 - Manhã"
+                                        data-turma-nivel="BASICO"
+                                        data-turma-teacher="Profª Elza"
+                                        data-turma-vagas-total="18"
+                                        data-turma-vagas-ocupadas="14"
+                                        data-turma-dias="Segunda e Quarta"
+                                        data-turma-horario="09:00"
+                                        data-turma-status="ATIVA"
+                                        data-turma-observacoes="Turma com foco em conversação e jogos educativos.">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18 9.5 14.5 6 4 16.5Zm15.7-9.8a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 0L15.3 5.3 18.8 8.8l.9-2.1Z" fill="currentColor"/></svg>
+                                    </button>
+                                    <button class="icon-btn" type="button" aria-label="Visualizar"
+                                        data-open-modal="turma-visualizar"
+                                        data-turma-id="1"
+                                        data-turma-nome="Kids 2 - Manhã"
+                                        data-turma-nivel-label="Básico"
+                                        data-turma-teacher="Profª Elza"
+                                        data-turma-vagas="14/18"
+                                        data-turma-dias="Segunda e Quarta"
+                                        data-turma-horario="09:00"
+                                        data-turma-status-label="Ativa"
+                                        data-turma-observacoes="Turma com foco em conversação e jogos educativos.">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5.6 0 9.4 5.4 9.6 5.6a1 1 0 0 1 0 .8C21.4 11.6 17.6 17 12 17S2.6 11.6 2.4 11.4a1 1 0 0 1 0-.8C2.6 10.4 6.4 5 12 5Zm0 2c-3.6 0-6.5 2.9-6.9 3.6.4.7 3.3 3.6 6.9 3.6s6.5-2.9 6.9-3.6C18.5 9.9 15.6 7 12 7Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="currentColor"/></svg>
+                                    </button>
+                                    <button class="icon-btn danger" type="button" aria-label="Excluir"
+                                        data-open-modal="turma-excluir"
+                                        data-turma-id="1"
+                                        data-turma-nome="Kids 2 - Manhã"
+                                        data-turma-vagas-ocupadas="14">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Z" fill="currentColor"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Adults 1 - Noite</td>
+                            <td>Intermediário</td>
+                            <td>Prof. Marcos</td>
+                            <td>20/20</td>
+                            <td>Ter e Qui 19:30</td>
+                            <td><span class="status-chip warn">Lotada</span></td>
+                            <td>
+                                <div class="action-icons">
+                                    <button class="icon-btn" type="button" aria-label="Editar"
+                                        data-open-modal="turma-editar"
+                                        data-turma-id="2"
+                                        data-turma-nome="Adults 1 - Noite"
+                                        data-turma-nivel="INTERMEDIARIO"
+                                        data-turma-teacher="Prof. Marcos"
+                                        data-turma-vagas-total="20"
+                                        data-turma-vagas-ocupadas="20"
+                                        data-turma-dias="Terca e Quinta"
+                                        data-turma-horario="19:30"
+                                        data-turma-status="LOTADA"
+                                        data-turma-observacoes="Lista de espera ativa com 5 alunos.">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18 9.5 14.5 6 4 16.5Zm15.7-9.8a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 0L15.3 5.3 18.8 8.8l.9-2.1Z" fill="currentColor"/></svg>
+                                    </button>
+                                    <button class="icon-btn" type="button" aria-label="Visualizar"
+                                        data-open-modal="turma-visualizar"
+                                        data-turma-id="2"
+                                        data-turma-nome="Adults 1 - Noite"
+                                        data-turma-nivel-label="Intermediário"
+                                        data-turma-teacher="Prof. Marcos"
+                                        data-turma-vagas="20/20"
+                                        data-turma-dias="Terca e Quinta"
+                                        data-turma-horario="19:30"
+                                        data-turma-status-label="Lotada"
+                                        data-turma-observacoes="Lista de espera ativa com 5 alunos.">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5.6 0 9.4 5.4 9.6 5.6a1 1 0 0 1 0 .8C21.4 11.6 17.6 17 12 17S2.6 11.6 2.4 11.4a1 1 0 0 1 0-.8C2.6 10.4 6.4 5 12 5Zm0 2c-3.6 0-6.5 2.9-6.9 3.6.4.7 3.3 3.6 6.9 3.6s6.5-2.9 6.9-3.6C18.5 9.9 15.6 7 12 7Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="currentColor"/></svg>
+                                    </button>
+                                    <button class="icon-btn danger" type="button" aria-label="Excluir"
+                                        data-open-modal="turma-excluir"
+                                        data-turma-id="2"
+                                        data-turma-nome="Adults 1 - Noite"
+                                        data-turma-vagas-ocupadas="20">
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Z" fill="currentColor"/></svg>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="pagination">
+                    <button type="button">Anterior</button>
+                    <span>Página 1 de 4</span>
+                    <button type="button">Próxima</button>
+                </div>
+            </div>
+        </article>
+    </section>
     <section class="admin-panel" data-panel="materiais"><div class="placeholder-box">Tela estática de Materiais de Estudo. Área para upload e organização por turma.</div></section>
     <section class="admin-panel" data-panel="notas"><div class="placeholder-box">Tela estática de Notas/Presença. Ideal para lançamento rápido em modal.</div></section>
     <section class="admin-panel" data-panel="mensalidades"><div class="placeholder-box">Tela estática de Gestão de Mensalidades com filtros por status e vencimento.</div></section>
@@ -528,6 +659,249 @@
             <div class="modal-footer">
                 <button type="button" class="admin-secondary-btn" data-close-modal>Fechar</button>
             </div>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="turma-nova" aria-labelledby="modalNovaTurmaTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalNovaTurmaTitulo">Adicionar nova turma</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formNovaTurma" th:action="@{/admin/turmas}" action="/admin/turmas" method="post" data-static-submit="true" data-feedback-target="turmaFormFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label for="turmaNome">Nome da turma</label>
+                        <input id="turmaNome" name="nome" type="text" placeholder="Ex.: Kids 2 - Manhã" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="turmaNivel">Nível</label>
+                        <select id="turmaNivel" name="nivel" required>
+                            <option value="">Selecione</option>
+                            <option value="BASICO">Básico</option>
+                            <option value="INTERMEDIARIO">Intermediário</option>
+                            <option value="AVANCADO">Avançado</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="turmaTeacher">Teacher responsável</label>
+                        <input id="turmaTeacher" name="teacher" type="text" placeholder="Nome do professor" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="turmaStatus">Status</label>
+                        <select id="turmaStatus" name="status" required>
+                            <option value="ATIVA">Ativa</option>
+                            <option value="LOTADA">Lotada</option>
+                            <option value="INATIVA">Inativa</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="turmaVagasTotal">Total de vagas</label>
+                        <input id="turmaVagasTotal" name="vagasTotal" type="number" min="1" max="60" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="turmaVagasOcupadas">Vagas ocupadas</label>
+                        <input id="turmaVagasOcupadas" name="vagasOcupadas" type="number" min="0" max="60" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="turmaDias">Dias da semana</label>
+                        <input id="turmaDias" name="diasSemana" type="text" placeholder="Ex.: Segunda e Quarta" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="turmaHorario">Horário</label>
+                        <input id="turmaHorario" name="horario" type="time" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="turmaObservacoes">Observações</label>
+                        <textarea id="turmaObservacoes" name="observacoes" rows="3" placeholder="Informações importantes da turma"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar turma</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="turma-editar" aria-labelledby="modalEditarTurmaTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalEditarTurmaTitulo">Editar turma</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formEditarTurma" th:action="@{/admin/turmas/editar}" action="/admin/turmas/editar" method="post" data-static-submit="true" data-feedback-target="turmaEditFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" id="editarTurmaId" name="turmaId">
+
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label for="editarTurmaNome">Nome da turma</label>
+                        <input id="editarTurmaNome" name="nome" type="text" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarTurmaNivel">Nível</label>
+                        <select id="editarTurmaNivel" name="nivel" required>
+                            <option value="">Selecione</option>
+                            <option value="BASICO">Básico</option>
+                            <option value="INTERMEDIARIO">Intermediário</option>
+                            <option value="AVANCADO">Avançado</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarTurmaTeacher">Teacher responsável</label>
+                        <input id="editarTurmaTeacher" name="teacher" type="text" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarTurmaStatus">Status</label>
+                        <select id="editarTurmaStatus" name="status" required>
+                            <option value="ATIVA">Ativa</option>
+                            <option value="LOTADA">Lotada</option>
+                            <option value="INATIVA">Inativa</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarTurmaVagasTotal">Total de vagas</label>
+                        <input id="editarTurmaVagasTotal" name="vagasTotal" type="number" min="1" max="60" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarTurmaVagasOcupadas">Vagas ocupadas</label>
+                        <input id="editarTurmaVagasOcupadas" name="vagasOcupadas" type="number" min="0" max="60" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarTurmaDias">Dias da semana</label>
+                        <input id="editarTurmaDias" name="diasSemana" type="text" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="editarTurmaHorario">Horário</label>
+                        <input id="editarTurmaHorario" name="horario" type="time" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="editarTurmaObservacoes">Observações</label>
+                        <textarea id="editarTurmaObservacoes" name="observacoes" rows="3"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar alterações</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="turma-visualizar" aria-labelledby="modalVisualizarTurmaTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalVisualizarTurmaTitulo">Visualizar turma</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-field">
+                    <label for="visualizarTurmaId">ID</label>
+                    <input id="visualizarTurmaId" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarTurmaNome">Nome da turma</label>
+                    <input id="visualizarTurmaNome" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarTurmaNivel">Nível</label>
+                    <input id="visualizarTurmaNivel" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarTurmaTeacher">Teacher</label>
+                    <input id="visualizarTurmaTeacher" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarTurmaVagas">Vagas</label>
+                    <input id="visualizarTurmaVagas" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarTurmaStatus">Status</label>
+                    <input id="visualizarTurmaStatus" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarTurmaDias">Dias da semana</label>
+                    <input id="visualizarTurmaDias" type="text" readonly>
+                </div>
+
+                <div class="modal-field">
+                    <label for="visualizarTurmaHorario">Horário</label>
+                    <input id="visualizarTurmaHorario" type="text" readonly>
+                </div>
+
+                <div class="modal-field modal-field-full">
+                    <label for="visualizarTurmaObservacoes">Observações</label>
+                    <textarea id="visualizarTurmaObservacoes" rows="3" readonly></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="admin-secondary-btn" data-close-modal>Fechar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="turma-excluir" aria-labelledby="modalExcluirTurmaTitulo">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h3 id="modalExcluirTurmaTitulo">Excluir turma</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formExcluirTurma" th:action="@{/admin/turmas/excluir}" action="/admin/turmas/excluir" method="post" data-static-submit="true" data-feedback-target="turmaDeleteFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" id="excluirTurmaId" name="turmaId">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="excluirTurmaNome">Turma selecionada</label>
+                        <input id="excluirTurmaNome" type="text" readonly>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Esta ação remove a turma da listagem. Quando integrar backend, valide se há alunos vinculados antes de excluir.</small>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text" id="excluirTurmaRegraAviso"></small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn" id="confirmarExcluirTurmaBtn">Confirmar exclusão</button>
+                </div>
+            </form>
         </div>
     </dialog>
 
