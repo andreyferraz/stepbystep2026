@@ -365,7 +365,277 @@
             </div>
         </article>
     </section>
-    <section class="admin-panel" data-panel="materiais"><div class="placeholder-box">Tela estática de Materiais de Estudo. Área para upload e organização por turma.</div></section>
+    <section class="admin-panel" data-panel="materiais">
+        <article class="admin-card">
+            <div class="admin-card-content">
+                <div class="section-head">
+                    <h2>Materiais de Estudo</h2>
+                    <div class="materiais-actions">
+                        <button type="button" class="admin-secondary-btn" data-open-modal="material-pasta">Criar pasta</button>
+                        <button type="button" class="admin-primary-btn" data-open-modal="material-novo">Novo material</button>
+                    </div>
+                </div>
+
+                <output class="admin-feedback" id="materialFormFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="materialPastaFeedback" aria-live="polite"></output>
+
+                <div class="materiais-toolbar">
+                    <input type="search" class="admin-search" placeholder="Pesquisar por titulo, turma ou professor">
+                    <select class="materiais-filter" aria-label="Filtrar por turma">
+                        <option value="">Todas as turmas</option>
+                        <option value="kids-1">Kids 1</option>
+                        <option value="teens-2">Teens 2</option>
+                        <option value="adults-1">Adults 1</option>
+                    </select>
+                    <select class="materiais-filter" aria-label="Filtrar por tipo de arquivo">
+                        <option value="">Todos os formatos</option>
+                        <option value="pdf">PDF</option>
+                        <option value="docx">DOCX</option>
+                        <option value="audio">Audio</option>
+                        <option value="video">Video</option>
+                    </select>
+                </div>
+
+                <div class="materiais-stats">
+                    <article class="materiais-stat-card">
+                        <p>Arquivos publicados</p>
+                        <strong>127</strong>
+                    </article>
+                    <article class="materiais-stat-card">
+                        <p>Pastas por turma</p>
+                        <strong>18</strong>
+                    </article>
+                    <article class="materiais-stat-card">
+                        <p>Uploads nesta semana</p>
+                        <strong>23</strong>
+                    </article>
+                    <article class="materiais-stat-card">
+                        <p>Downloads dos alunos</p>
+                        <strong>842</strong>
+                    </article>
+                </div>
+
+                <div class="materiais-grid">
+                    <section class="materiais-list" aria-label="Lista de materiais por turma">
+                        <article class="material-card">
+                            <header>
+                                <h3>Workbook - Unit 4</h3>
+                                <span class="status-chip success">Publicado</span>
+                            </header>
+                            <p>Exercicios de leitura e listening para revisar simple present e adverbs of frequency.</p>
+                            <div class="material-meta">
+                                <span>Turma: Kids 1</span>
+                                <span>Formato: PDF</span>
+                                <span>Tamanho: 3.4 MB</span>
+                                <span>Atualizado em: 11/03/2026</span>
+                            </div>
+                            <div class="material-actions">
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Editar</button>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Compartilhar</button>
+                            </div>
+                        </article>
+
+                        <article class="material-card">
+                            <header>
+                                <h3>Speaking Challenge - Week 2</h3>
+                                <span class="status-chip warn">Rascunho</span>
+                            </header>
+                            <p>Atividade gravada para pratica de apresentacao pessoal com roteiro guiado.</p>
+                            <div class="material-meta">
+                                <span>Turma: Teens 2</span>
+                                <span>Formato: Video</span>
+                                <span>Tamanho: 48 MB</span>
+                                <span>Atualizado em: 13/03/2026</span>
+                            </div>
+                            <div class="material-actions">
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Editar</button>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Publicar</button>
+                            </div>
+                        </article>
+
+                        <article class="material-card">
+                            <header>
+                                <h3>Grammar Notes - Past Tense</h3>
+                                <span class="status-chip success">Publicado</span>
+                            </header>
+                            <p>Resumo com regras, exemplos e lista de verbos irregulares mais usados em sala.</p>
+                            <div class="material-meta">
+                                <span>Turma: Adults 1</span>
+                                <span>Formato: DOCX</span>
+                                <span>Tamanho: 1.1 MB</span>
+                                <span>Atualizado em: 10/03/2026</span>
+                            </div>
+                            <div class="material-actions">
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Editar</button>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Duplicar</button>
+                            </div>
+                        </article>
+                    </section>
+
+                    <aside class="materiais-side">
+                        <article class="admin-card materiais-side-card">
+                            <header class="admin-card-header">
+                                <h3>Ultimos uploads</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="materiais-timeline">
+                                    <li>
+                                        <strong>Quiz Vocabulary A2</strong>
+                                        <span>Hoje, 09:42 - por Prof. Elza</span>
+                                    </li>
+                                    <li>
+                                        <strong>Audio Practice - Unit 3</strong>
+                                        <span>Ontem, 18:15 - por Prof. Marcos</span>
+                                    </li>
+                                    <li>
+                                        <strong>Homework Sheet - Teens</strong>
+                                        <span>12/03, 20:04 - por Prof. Elza</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article class="admin-card materiais-side-card">
+                            <header class="admin-card-header">
+                                <h3>Espaco usado</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <div class="materiais-storage">
+                                    <div class="materiais-storage-bar">
+                                        <span style="width: 62%"></span>
+                                    </div>
+                                    <p>62% de 10 GB utilizados</p>
+                                    <small>3.8 GB disponiveis para novos materiais.</small>
+                                </div>
+                            </div>
+                        </article>
+                    </aside>
+                </div>
+            </div>
+        </article>
+    </section>
+    <dialog class="modal-overlay" data-modal="material-novo" aria-labelledby="modalNovoMaterialTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalNovoMaterialTitulo">Adicionar novo material</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formNovoMaterial" th:action="@{/admin/materiais}" action="/admin/materiais" method="post" data-static-submit="true" data-feedback-target="materialFormFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label for="materialTitulo">Titulo do material</label>
+                        <input id="materialTitulo" name="titulo" type="text" placeholder="Ex.: Workbook Unit 5" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="materialTurma">Turma</label>
+                        <select id="materialTurma" name="turma" required>
+                            <option value="">Selecione</option>
+                            <option value="kids-1">Kids 1</option>
+                            <option value="teens-2">Teens 2</option>
+                            <option value="adults-1">Adults 1</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="materialTipo">Tipo de arquivo</label>
+                        <select id="materialTipo" name="tipo" required>
+                            <option value="">Selecione</option>
+                            <option value="pdf">PDF</option>
+                            <option value="docx">DOCX</option>
+                            <option value="audio">Audio</option>
+                            <option value="video">Video</option>
+                            <option value="link">Link externo</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="materialAcesso">Visibilidade</label>
+                        <select id="materialAcesso" name="visibilidade" required>
+                            <option value="">Selecione</option>
+                            <option value="publicado">Publicado</option>
+                            <option value="rascunho">Rascunho</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="materialResumo">Resumo</label>
+                        <textarea id="materialResumo" name="descricao" rows="4" placeholder="Descreva o objetivo do material e como os alunos devem utilizar." required></textarea>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="materialArquivo">Arquivo (simulado)</label>
+                        <input id="materialArquivo" name="arquivo" type="text" placeholder="Ex.: workbook-unit5.pdf" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="materialPublicacao">Data de publicacao</label>
+                        <input id="materialPublicacao" name="dataPublicacao" type="date" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Este modal esta em modo estatico. Integre o envio ao backend para persistir o material e fazer upload real de arquivo.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar material</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="material-pasta" aria-labelledby="modalNovaPastaTitulo">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h3 id="modalNovaPastaTitulo">Criar pasta de materiais</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formNovaPasta" th:action="@{/admin/materiais/pastas}" action="/admin/materiais/pastas" method="post" data-static-submit="true" data-feedback-target="materialPastaFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label for="pastaNome">Nome da pasta</label>
+                        <input id="pastaNome" name="nome" type="text" placeholder="Ex.: Teens 2 - Listening" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="pastaTurma">Turma vinculada</label>
+                        <select id="pastaTurma" name="turma" required>
+                            <option value="">Selecione</option>
+                            <option value="kids-1">Kids 1</option>
+                            <option value="teens-2">Teens 2</option>
+                            <option value="adults-1">Adults 1</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="pastaDescricao">Descricao</label>
+                        <textarea id="pastaDescricao" name="descricao" rows="3" placeholder="Use para organizar por unidade, habilidade ou semana."></textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Esta criacao de pasta ainda e estatica. Integre ao backend para persistencia e hierarquia real de diretorios.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Criar pasta</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
     <section class="admin-panel" data-panel="notas"><div class="placeholder-box">Tela estática de Notas/Presença. Ideal para lançamento rápido em modal.</div></section>
     <section class="admin-panel" data-panel="mensalidades"><div class="placeholder-box">Tela estática de Gestão de Mensalidades com filtros por status e vencimento.</div></section>
     <section class="admin-panel" data-panel="inadimplencia"><div class="placeholder-box">Tela estática de Inadimplência com ações de cobrança e contato.</div></section>

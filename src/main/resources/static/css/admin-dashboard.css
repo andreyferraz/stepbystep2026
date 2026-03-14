@@ -504,6 +504,188 @@ body.admin-body {
     color: var(--admin-muted);
 }
 
+.materiais-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.materiais-toolbar {
+    margin-bottom: 14px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.materiais-filter {
+    border: 1px solid var(--admin-line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: var(--admin-ink);
+    background: #fff;
+    font: inherit;
+    min-width: 170px;
+}
+
+.materiais-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.materiais-stat-card {
+    border: 1px solid var(--admin-line);
+    border-radius: 12px;
+    padding: 12px;
+    background: linear-gradient(180deg, #fff, #f8fbff);
+}
+
+.materiais-stat-card p {
+    margin: 0;
+    color: var(--admin-muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.materiais-stat-card strong {
+    display: block;
+    margin-top: 6px;
+    color: var(--admin-brand-900);
+    font-size: 1.35rem;
+}
+
+.materiais-grid {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.materiais-list {
+    display: grid;
+    gap: 10px;
+}
+
+.material-card {
+    border: 1px solid var(--admin-line);
+    border-radius: 14px;
+    padding: 12px;
+    background: #fff;
+}
+
+.material-card header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.material-card h3 {
+    margin: 0;
+    color: var(--admin-brand-900);
+    font-size: 1rem;
+}
+
+.material-card p {
+    margin: 0;
+    color: var(--admin-ink);
+    font-size: 0.92rem;
+    line-height: 1.45;
+}
+
+.material-meta {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.material-meta span {
+    border: 1px solid var(--admin-line);
+    border-radius: 999px;
+    padding: 4px 8px;
+    color: var(--admin-muted);
+    background: #f9fcff;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.material-actions {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.materiais-side {
+    display: grid;
+    gap: 10px;
+}
+
+.materiais-side-card .admin-card-header h3 {
+    margin: 0;
+    color: var(--admin-brand-900);
+    font-size: 1rem;
+}
+
+.materiais-timeline {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 10px;
+}
+
+.materiais-timeline li {
+    border: 1px solid var(--admin-line);
+    border-radius: 12px;
+    padding: 10px;
+    background: #f9fcff;
+}
+
+.materiais-timeline strong {
+    display: block;
+    color: var(--admin-brand-900);
+    font-size: 0.92rem;
+}
+
+.materiais-timeline span {
+    margin-top: 4px;
+    display: block;
+    color: var(--admin-muted);
+    font-size: 0.82rem;
+}
+
+.materiais-storage-bar {
+    width: 100%;
+    height: 12px;
+    border-radius: 999px;
+    background: #e8f1f8;
+    overflow: hidden;
+}
+
+.materiais-storage-bar span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(130deg, #1d5f92, #2b7ebf);
+}
+
+.materiais-storage p {
+    margin: 10px 0 4px;
+    color: var(--admin-ink);
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+.materiais-storage small {
+    color: var(--admin-muted);
+    font-size: 0.82rem;
+}
+
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -626,6 +808,14 @@ body.admin-body {
     .admin-summary-grid {
         grid-template-columns: 1fr;
     }
+
+    .materiais-stats {
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+    }
+
+    .materiais-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 960px) {
@@ -678,6 +868,21 @@ body.admin-body {
 
     .metric-grid {
         grid-template-columns: 1fr;
+    }
+
+    .materiais-actions {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .materiais-stats {
+        grid-template-columns: 1fr;
+    }
+
+    .material-card header {
+        align-items: flex-start;
+        flex-direction: column;
     }
 
     .modal-body {
