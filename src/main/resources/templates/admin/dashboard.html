@@ -475,7 +475,7 @@
                         </article>
                     </section>
 
-                    <aside class="materiais-side">
+                    <aside class="materiais-side" aria-label="Resumo de materiais">
                         <article class="admin-card materiais-side-card">
                             <header class="admin-card-header">
                                 <h3>Ultimos uploads</h3>
@@ -636,7 +636,241 @@
         </div>
     </dialog>
 
-    <section class="admin-panel" data-panel="notas"><div class="placeholder-box">Tela estática de Notas/Presença. Ideal para lançamento rápido em modal.</div></section>
+    <section class="admin-panel" data-panel="notas">
+        <article class="admin-card">
+            <div class="admin-card-content">
+                <div class="section-head">
+                    <h2>Notas e Presenca</h2>
+                    <div class="notas-actions">
+                        <button type="button" class="admin-secondary-btn">Exportar boletim</button>
+                        <button type="button" class="admin-primary-btn" data-open-modal="nota-presenca-lancar">Lancar nota/presenca</button>
+                    </div>
+                </div>
+
+                <output class="admin-feedback" id="notasFormFeedback" aria-live="polite"></output>
+
+                <div class="notas-toolbar">
+                    <input type="search" class="admin-search" placeholder="Pesquisar por aluno, turma ou atividade">
+                    <select class="notas-filter" aria-label="Filtrar por turma">
+                        <option value="">Todas as turmas</option>
+                        <option value="kids-2">Kids 2</option>
+                        <option value="teens-1">Teens 1</option>
+                        <option value="adults-1">Adults 1</option>
+                    </select>
+                    <select class="notas-filter" aria-label="Filtrar por bimestre">
+                        <option value="">Bimestre atual</option>
+                        <option value="1">1o bimestre</option>
+                        <option value="2">2o bimestre</option>
+                        <option value="3">3o bimestre</option>
+                        <option value="4">4o bimestre</option>
+                    </select>
+                </div>
+
+                <div class="notas-metric-grid">
+                    <article class="notas-metric-card">
+                        <p>Media geral da escola</p>
+                        <strong>8.4</strong>
+                    </article>
+                    <article class="notas-metric-card">
+                        <p>Presenca media do mes</p>
+                        <strong>93%</strong>
+                    </article>
+                    <article class="notas-metric-card">
+                        <p>Alunos abaixo de 75%</p>
+                        <strong>7</strong>
+                    </article>
+                    <article class="notas-metric-card">
+                        <p>Avaliacoes pendentes</p>
+                        <strong>12</strong>
+                    </article>
+                </div>
+
+                <div class="notas-grid">
+                    <article class="admin-card notas-block">
+                        <header class="admin-card-header">
+                            <h3>Lancamentos recentes</h3>
+                        </header>
+                        <div class="admin-card-content">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Aluno</th>
+                                        <th>Turma</th>
+                                        <th>Atividade</th>
+                                        <th>Nota</th>
+                                        <th>Presenca</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Rafael Alves</td>
+                                        <td>Kids 2</td>
+                                        <td>Quiz Vocabulary</td>
+                                        <td>9.2</td>
+                                        <td>Presente</td>
+                                        <td><span class="status-chip success">Lancado</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Helena Martins</td>
+                                        <td>Adults 1</td>
+                                        <td>Speaking Challenge</td>
+                                        <td>8.7</td>
+                                        <td>Presente</td>
+                                        <td><span class="status-chip success">Lancado</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Joao Pedro</td>
+                                        <td>Teens 1</td>
+                                        <td>Homework Unit 3</td>
+                                        <td>-</td>
+                                        <td>Falta</td>
+                                        <td><span class="status-chip warn">Pendente</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Maria Luisa</td>
+                                        <td>Adults 1</td>
+                                        <td>Listening Test</td>
+                                        <td>7.8</td>
+                                        <td>Presente</td>
+                                        <td><span class="status-chip success">Lancado</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+
+                    <aside class="notas-side" aria-label="Resumo de notas e presenca">
+                        <article class="admin-card notas-block">
+                            <header class="admin-card-header">
+                                <h3>Chamada de hoje</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="notas-attendance-list">
+                                    <li>
+                                        <span>Ana Clara - Kids 2</span>
+                                        <span class="status-chip success">Presente</span>
+                                    </li>
+                                    <li>
+                                        <span>Gabriel Souza - Kids 2</span>
+                                        <span class="status-chip success">Presente</span>
+                                    </li>
+                                    <li>
+                                        <span>Joao Pedro - Teens 1</span>
+                                        <span class="status-chip warn">Falta</span>
+                                    </li>
+                                    <li>
+                                        <span>Isabela Rocha - Adults 1</span>
+                                        <span class="status-chip success">Presente</span>
+                                    </li>
+                                </ul>
+                                <div class="notas-side-actions">
+                                    <button type="button" class="admin-secondary-btn admin-inline-btn">Ver diario completo</button>
+                                </div>
+                            </div>
+                        </article>
+
+                        <article class="admin-card notas-block">
+                            <header class="admin-card-header">
+                                <h3>Turmas em atencao</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="notas-warning-list">
+                                    <li>
+                                        <strong>Teens 1</strong>
+                                        <span>4 alunos com media abaixo de 7.0</span>
+                                    </li>
+                                    <li>
+                                        <strong>Kids 2</strong>
+                                        <span>3 alunos com faltas acima de 20%</span>
+                                    </li>
+                                    <li>
+                                        <strong>Adults 1</strong>
+                                        <span>2 avaliacoes ainda sem lancamento</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+                    </aside>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <dialog class="modal-overlay" data-modal="nota-presenca-lancar" aria-labelledby="modalLancarNotaPresencaTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalLancarNotaPresencaTitulo">Lancar nota e presenca</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formLancarNotaPresenca" th:action="@{/admin/notas-presenca}" action="/admin/notas-presenca" method="post" data-static-submit="true" data-feedback-target="notasFormFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label for="notaAluno">Aluno</label>
+                        <select id="notaAluno" name="aluno" required>
+                            <option value="">Selecione</option>
+                            <option value="rafael-alves">Rafael Alves</option>
+                            <option value="helena-martins">Helena Martins</option>
+                            <option value="joao-pedro">Joao Pedro</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="notaTurma">Turma</label>
+                        <select id="notaTurma" name="turma" required>
+                            <option value="">Selecione</option>
+                            <option value="kids-2">Kids 2</option>
+                            <option value="teens-1">Teens 1</option>
+                            <option value="adults-1">Adults 1</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="notaAtividade">Atividade</label>
+                        <input id="notaAtividade" name="atividade" type="text" placeholder="Ex.: Quiz Vocabulary" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="notaValor">Nota</label>
+                        <input id="notaValor" name="nota" type="number" min="0" max="10" step="0.1" placeholder="0.0 a 10.0" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="notaPresenca">Presenca</label>
+                        <select id="notaPresenca" name="presenca" required>
+                            <option value="">Selecione</option>
+                            <option value="presente">Presente</option>
+                            <option value="falta">Falta</option>
+                            <option value="justificada">Falta justificada</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="notaData">Data</label>
+                        <input id="notaData" name="data" type="date" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="notaObservacao">Observacoes</label>
+                        <textarea id="notaObservacao" name="observacoes" rows="3" placeholder="Comentarios sobre desempenho, participacao ou recuperacao."></textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para persistir no diario, atualizar media e historico do aluno.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar lancamento</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
     <section class="admin-panel" data-panel="mensalidades"><div class="placeholder-box">Tela estática de Gestão de Mensalidades com filtros por status e vencimento.</div></section>
     <section class="admin-panel" data-panel="inadimplencia"><div class="placeholder-box">Tela estática de Inadimplência com ações de cobrança e contato.</div></section>
     <section class="admin-panel" data-panel="pre-inscricoes"><div class="placeholder-box">Tela estática de Pré-inscrições para acompanhar leads (Pendente, Contatado, Matriculado).</div></section>

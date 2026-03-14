@@ -256,6 +256,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     feedback.textContent = "Material preparado para cadastro. Integre este formulário ao backend para salvar e publicar no portal do aluno.";
                 } else if (feedbackTarget === "materialPastaFeedback") {
                     feedback.textContent = "Pasta preparada para criacao. Integre este formulário ao backend para persistir a estrutura de materiais.";
+                } else if (feedbackTarget === "notasFormFeedback") {
+                    feedback.textContent = "Lancamento de nota e presenca preparado. Integre este formulario ao backend para atualizar diario e boletim.";
                 } else {
                     feedback.textContent = "Aluno e credenciais de acesso preparados para cadastro. Integre este formulário ao backend para persistir no banco.";
                 }

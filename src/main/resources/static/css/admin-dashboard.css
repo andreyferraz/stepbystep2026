@@ -686,6 +686,120 @@ body.admin-body {
     font-size: 0.82rem;
 }
 
+.notas-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notas-toolbar {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.notas-filter {
+    border: 1px solid var(--admin-line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff;
+    color: var(--admin-ink);
+    font: inherit;
+    min-width: 170px;
+}
+
+.notas-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.notas-metric-card {
+    border: 1px solid var(--admin-line);
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fff, #f8fbff);
+    padding: 12px;
+}
+
+.notas-metric-card p {
+    margin: 0;
+    color: var(--admin-muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.notas-metric-card strong {
+    margin-top: 6px;
+    display: block;
+    color: var(--admin-brand-900);
+    font-size: 1.35rem;
+}
+
+.notas-grid {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.notas-side {
+    display: grid;
+    gap: 10px;
+}
+
+.notas-block .admin-card-header h3 {
+    margin: 0;
+    color: var(--admin-brand-900);
+    font-size: 1rem;
+}
+
+.notas-attendance-list,
+.notas-warning-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+}
+
+.notas-attendance-list li,
+.notas-warning-list li {
+    border: 1px solid var(--admin-line);
+    border-radius: 12px;
+    background: #f9fcff;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.notas-warning-list li {
+    display: block;
+}
+
+.notas-warning-list strong {
+    display: block;
+    color: var(--admin-brand-900);
+    font-size: 0.92rem;
+}
+
+.notas-warning-list span {
+    margin-top: 3px;
+    display: block;
+    color: var(--admin-muted);
+    font-size: 0.84rem;
+}
+
+.notas-side-actions {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -816,6 +930,14 @@ body.admin-body {
     .materiais-grid {
         grid-template-columns: 1fr;
     }
+
+    .notas-metric-grid {
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+    }
+
+    .notas-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 960px) {
@@ -881,6 +1003,21 @@ body.admin-body {
     }
 
     .material-card header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .notas-actions {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .notas-metric-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .notas-attendance-list li {
         align-items: flex-start;
         flex-direction: column;
     }
