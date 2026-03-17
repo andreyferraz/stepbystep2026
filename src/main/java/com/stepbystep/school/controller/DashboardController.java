@@ -28,7 +28,9 @@ import java.util.Locale;
 public class DashboardController {
 
     private static final String REDIRECT_ALUNOS_PANEL = "redirect:/admin/dashboard?panel=alunos";
+    private static final String REDIRECT_TURMAS_PANEL = "redirect:/admin/dashboard?panel=turmas";
     private static final String CAMPO_ID_ALUNO = "ID do Aluno";
+    private static final String CAMPO_ID_TURMA = "ID da Turma";
     private static final String MSG_USUARIO_ALUNO_NAO_ENCONTRADO = "Usuário do aluno não encontrado.";
 
     private final TurmaService turmaService;
@@ -220,6 +222,77 @@ public class DashboardController {
         }
 
         return REDIRECT_ALUNOS_PANEL;
+    }
+
+    @PostMapping("/admin/turmas")
+    public String cadastrarTurma(
+        @RequestParam("nome") String nome,
+        @RequestParam("diasSemana") String diasSemana,
+        @RequestParam("horario") String horario,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            Turma turma = Turma.builder()
+                .nome(nome)
+                .diasSemana(diasSemana)
+                .horario(horario)
+                .build();
+
+            turmaService.criarTurma(turma);
+            redirectAttributes.addFlashAttribute("turmaFormFeedback", "Turma cadastrada com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("turmaFormFeedback", ex.getMessage());
+        }
+
+        return REDIRECT_TURMAS_PANEL;
+    }
+
+    @PostMapping("/admin/turmas/editar")
+    public String editarTurma(
+        @RequestParam("turmaId") java.util.UUID turmaId,
+        @RequestParam("nome") String nome,
+        @RequestParam("diasSemana") String diasSemana,
+        @RequestParam("horario") String horario,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(turmaId, CAMPO_ID_TURMA);
+
+            Turma turmaAtualizada = Turma.builder()
+                .nome(nome)
+                .diasSemana(diasSemana)
+                .horario(horario)
+                .build();
+
+            turmaService.editarTurma(turmaId, turmaAtualizada);
+            redirectAttributes.addFlashAttribute("turmaEditFeedback", "Turma atualizada com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("turmaEditFeedback", ex.getMessage());
+        }
+
+        return REDIRECT_TURMAS_PANEL;
+    }
+
+    @PostMapping("/admin/turmas/excluir")
+    public String excluirTurma(
+        @RequestParam("turmaId") java.util.UUID turmaId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(turmaId, CAMPO_ID_TURMA);
+            Turma turma = turmaService.obterTurmaPorId(turmaId);
+
+            if (turma.getAlunos() != null && !turma.getAlunos().isEmpty()) {
+                throw new IllegalArgumentException("Não é possível excluir a turma porque há alunos vinculados.");
+            }
+
+            turmaService.excluirTurma(turmaId);
+            redirectAttributes.addFlashAttribute("turmaDeleteFeedback", "Turma excluída com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("turmaDeleteFeedback", ex.getMessage());
+        }
+
+        return REDIRECT_TURMAS_PANEL;
     }
 
     @GetMapping("/aluno/dashboard")

@@ -391,4 +391,24 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
+    var formNovaTurma = document.getElementById("formNovaTurma");
+    if (formNovaTurma) {
+        formNovaTurma.addEventListener("submit", function (event) {
+            if (!formNovaTurma.checkValidity()) {
+                event.preventDefault();
+                formNovaTurma.reportValidity();
+            }
+        });
+    }
+
+    var formEditarTurma = document.getElementById("formEditarTurma");
+    if (formEditarTurma) {
+        formEditarTurma.addEventListener("submit", function (event) {
+            if (!formEditarTurma.checkValidity()) {
+                event.preventDefault();
+                formEditarTurma.reportValidity();
+            }
+        });
+    }
 });
