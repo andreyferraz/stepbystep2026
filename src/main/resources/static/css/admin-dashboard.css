@@ -996,6 +996,104 @@ body.admin-body {
     font-size: 0.84rem;
 }
 
+.preinscricoes-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.preinscricoes-toolbar {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.preinscricoes-filter {
+    border: 1px solid var(--admin-line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff;
+    color: var(--admin-ink);
+    font: inherit;
+    min-width: 170px;
+}
+
+.preinscricoes-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.preinscricoes-metric-card {
+    border: 1px solid var(--admin-line);
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fff, #f8fbff);
+    padding: 12px;
+}
+
+.preinscricoes-metric-card p {
+    margin: 0;
+    color: var(--admin-muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.preinscricoes-metric-card strong {
+    margin-top: 6px;
+    display: block;
+    color: var(--admin-brand-900);
+    font-size: 1.35rem;
+}
+
+.preinscricoes-grid {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.preinscricoes-side {
+    display: grid;
+    gap: 10px;
+}
+
+.preinscricoes-block .admin-card-header h3 {
+    margin: 0;
+    color: var(--admin-brand-900);
+    font-size: 1rem;
+}
+
+.preinscricoes-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+}
+
+.preinscricoes-list li {
+    border: 1px solid var(--admin-line);
+    border-radius: 12px;
+    background: #f9fcff;
+    padding: 10px;
+}
+
+.preinscricoes-list strong {
+    display: block;
+    color: var(--admin-brand-900);
+    font-size: 0.92rem;
+}
+
+.preinscricoes-list span {
+    margin-top: 3px;
+    display: block;
+    color: var(--admin-muted);
+    font-size: 0.84rem;
+}
+
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -1150,6 +1248,14 @@ body.admin-body {
     .inadimplencia-grid {
         grid-template-columns: 1fr;
     }
+
+    .preinscricoes-metric-grid {
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+    }
+
+    .preinscricoes-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 960px) {
@@ -1237,6 +1343,12 @@ body.admin-body {
         flex-wrap: wrap;
     }
 
+    .preinscricoes-actions {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
     .notas-metric-grid {
         grid-template-columns: 1fr;
     }
@@ -1246,6 +1358,10 @@ body.admin-body {
     }
 
     .inadimplencia-metric-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .preinscricoes-metric-grid {
         grid-template-columns: 1fr;
     }
 

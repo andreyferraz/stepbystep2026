@@ -266,6 +266,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     feedback.textContent = "Lembrete preparado em modo estatico. Integre ao backend para enviar a mensagem e registrar o historico de contato.";
                 } else if (feedbackTarget === "inadimplenciaAcordoFeedback") {
                     feedback.textContent = "Acordo preparado em modo estatico. Integre ao backend para salvar parcelas, vencimentos e saldo devedor atualizado.";
+                } else if (feedbackTarget === "preInscricaoFormFeedback") {
+                    feedback.textContent = "Lead preparado para cadastro em modo estatico. Integre ao backend para persistir a pre-inscricao e iniciar o fluxo comercial.";
+                } else if (feedbackTarget === "preInscricaoContatoFeedback") {
+                    feedback.textContent = "Contato do lead preparado em modo estatico. Integre ao backend para salvar historico e atualizar status automaticamente.";
                 } else {
                     feedback.textContent = "Aluno e credenciais de acesso preparados para cadastro. Integre este formulário ao backend para persistir no banco.";
                 }

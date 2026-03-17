@@ -1482,7 +1482,314 @@
         </div>
     </dialog>
 
-    <section class="admin-panel" data-panel="pre-inscricoes"><div class="placeholder-box">Tela estática de Pré-inscrições para acompanhar leads (Pendente, Contatado, Matriculado).</div></section>
+    <section class="admin-panel" data-panel="pre-inscricoes">
+        <article class="admin-card">
+            <div class="admin-card-content">
+                <div class="section-head">
+                    <h2>Gestao de Pre-inscricoes</h2>
+                    <div class="preinscricoes-actions">
+                        <button type="button" class="admin-secondary-btn" data-open-modal="preinscricao-contato">Registrar contato</button>
+                        <button type="button" class="admin-primary-btn" data-open-modal="preinscricao-nova">Nova pre-inscricao</button>
+                    </div>
+                </div>
+
+                <output class="admin-feedback" id="preInscricaoContatoFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="preInscricaoFormFeedback" aria-live="polite"></output>
+
+                <div class="preinscricoes-toolbar">
+                    <input type="search" class="admin-search" placeholder="Pesquisar por nome, WhatsApp ou origem">
+                    <select class="preinscricoes-filter" aria-label="Filtrar por status do lead">
+                        <option value="">Todos os status</option>
+                        <option value="pendente">Pendente</option>
+                        <option value="contatado">Contatado</option>
+                        <option value="matriculado">Matriculado</option>
+                    </select>
+                    <select class="preinscricoes-filter" aria-label="Filtrar por interesse">
+                        <option value="">Todos os interesses</option>
+                        <option value="kids">Kids</option>
+                        <option value="teens">Teens</option>
+                        <option value="adults">Adults</option>
+                    </select>
+                </div>
+
+                <div class="preinscricoes-metric-grid">
+                    <article class="preinscricoes-metric-card">
+                        <p>Leads pendentes</p>
+                        <strong>12</strong>
+                    </article>
+                    <article class="preinscricoes-metric-card">
+                        <p>Contatados na semana</p>
+                        <strong>19</strong>
+                    </article>
+                    <article class="preinscricoes-metric-card">
+                        <p>Conversao no mes</p>
+                        <strong>34%</strong>
+                    </article>
+                    <article class="preinscricoes-metric-card">
+                        <p>Matriculas via lead</p>
+                        <strong>8</strong>
+                    </article>
+                </div>
+
+                <div class="preinscricoes-grid">
+                    <article class="admin-card preinscricoes-block">
+                        <header class="admin-card-header">
+                            <h3>Pipeline de leads</h3>
+                        </header>
+                        <div class="admin-card-content">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Interessado</th>
+                                        <th>WhatsApp</th>
+                                        <th>Interesse</th>
+                                        <th>Data do lead</th>
+                                        <th>Origem</th>
+                                        <th>Status</th>
+                                        <th>Acoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Livia Monteiro</td>
+                                        <td>(88) 99914-7721</td>
+                                        <td>Kids 1</td>
+                                        <td>15/03/2026</td>
+                                        <td>Instagram</td>
+                                        <td><span class="status-chip warn">Pendente</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="preinscricao-contato">Contatar</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Daniel Ribeiro</td>
+                                        <td>(88) 99873-1020</td>
+                                        <td>Adults 1</td>
+                                        <td>14/03/2026</td>
+                                        <td>Site</td>
+                                        <td><span class="status-chip warn">Contatado</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Detalhes</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Marina Souza</td>
+                                        <td>(88) 99755-6601</td>
+                                        <td>Teens 2</td>
+                                        <td>12/03/2026</td>
+                                        <td>Indicacao</td>
+                                        <td><span class="status-chip success">Matriculado</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Historico</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pedro Henrique</td>
+                                        <td>(88) 99624-8890</td>
+                                        <td>Kids 2</td>
+                                        <td>11/03/2026</td>
+                                        <td>WhatsApp</td>
+                                        <td><span class="status-chip warn">Pendente</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="preinscricao-contato">Contatar</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="pagination">
+                                <button type="button">Anterior</button>
+                                <span>Pagina 1 de 5</span>
+                                <button type="button">Proxima</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <aside class="preinscricoes-side" aria-label="Resumo de pre-inscricoes">
+                        <article class="admin-card preinscricoes-block">
+                            <header class="admin-card-header">
+                                <h3>Proximos retornos</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="preinscricoes-list">
+                                    <li>
+                                        <strong>10:00 - Livia Monteiro</strong>
+                                        <span>Confirmar melhor horario para aula experimental.</span>
+                                    </li>
+                                    <li>
+                                        <strong>14:30 - Pedro Henrique</strong>
+                                        <span>Enviar proposta para plano trimestral.</span>
+                                    </li>
+                                    <li>
+                                        <strong>16:00 - Daniel Ribeiro</strong>
+                                        <span>Retorno sobre disponibilidade da turma Adults 1.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article class="admin-card preinscricoes-block">
+                            <header class="admin-card-header">
+                                <h3>Origem dos leads</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="preinscricoes-list">
+                                    <li>
+                                        <strong>Instagram</strong>
+                                        <span>43% dos leads do mes.</span>
+                                    </li>
+                                    <li>
+                                        <strong>Indicacao</strong>
+                                        <span>31% com maior taxa de conversao.</span>
+                                    </li>
+                                    <li>
+                                        <strong>Site e WhatsApp</strong>
+                                        <span>26% com resposta em ate 24 horas.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+                    </aside>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <dialog class="modal-overlay" data-modal="preinscricao-nova" aria-labelledby="modalNovaPreInscricaoTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalNovaPreInscricaoTitulo">Nova pre-inscricao</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formNovaPreInscricao" th:action="@{/admin/pre-inscricoes}" action="/admin/pre-inscricoes" method="post" data-static-submit="true" data-feedback-target="preInscricaoFormFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label for="preInscricaoNome">Nome do interessado</label>
+                        <input id="preInscricaoNome" name="nomeInteressado" type="text" placeholder="Ex.: Larissa Gomes" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="preInscricaoWhatsapp">WhatsApp</label>
+                        <input id="preInscricaoWhatsapp" name="whatsapp" type="tel" placeholder="(00) 00000-0000" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="preInscricaoInteresse">Interesse</label>
+                        <select id="preInscricaoInteresse" name="interesse" required>
+                            <option value="">Selecione</option>
+                            <option value="kids-1">Kids 1</option>
+                            <option value="kids-2">Kids 2</option>
+                            <option value="teens-2">Teens 2</option>
+                            <option value="adults-1">Adults 1</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="preInscricaoOrigem">Origem</label>
+                        <select id="preInscricaoOrigem" name="origem" required>
+                            <option value="">Selecione</option>
+                            <option value="instagram">Instagram</option>
+                            <option value="site">Site</option>
+                            <option value="indicacao">Indicacao</option>
+                            <option value="whatsapp">WhatsApp</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="preInscricaoDataLead">Data do lead</label>
+                        <input id="preInscricaoDataLead" name="dataLead" type="date" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="preInscricaoStatus">Status inicial</label>
+                        <select id="preInscricaoStatus" name="status" required>
+                            <option value="pendente">Pendente</option>
+                            <option value="contatado">Contatado</option>
+                            <option value="matriculado">Matriculado</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="preInscricaoMensagem">Mensagem do lead</label>
+                        <textarea id="preInscricaoMensagem" name="mensagem" rows="4" placeholder="Interesse, horario preferencial e observacoes da familia."></textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para persistir a pre-inscricao e alimentar o pipeline de conversao.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar lead</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="preinscricao-contato" aria-labelledby="modalContatoPreInscricaoTitulo">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h3 id="modalContatoPreInscricaoTitulo">Registrar contato do lead</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formContatoPreInscricao" th:action="@{/admin/pre-inscricoes/contato}" action="/admin/pre-inscricoes/contato" method="post" data-static-submit="true" data-feedback-target="preInscricaoContatoFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="preInscricaoLeadContato">Lead</label>
+                        <select id="preInscricaoLeadContato" name="lead" required>
+                            <option value="">Selecione</option>
+                            <option value="livia-monteiro">Livia Monteiro</option>
+                            <option value="pedro-henrique">Pedro Henrique</option>
+                            <option value="daniel-ribeiro">Daniel Ribeiro</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="preInscricaoCanalContato">Canal</label>
+                        <select id="preInscricaoCanalContato" name="canal" required>
+                            <option value="">Selecione</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="ligacao">Ligacao</option>
+                            <option value="email">E-mail</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="preInscricaoStatusContato">Novo status</label>
+                        <select id="preInscricaoStatusContato" name="status" required>
+                            <option value="contatado">Contatado</option>
+                            <option value="pendente">Pendente</option>
+                            <option value="matriculado">Matriculado</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="preInscricaoDataRetorno">Data do proximo retorno</label>
+                        <input id="preInscricaoDataRetorno" name="proximoRetorno" type="date">
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="preInscricaoResponsavelContato">Responsavel</label>
+                        <input id="preInscricaoResponsavelContato" name="responsavel" type="text" placeholder="Nome de quem fez o contato" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="preInscricaoResumoContato">Resumo do contato</label>
+                        <textarea id="preInscricaoResumoContato" name="resumo" rows="3" placeholder="Interesse confirmado, duvidas, horario de visita e proximos passos."></textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Fluxo estatico para demonstracao. Integre ao backend para registrar historico e atualizar o status do lead.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar contato</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
     <section class="admin-panel" data-panel="blog"><div class="placeholder-box">Tela estática de Postagens do Blog com editor e calendário editorial.</div></section>
     <section class="admin-panel" data-panel="livros"><div class="placeholder-box">Tela estática de Obras Literárias para catálogo e gerenciamento.</div></section>
     <section class="admin-panel" data-panel="galeria"><div class="placeholder-box">Tela estática de Galeria de Fotos para upload e organização por álbum.</div></section>
