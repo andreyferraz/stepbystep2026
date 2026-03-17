@@ -2352,7 +2352,255 @@
         </div>
     </dialog>
 
-    <section class="admin-panel" data-panel="galeria"><div class="placeholder-box">Tela estática de Galeria de Fotos para upload e organização por álbum.</div></section>
+    <section class="admin-panel" data-panel="galeria">
+        <article class="admin-card">
+            <div class="admin-card-content">
+                <div class="section-head">
+                    <h2>Galeria de Fotos</h2>
+                    <div class="galeria-actions">
+                        <button type="button" class="admin-secondary-btn" data-open-modal="galeria-editar">Editar foto</button>
+                        <button type="button" class="admin-primary-btn" data-open-modal="galeria-nova">Nova foto</button>
+                    </div>
+                </div>
+
+                <output class="admin-feedback" id="galeriaFormFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="galeriaEditFeedback" aria-live="polite"></output>
+
+                <div class="galeria-toolbar">
+                    <input type="search" class="admin-search" placeholder="Pesquisar por legenda, album ou data">
+                    <select class="galeria-filter" aria-label="Filtrar por album">
+                        <option value="">Todos os albuns</option>
+                        <option value="eventos">Eventos</option>
+                        <option value="aulas">Aulas</option>
+                        <option value="projetos">Projetos especiais</option>
+                    </select>
+                    <select class="galeria-filter" aria-label="Filtrar por visibilidade">
+                        <option value="">Todas as visibilidades</option>
+                        <option value="publica">Publica</option>
+                        <option value="restrita">Restrita</option>
+                        <option value="rascunho">Rascunho</option>
+                    </select>
+                </div>
+
+                <div class="galeria-metric-grid">
+                    <article class="galeria-metric-card">
+                        <p>Fotos publicadas</p>
+                        <strong>326</strong>
+                    </article>
+                    <article class="galeria-metric-card">
+                        <p>Albuns ativos</p>
+                        <strong>24</strong>
+                    </article>
+                    <article class="galeria-metric-card">
+                        <p>Uploads no mes</p>
+                        <strong>41</strong>
+                    </article>
+                    <article class="galeria-metric-card">
+                        <p>Mais curtida</p>
+                        <strong>Festa Junina 2025</strong>
+                    </article>
+                </div>
+
+                <div class="galeria-grid">
+                    <section class="galeria-gallery" aria-label="Mosaico de fotos">
+                        <article class="galeria-photo-card">
+                            <div class="galeria-photo-thumb"><span>Foto 1</span></div>
+                            <h3>Apresentacao de Halloween</h3>
+                            <p>Album: Eventos | 14/10/2025</p>
+                            <div class="material-actions">
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="galeria-editar">Editar</button>
+                            </div>
+                        </article>
+
+                        <article class="galeria-photo-card">
+                            <div class="galeria-photo-thumb"><span>Foto 2</span></div>
+                            <h3>Aula tematica - Colors</h3>
+                            <p>Album: Aulas | 07/03/2026</p>
+                            <div class="material-actions">
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="galeria-editar">Editar</button>
+                            </div>
+                        </article>
+
+                        <article class="galeria-photo-card">
+                            <div class="galeria-photo-thumb"><span>Foto 3</span></div>
+                            <h3>Projeto de leitura - Teens</h3>
+                            <p>Album: Projetos especiais | 01/03/2026</p>
+                            <div class="material-actions">
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="galeria-editar">Editar</button>
+                            </div>
+                        </article>
+
+                        <article class="galeria-photo-card">
+                            <div class="galeria-photo-thumb"><span>Foto 4</span></div>
+                            <h3>Momento de speaking</h3>
+                            <p>Album: Aulas | 25/02/2026</p>
+                            <div class="material-actions">
+                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="galeria-editar">Editar</button>
+                            </div>
+                        </article>
+                    </section>
+
+                    <aside class="galeria-side" aria-label="Resumo da galeria">
+                        <article class="admin-card galeria-side-card">
+                            <header class="admin-card-header">
+                                <h3>Ultimos uploads</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="galeria-list">
+                                    <li>
+                                        <strong>Projeto de leitura - Teens</strong>
+                                        <span>Enviado por Coord. Amanda em 01/03.</span>
+                                    </li>
+                                    <li>
+                                        <strong>Aula tematica - Colors</strong>
+                                        <span>Enviado por Prof. Elza em 07/03.</span>
+                                    </li>
+                                    <li>
+                                        <strong>Treino de listening - Adults</strong>
+                                        <span>Enviado por Prof. Marcos em 09/03.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article class="admin-card galeria-side-card">
+                            <header class="admin-card-header">
+                                <h3>Armazenamento</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <div class="materiais-storage">
+                                    <div class="materiais-storage-bar">
+                                        <span style="width: 68%"></span>
+                                    </div>
+                                    <p>68% de 20 GB utilizados</p>
+                                    <small>6.4 GB disponiveis para novos uploads.</small>
+                                </div>
+                            </div>
+                        </article>
+                    </aside>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <dialog class="modal-overlay" data-modal="galeria-nova" aria-labelledby="modalNovaFotoTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalNovaFotoTitulo">Adicionar nova foto</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formNovaFotoGaleria" th:action="@{/admin/galeria/fotos}" action="/admin/galeria/fotos" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="galeriaFormFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="galeriaLegenda">Legenda</label>
+                        <input id="galeriaLegenda" name="legenda" type="text" placeholder="Ex.: Apresentacao de Halloween" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="galeriaAlbum">Album</label>
+                        <select id="galeriaAlbum" name="album" required>
+                            <option value="">Selecione</option>
+                            <option value="eventos">Eventos</option>
+                            <option value="aulas">Aulas</option>
+                            <option value="projetos">Projetos especiais</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="galeriaDataUpload">Data do upload</label>
+                        <input id="galeriaDataUpload" name="dataUpload" type="date" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="galeriaVisibilidade">Visibilidade</label>
+                        <select id="galeriaVisibilidade" name="visibilidade" required>
+                            <option value="publica">Publica</option>
+                            <option value="restrita">Restrita</option>
+                            <option value="rascunho">Rascunho</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="galeriaResponsavel">Responsavel</label>
+                        <input id="galeriaResponsavel" name="responsavel" type="text" placeholder="Nome de quem realizou o upload" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="galeriaImagemArquivo">Arquivo da foto</label>
+                        <input id="galeriaImagemArquivo" name="imagem" type="file" accept="image/*" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para armazenar a imagem enviada e preencher a URL automaticamente.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar foto</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="galeria-editar" aria-labelledby="modalEditarFotoTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalEditarFotoTitulo">Editar foto da galeria</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formEditarFotoGaleria" th:action="@{/admin/galeria/fotos/editar}" action="/admin/galeria/fotos/editar" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="galeriaEditFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="galeriaEditarLegenda">Legenda</label>
+                        <input id="galeriaEditarLegenda" name="legenda" type="text" value="Projeto de leitura - Teens" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="galeriaEditarAlbum">Album</label>
+                        <select id="galeriaEditarAlbum" name="album" required>
+                            <option value="projetos" selected>Projetos especiais</option>
+                            <option value="eventos">Eventos</option>
+                            <option value="aulas">Aulas</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="galeriaEditarVisibilidade">Visibilidade</label>
+                        <select id="galeriaEditarVisibilidade" name="visibilidade" required>
+                            <option value="publica" selected>Publica</option>
+                            <option value="restrita">Restrita</option>
+                            <option value="rascunho">Rascunho</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="galeriaEditarImagemArquivo">Trocar imagem</label>
+                        <input id="galeriaEditarImagemArquivo" name="imagem" type="file" accept="image/*">
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Edicao estatica para demonstracao. Integre ao backend para atualizar metadados e substituir a imagem quando necessario.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar alteracoes</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
 
     <dialog class="modal-overlay" data-modal="aluno-novo" aria-labelledby="modalNovoAlunoTitulo">
         <div class="modal-card modal-card-wide">
