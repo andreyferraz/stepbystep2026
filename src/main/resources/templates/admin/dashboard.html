@@ -871,7 +871,317 @@
         </div>
     </dialog>
 
-    <section class="admin-panel" data-panel="mensalidades"><div class="placeholder-box">Tela estática de Gestão de Mensalidades com filtros por status e vencimento.</div></section>
+    <section class="admin-panel" data-panel="mensalidades">
+        <article class="admin-card">
+            <div class="admin-card-content">
+                <div class="section-head">
+                    <h2>Gestao de Mensalidades</h2>
+                    <div class="mensalidades-actions">
+                        <button type="button" class="admin-secondary-btn" data-open-modal="mensalidade-cobranca">Gerar cobranca</button>
+                        <button type="button" class="admin-primary-btn" data-open-modal="mensalidade-registrar">Registrar pagamento</button>
+                    </div>
+                </div>
+
+                <output class="admin-feedback" id="mensalidadeFormFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="mensalidadeCobrancaFeedback" aria-live="polite"></output>
+
+                <div class="mensalidades-toolbar">
+                    <input type="search" class="admin-search" placeholder="Pesquisar por aluno, turma ou competencia">
+                    <select class="mensalidades-filter" aria-label="Filtrar por status da mensalidade">
+                        <option value="">Todos os status</option>
+                        <option value="pago">Pago</option>
+                        <option value="avencer">A vencer</option>
+                        <option value="atrasado">Em atraso</option>
+                    </select>
+                    <select class="mensalidades-filter" aria-label="Filtrar por vencimento">
+                        <option value="">Todos os vencimentos</option>
+                        <option value="semana">Vence esta semana</option>
+                        <option value="mes">Vence este mes</option>
+                        <option value="atrasadas">Atrasadas</option>
+                    </select>
+                </div>
+
+                <div class="mensalidades-metric-grid">
+                    <article class="mensalidades-metric-card">
+                        <p>Recebido no mes</p>
+                        <strong>R$ 38.420</strong>
+                    </article>
+                    <article class="mensalidades-metric-card">
+                        <p>A receber no mes</p>
+                        <strong>R$ 12.870</strong>
+                    </article>
+                    <article class="mensalidades-metric-card">
+                        <p>Mensalidades em atraso</p>
+                        <strong>17</strong>
+                    </article>
+                    <article class="mensalidades-metric-card">
+                        <p>Taxa de adimplencia</p>
+                        <strong>86%</strong>
+                    </article>
+                </div>
+
+                <div class="mensalidades-grid">
+                    <article class="admin-card mensalidades-block">
+                        <header class="admin-card-header">
+                            <h3>Controle de lancamentos</h3>
+                        </header>
+                        <div class="admin-card-content">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Aluno</th>
+                                        <th>Turma</th>
+                                        <th>Competencia</th>
+                                        <th>Vencimento</th>
+                                        <th>Valor</th>
+                                        <th>Status</th>
+                                        <th>Acoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Rafael Alves</td>
+                                        <td>Kids 2</td>
+                                        <td>Mar/2026</td>
+                                        <td>05/03/2026</td>
+                                        <td>R$ 290</td>
+                                        <td><span class="status-chip success">Pago</span></td>
+                                        <td>
+                                            <div class="action-icons">
+                                                <button type="button" class="admin-secondary-btn admin-inline-btn">Recibo</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Helena Martins</td>
+                                        <td>Adults 2</td>
+                                        <td>Mar/2026</td>
+                                        <td>10/03/2026</td>
+                                        <td>R$ 320</td>
+                                        <td><span class="status-chip warn">A vencer</span></td>
+                                        <td>
+                                            <div class="action-icons">
+                                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="mensalidade-registrar">Baixar</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gabriel Souza</td>
+                                        <td>Kids 1</td>
+                                        <td>Fev/2026</td>
+                                        <td>15/02/2026</td>
+                                        <td>R$ 290</td>
+                                        <td><span class="status-chip warn">Atrasada</span></td>
+                                        <td>
+                                            <div class="action-icons">
+                                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="mensalidade-cobranca">Cobrar</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Maria Luisa</td>
+                                        <td>Adults 1</td>
+                                        <td>Mar/2026</td>
+                                        <td>12/03/2026</td>
+                                        <td>R$ 280</td>
+                                        <td><span class="status-chip success">Pago</span></td>
+                                        <td>
+                                            <div class="action-icons">
+                                                <button type="button" class="admin-secondary-btn admin-inline-btn">Detalhes</button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="pagination">
+                                <button type="button">Anterior</button>
+                                <span>Pagina 1 de 6</span>
+                                <button type="button">Proxima</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <aside class="mensalidades-side" aria-label="Resumo de mensalidades">
+                        <article class="admin-card mensalidades-block">
+                            <header class="admin-card-header">
+                                <h3>Proximos vencimentos</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="mensalidades-list">
+                                    <li>
+                                        <strong>Isabela Rocha</strong>
+                                        <span>Vence em 16/03 - R$ 320</span>
+                                    </li>
+                                    <li>
+                                        <strong>Matheus Lima</strong>
+                                        <span>Vence em 17/03 - R$ 280</span>
+                                    </li>
+                                    <li>
+                                        <strong>Ana Clara</strong>
+                                        <span>Vence em 18/03 - R$ 290</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article class="admin-card mensalidades-block">
+                            <header class="admin-card-header">
+                                <h3>Resumo de cobrancas</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="mensalidades-list">
+                                    <li>
+                                        <strong>PIX enviado hoje</strong>
+                                        <span>9 cobrancas encaminhadas por WhatsApp.</span>
+                                    </li>
+                                    <li>
+                                        <strong>Boletos gerados no mes</strong>
+                                        <span>34 documentos emitidos para alunos ativos.</span>
+                                    </li>
+                                    <li>
+                                        <strong>Cobrancas pendentes</strong>
+                                        <span>17 alunos aguardando confirmacao de pagamento.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+                    </aside>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <dialog class="modal-overlay" data-modal="mensalidade-registrar" aria-labelledby="modalRegistrarMensalidadeTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalRegistrarMensalidadeTitulo">Registrar pagamento de mensalidade</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formRegistrarMensalidade" th:action="@{/admin/mensalidades/registrar-pagamento}" action="/admin/mensalidades/registrar-pagamento" method="post" data-static-submit="true" data-feedback-target="mensalidadeFormFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label for="mensalidadeAluno">Aluno</label>
+                        <select id="mensalidadeAluno" name="aluno" required>
+                            <option value="">Selecione</option>
+                            <option value="rafael-alves">Rafael Alves</option>
+                            <option value="helena-martins">Helena Martins</option>
+                            <option value="gabriel-souza">Gabriel Souza</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="mensalidadeCompetencia">Competencia</label>
+                        <input id="mensalidadeCompetencia" name="competencia" type="month" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="mensalidadeValor">Valor pago</label>
+                        <input id="mensalidadeValor" name="valor" type="text" placeholder="Ex.: 290,00" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="mensalidadeMetodo">Metodo de pagamento</label>
+                        <select id="mensalidadeMetodo" name="metodo" required>
+                            <option value="">Selecione</option>
+                            <option value="pix">PIX</option>
+                            <option value="cartao">Cartao</option>
+                            <option value="boleto">Boleto</option>
+                            <option value="dinheiro">Dinheiro</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="mensalidadeDataPagamento">Data de pagamento</label>
+                        <input id="mensalidadeDataPagamento" name="dataPagamento" type="date" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="mensalidadeReferencia">Referencia</label>
+                        <input id="mensalidadeReferencia" name="referencia" type="text" placeholder="Ex.: PIX #9AB21C" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="mensalidadeObservacao">Observacoes</label>
+                        <textarea id="mensalidadeObservacao" name="observacoes" rows="3" placeholder="Informacoes adicionais sobre a baixa manual."></textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para atualizar status da mensalidade e registrar data de pagamento.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar pagamento</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="mensalidade-cobranca" aria-labelledby="modalCobrancaMensalidadeTitulo">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h3 id="modalCobrancaMensalidadeTitulo">Gerar cobranca</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formGerarCobrancaMensalidade" th:action="@{/admin/mensalidades/gerar-cobranca}" action="/admin/mensalidades/gerar-cobranca" method="post" data-static-submit="true" data-feedback-target="mensalidadeCobrancaFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="cobrancaTurma">Turma</label>
+                        <select id="cobrancaTurma" name="turma" required>
+                            <option value="">Selecione</option>
+                            <option value="kids-1">Kids 1</option>
+                            <option value="kids-2">Kids 2</option>
+                            <option value="teens-2">Teens 2</option>
+                            <option value="adults-1">Adults 1</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="cobrancaCompetencia">Competencia</label>
+                        <input id="cobrancaCompetencia" name="competencia" type="month" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="cobrancaVencimento">Data de vencimento</label>
+                        <input id="cobrancaVencimento" name="vencimento" type="date" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="cobrancaValor">Valor base</label>
+                        <input id="cobrancaValor" name="valor" type="text" placeholder="Ex.: 290,00" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="cobrancaCanal">Canal de envio</label>
+                        <select id="cobrancaCanal" name="canal" required>
+                            <option value="">Selecione</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="email">E-mail</option>
+                            <option value="portal">Portal do aluno</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Este fluxo esta estatico. Integre ao backend para gerar PIX copia e cola, atualizar status para "A vencer" e notificar os responsaveis.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Gerar cobranca</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
     <section class="admin-panel" data-panel="inadimplencia"><div class="placeholder-box">Tela estática de Inadimplência com ações de cobrança e contato.</div></section>
     <section class="admin-panel" data-panel="pre-inscricoes"><div class="placeholder-box">Tela estática de Pré-inscrições para acompanhar leads (Pendente, Contatado, Matriculado).</div></section>
     <section class="admin-panel" data-panel="blog"><div class="placeholder-box">Tela estática de Postagens do Blog com editor e calendário editorial.</div></section>

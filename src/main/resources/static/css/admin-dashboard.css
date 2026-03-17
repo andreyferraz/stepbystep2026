@@ -800,6 +800,104 @@ body.admin-body {
     justify-content: flex-end;
 }
 
+.mensalidades-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.mensalidades-toolbar {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.mensalidades-filter {
+    border: 1px solid var(--admin-line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff;
+    color: var(--admin-ink);
+    font: inherit;
+    min-width: 170px;
+}
+
+.mensalidades-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.mensalidades-metric-card {
+    border: 1px solid var(--admin-line);
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fff, #f8fbff);
+    padding: 12px;
+}
+
+.mensalidades-metric-card p {
+    margin: 0;
+    color: var(--admin-muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.mensalidades-metric-card strong {
+    margin-top: 6px;
+    display: block;
+    color: var(--admin-brand-900);
+    font-size: 1.35rem;
+}
+
+.mensalidades-grid {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.mensalidades-side {
+    display: grid;
+    gap: 10px;
+}
+
+.mensalidades-block .admin-card-header h3 {
+    margin: 0;
+    color: var(--admin-brand-900);
+    font-size: 1rem;
+}
+
+.mensalidades-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+}
+
+.mensalidades-list li {
+    border: 1px solid var(--admin-line);
+    border-radius: 12px;
+    background: #f9fcff;
+    padding: 10px;
+}
+
+.mensalidades-list strong {
+    display: block;
+    color: var(--admin-brand-900);
+    font-size: 0.92rem;
+}
+
+.mensalidades-list span {
+    margin-top: 3px;
+    display: block;
+    color: var(--admin-muted);
+    font-size: 0.84rem;
+}
+
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -938,6 +1036,14 @@ body.admin-body {
     .notas-grid {
         grid-template-columns: 1fr;
     }
+
+    .mensalidades-metric-grid {
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+    }
+
+    .mensalidades-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 960px) {
@@ -1013,7 +1119,17 @@ body.admin-body {
         flex-wrap: wrap;
     }
 
+    .mensalidades-actions {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
     .notas-metric-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mensalidades-metric-grid {
         grid-template-columns: 1fr;
     }
 

@@ -258,6 +258,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     feedback.textContent = "Pasta preparada para criacao. Integre este formulário ao backend para persistir a estrutura de materiais.";
                 } else if (feedbackTarget === "notasFormFeedback") {
                     feedback.textContent = "Lancamento de nota e presenca preparado. Integre este formulario ao backend para atualizar diario e boletim.";
+                } else if (feedbackTarget === "mensalidadeFormFeedback") {
+                    feedback.textContent = "Pagamento registrado em modo estatico. Integre este formulario ao backend para atualizar status da mensalidade e salvar a baixa.";
+                } else if (feedbackTarget === "mensalidadeCobrancaFeedback") {
+                    feedback.textContent = "Cobranca gerada em modo estatico. Integre este formulario ao backend para emitir PIX/boleto e notificar os responsaveis.";
                 } else {
                     feedback.textContent = "Aluno e credenciais de acesso preparados para cadastro. Integre este formulário ao backend para persistir no banco.";
                 }
