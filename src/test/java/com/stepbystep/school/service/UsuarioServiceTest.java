@@ -11,6 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,6 +26,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.stepbystep.school.enums.Role;
 import com.stepbystep.school.model.Aluno;
@@ -37,6 +39,9 @@ class UsuarioServiceTest {
     @Mock
     private UsuarioRepository usuarioRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UsuarioService usuarioService;
 
@@ -47,6 +52,8 @@ class UsuarioServiceTest {
 
     @BeforeEach
     void setUp() {
+        lenient().when(passwordEncoder.encode(any(CharSequence.class))).thenAnswer(invocation -> "ENC(" + invocation.getArgument(0) + ")");
+
         usuarioId = UUID.randomUUID();
         aluno = Aluno.builder()
                 .id(UUID.randomUUID())
@@ -101,7 +108,7 @@ class UsuarioServiceTest {
             assertNull(enviadoParaSalvar.getId());
             assertEquals("Admin Geral", enviadoParaSalvar.getNome());
             assertEquals("admin@step.com", enviadoParaSalvar.getEmail());
-            assertEquals("123456", enviadoParaSalvar.getSenha());
+            assertEquals("ENC(123456)", enviadoParaSalvar.getSenha());
             assertEquals(Role.ADMIN, enviadoParaSalvar.getRole());
             assertNotNull(resultado);
         }
@@ -226,7 +233,7 @@ class UsuarioServiceTest {
             assertEquals(usuarioId, existente.getId());
             assertEquals("Novo Nome", existente.getNome());
             assertEquals("novo@step.com", existente.getEmail());
-            assertEquals("novaSenha", existente.getSenha());
+            assertEquals("ENC(novaSenha)", existente.getSenha());
             assertEquals(Role.ALUNO, existente.getRole());
             assertTrue(existente.isAtivo());
             assertEquals(aluno, existente.getAluno());
