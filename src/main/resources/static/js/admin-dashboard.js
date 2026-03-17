@@ -270,6 +270,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     feedback.textContent = "Lead preparado para cadastro em modo estatico. Integre ao backend para persistir a pre-inscricao e iniciar o fluxo comercial.";
                 } else if (feedbackTarget === "preInscricaoContatoFeedback") {
                     feedback.textContent = "Contato do lead preparado em modo estatico. Integre ao backend para salvar historico e atualizar status automaticamente.";
+                } else if (feedbackTarget === "blogFormFeedback") {
+                    feedback.textContent = "Postagem preparada em modo estatico. Integre ao backend para salvar e publicar no blog da escola.";
+                } else if (feedbackTarget === "blogEditFeedback") {
+                    feedback.textContent = "Edicao de postagem preparada em modo estatico. Integre ao backend para versionar e atualizar o conteudo publicado.";
                 } else {
                     feedback.textContent = "Aluno e credenciais de acesso preparados para cadastro. Integre este formulário ao backend para persistir no banco.";
                 }

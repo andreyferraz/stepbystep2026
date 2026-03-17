@@ -1790,7 +1790,291 @@
         </div>
     </dialog>
 
-    <section class="admin-panel" data-panel="blog"><div class="placeholder-box">Tela estática de Postagens do Blog com editor e calendário editorial.</div></section>
+    <section class="admin-panel" data-panel="blog">
+        <article class="admin-card">
+            <div class="admin-card-content">
+                <div class="section-head">
+                    <h2>Postagens do Blog</h2>
+                    <div class="blog-actions">
+                        <button type="button" class="admin-secondary-btn" data-open-modal="blog-editar">Editar rascunho</button>
+                        <button type="button" class="admin-primary-btn" data-open-modal="blog-nova">Nova postagem</button>
+                    </div>
+                </div>
+
+                <output class="admin-feedback" id="blogFormFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="blogEditFeedback" aria-live="polite"></output>
+
+                <div class="blog-toolbar">
+                    <input type="search" class="admin-search" placeholder="Pesquisar por titulo, autor ou palavra-chave">
+                    <select class="blog-filter" aria-label="Filtrar por status da postagem">
+                        <option value="">Todos os status</option>
+                        <option value="publicado">Publicado</option>
+                        <option value="rascunho">Rascunho</option>
+                        <option value="agendado">Agendado</option>
+                    </select>
+                    <select class="blog-filter" aria-label="Filtrar por categoria">
+                        <option value="">Todas as categorias</option>
+                        <option value="dicas">Dicas de ingles</option>
+                        <option value="eventos">Eventos</option>
+                        <option value="escola">Vida na escola</option>
+                    </select>
+                </div>
+
+                <div class="blog-metric-grid">
+                    <article class="blog-metric-card">
+                        <p>Postagens publicadas</p>
+                        <strong>64</strong>
+                    </article>
+                    <article class="blog-metric-card">
+                        <p>Rascunhos ativos</p>
+                        <strong>9</strong>
+                    </article>
+                    <article class="blog-metric-card">
+                        <p>Visualizacoes no mes</p>
+                        <strong>12.4k</strong>
+                    </article>
+                    <article class="blog-metric-card">
+                        <p>Agendadas para semana</p>
+                        <strong>3</strong>
+                    </article>
+                </div>
+
+                <div class="blog-grid">
+                    <article class="admin-card blog-block">
+                        <header class="admin-card-header">
+                            <h3>Calendario editorial</h3>
+                        </header>
+                        <div class="admin-card-content">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Titulo</th>
+                                        <th>Categoria</th>
+                                        <th>Autor</th>
+                                        <th>Data</th>
+                                        <th>Status</th>
+                                        <th>Acoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>5 jogos para praticar vocabulario em casa</td>
+                                        <td>Dicas de ingles</td>
+                                        <td>Equipe Pedagogica</td>
+                                        <td>18/03/2026</td>
+                                        <td><span class="status-chip warn">Agendado</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="blog-editar">Editar</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Como funciona a aula experimental na Step By Step</td>
+                                        <td>Vida na escola</td>
+                                        <td>Coord. Amanda</td>
+                                        <td>12/03/2026</td>
+                                        <td><span class="status-chip success">Publicado</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Especial de Páscoa: atividades para o Kids</td>
+                                        <td>Eventos</td>
+                                        <td>Prof. Elza</td>
+                                        <td>10/03/2026</td>
+                                        <td><span class="status-chip warn">Rascunho</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="blog-editar">Continuar</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Checklist para evoluir no speaking em 30 dias</td>
+                                        <td>Dicas de ingles</td>
+                                        <td>Prof. Marcos</td>
+                                        <td>05/03/2026</td>
+                                        <td><span class="status-chip success">Publicado</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Metricas</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="pagination">
+                                <button type="button">Anterior</button>
+                                <span>Pagina 1 de 4</span>
+                                <button type="button">Proxima</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <aside class="blog-side" aria-label="Resumo do blog">
+                        <article class="admin-card blog-block">
+                            <header class="admin-card-header">
+                                <h3>Top posts da semana</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="blog-list">
+                                    <li>
+                                        <strong>Como ajudar seu filho no listening</strong>
+                                        <span>2.3k visualizacoes e 84 compartilhamentos.</span>
+                                    </li>
+                                    <li>
+                                        <strong>Rotina de estudos para Teens</strong>
+                                        <span>1.8k visualizacoes e 61 compartilhamentos.</span>
+                                    </li>
+                                    <li>
+                                        <strong>Palavras mais usadas em sala (Kids)</strong>
+                                        <span>1.2k visualizacoes e 39 compartilhamentos.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article class="admin-card blog-block">
+                            <header class="admin-card-header">
+                                <h3>Proximas publicacoes</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="blog-list">
+                                    <li>
+                                        <strong>18/03 - Jogos de vocabulario</strong>
+                                        <span>Status: agendado para 09:00.</span>
+                                    </li>
+                                    <li>
+                                        <strong>20/03 - Diario da turma Kids 2</strong>
+                                        <span>Status: revisao final de conteudo.</span>
+                                    </li>
+                                    <li>
+                                        <strong>22/03 - Preparacao para prova oral</strong>
+                                        <span>Status: aguardando imagem de capa.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+                    </aside>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <dialog class="modal-overlay" data-modal="blog-nova" aria-labelledby="modalNovaPostagemTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalNovaPostagemTitulo">Nova postagem do blog</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formNovaPostagem" th:action="@{/admin/blog/postagens}" action="/admin/blog/postagens" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="blogFormFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="blogTitulo">Titulo</label>
+                        <input id="blogTitulo" name="titulo" type="text" placeholder="Ex.: 5 jogos para praticar vocabulario em casa" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="blogCategoria">Categoria</label>
+                        <select id="blogCategoria" name="categoria" required>
+                            <option value="">Selecione</option>
+                            <option value="dicas">Dicas de ingles</option>
+                            <option value="eventos">Eventos</option>
+                            <option value="escola">Vida na escola</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="blogAutor">Autor</label>
+                        <input id="blogAutor" name="autor" type="text" placeholder="Nome do autor" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="blogDataPublicacao">Data de publicacao</label>
+                        <input id="blogDataPublicacao" name="dataPublicacao" type="date" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="blogStatus">Status</label>
+                        <select id="blogStatus" name="status" required>
+                            <option value="publicado">Publicado</option>
+                            <option value="rascunho">Rascunho</option>
+                            <option value="agendado">Agendado</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="blogImagemCapa">Imagem de capa</label>
+                        <input id="blogImagemCapa" name="imagemCapa" type="file" accept="image/*">
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="blogConteudo">Conteudo</label>
+                        <textarea id="blogConteudo" name="conteudo" rows="6" placeholder="Escreva aqui o conteudo da postagem..." required></textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para salvar a postagem e publicar no blog publico.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar postagem</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="blog-editar" aria-labelledby="modalEditarPostagemTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalEditarPostagemTitulo">Editar postagem</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formEditarPostagem" th:action="@{/admin/blog/postagens/editar}" action="/admin/blog/postagens/editar" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="blogEditFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="blogEditarTitulo">Titulo</label>
+                        <input id="blogEditarTitulo" name="titulo" type="text" value="Especial de Pascoa: atividades para o Kids" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="blogEditarCategoria">Categoria</label>
+                        <select id="blogEditarCategoria" name="categoria" required>
+                            <option value="eventos" selected>Eventos</option>
+                            <option value="dicas">Dicas de ingles</option>
+                            <option value="escola">Vida na escola</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="blogEditarStatus">Status</label>
+                        <select id="blogEditarStatus" name="status" required>
+                            <option value="rascunho" selected>Rascunho</option>
+                            <option value="publicado">Publicado</option>
+                            <option value="agendado">Agendado</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="blogEditarImagemCapa">Imagem de capa</label>
+                        <input id="blogEditarImagemCapa" name="imagemCapa" type="file" accept="image/*">
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="blogEditarConteudo">Conteudo</label>
+                        <textarea id="blogEditarConteudo" name="conteudo" rows="6" required>Conteudo em revisao para publicacao no especial de Pascoa, com foco em vocabulario tematico e atividades praticas para os alunos Kids.</textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Edicao estatica para demonstracao. Integre ao backend para versionamento, revisao e publicacao automatica.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar alteracoes</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
     <section class="admin-panel" data-panel="livros"><div class="placeholder-box">Tela estática de Obras Literárias para catálogo e gerenciamento.</div></section>
     <section class="admin-panel" data-panel="galeria"><div class="placeholder-box">Tela estática de Galeria de Fotos para upload e organização por álbum.</div></section>
 
