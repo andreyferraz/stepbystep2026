@@ -15,6 +15,9 @@ import com.stepbystep.school.util.ValidationUtils;
 @Service
 public class UsuarioService {
 
+    private static final String CAMPO_ID_USUARIO = "ID do Usuário";
+    private static final String MSG_USUARIO_NAO_ENCONTRADO = "Usuário não encontrado com ID: ";
+
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -43,7 +46,7 @@ public class UsuarioService {
     }
 
     public Usuario editarUsuario(UUID id, Usuario usuarioAtualizado) {
-        ValidationUtils.validarCampoObrigatorio(id, "ID do Usuário");
+        ValidationUtils.validarCampoObrigatorio(id, CAMPO_ID_USUARIO);
         ValidationUtils.validarCampoObrigatorio(usuarioAtualizado, "Usuário");
         ValidationUtils.validarCampoStringObrigatorio(usuarioAtualizado.getNome(), "Nome do Usuário");
         ValidationUtils.validarCampoStringObrigatorio(usuarioAtualizado.getEmail(), "E-mail do Usuário");
@@ -55,7 +58,7 @@ public class UsuarioService {
         }
 
         Usuario usuarioExistente = usuarioRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com ID: " + id));
+            .orElseThrow(() -> new IllegalArgumentException(MSG_USUARIO_NAO_ENCONTRADO + id));
 
         usuarioExistente.setNome(usuarioAtualizado.getNome().trim());
         usuarioExistente.setEmail(usuarioAtualizado.getEmail().trim().toLowerCase(Locale.ROOT));
@@ -73,11 +76,22 @@ public class UsuarioService {
     }
 
     public void excluirUsuario(UUID id) {
-        ValidationUtils.validarCampoObrigatorio(id, "ID do Usuário");
+        ValidationUtils.validarCampoObrigatorio(id, CAMPO_ID_USUARIO);
         Usuario usuarioExistente = usuarioRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado com ID: " + id));
+            .orElseThrow(() -> new IllegalArgumentException(MSG_USUARIO_NAO_ENCONTRADO + id));
 
         usuarioRepository.delete(usuarioExistente);
+    }
+
+    public void redefinirSenhaUsuario(UUID id, String novaSenha) {
+        ValidationUtils.validarCampoObrigatorio(id, CAMPO_ID_USUARIO);
+        ValidationUtils.validarCampoStringObrigatorio(novaSenha, "Nova senha do Usuário");
+
+        Usuario usuarioExistente = usuarioRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException(MSG_USUARIO_NAO_ENCONTRADO + id));
+
+        usuarioExistente.setSenha(encodeIfNeeded(novaSenha));
+        usuarioRepository.save(usuarioExistente);
     }
 
     public List<Usuario> listarUsuarios() {

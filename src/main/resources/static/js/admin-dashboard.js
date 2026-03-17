@@ -12,6 +12,24 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    function activatePanelFromQuery() {
+        var params = new URLSearchParams(window.location.search);
+        var panelFromQuery = params.get("panel");
+
+        if (!panelFromQuery) {
+            return false;
+        }
+
+        var queryLink = findLinkByTarget(panelFromQuery);
+        if (!queryLink) {
+            return false;
+        }
+
+        activatePanel(panelFromQuery, queryLink.getAttribute("data-panel-title"));
+        localStorage.setItem(panelStorageKey, panelFromQuery);
+        return true;
+    }
+
     function activatePanel(target, title) {
         navLinks.forEach(function (link) {
             link.classList.toggle("is-active", link.getAttribute("data-panel-target") === target);
@@ -39,11 +57,15 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    var savedPanel = localStorage.getItem(panelStorageKey);
-    if (savedPanel) {
-        var savedLink = findLinkByTarget(savedPanel);
-        if (savedLink) {
-            activatePanel(savedPanel, savedLink.getAttribute("data-panel-title"));
+    var panelDefinidoPorQuery = activatePanelFromQuery();
+
+    if (!panelDefinidoPorQuery) {
+        var savedPanel = localStorage.getItem(panelStorageKey);
+        if (savedPanel) {
+            var savedLink = findLinkByTarget(savedPanel);
+            if (savedLink) {
+                activatePanel(savedPanel, savedLink.getAttribute("data-panel-title"));
+            }
         }
     }
 
@@ -62,10 +84,23 @@ document.addEventListener("DOMContentLoaded", function () {
             var modal = document.querySelector('[data-modal="' + target + '"]');
             if (modal) {
                 if (target === "aluno-senha") {
+                    var alunoId = button.getAttribute("data-aluno-id") || "";
                     var nomeAluno = button.getAttribute("data-aluno-nome") || "";
+                    var loginAluno = button.getAttribute("data-aluno-login") || "";
+                    var alunoIdInput = modal.querySelector("#alunoSenhaId");
                     var alunoNomeInput = modal.querySelector("#alunoSenhaNome");
+                    var alunoLoginInput = modal.querySelector("#alunoSenhaLogin");
+
+                    if (alunoIdInput) {
+                        alunoIdInput.value = alunoId;
+                    }
+
                     if (alunoNomeInput) {
                         alunoNomeInput.value = nomeAluno;
+                    }
+
+                    if (alunoLoginInput) {
+                        alunoLoginInput.value = loginAluno;
                     }
                 }
 
@@ -306,4 +341,54 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    var formNovoAluno = document.getElementById("formNovoAluno");
+    if (formNovoAluno) {
+        formNovoAluno.addEventListener("submit", function (event) {
+            var senhaInput = formNovoAluno.querySelector("#alunoSenha");
+            var confirmaSenhaInput = formNovoAluno.querySelector("#alunoSenhaConfirmacao");
+
+            if (!senhaInput || !confirmaSenhaInput) {
+                return;
+            }
+
+            var senhasIguais = senhaInput.value === confirmaSenhaInput.value;
+            confirmaSenhaInput.setCustomValidity(senhasIguais ? "" : "As senhas não coincidem.");
+
+            if (!formNovoAluno.checkValidity()) {
+                event.preventDefault();
+                formNovoAluno.reportValidity();
+            }
+        });
+    }
+
+    var formEditarAluno = document.getElementById("formEditarAluno");
+    if (formEditarAluno) {
+        formEditarAluno.addEventListener("submit", function (event) {
+            if (!formEditarAluno.checkValidity()) {
+                event.preventDefault();
+                formEditarAluno.reportValidity();
+            }
+        });
+    }
+
+    var formRedefinirSenhaAluno = document.getElementById("formRedefinirSenhaAluno");
+    if (formRedefinirSenhaAluno) {
+        formRedefinirSenhaAluno.addEventListener("submit", function (event) {
+            var novaSenhaInput = formRedefinirSenhaAluno.querySelector("#alunoNovaSenha");
+            var novaSenhaConfirmacaoInput = formRedefinirSenhaAluno.querySelector("#alunoNovaSenhaConfirmacao");
+
+            if (!novaSenhaInput || !novaSenhaConfirmacaoInput) {
+                return;
+            }
+
+            var novasSenhasIguais = novaSenhaInput.value === novaSenhaConfirmacaoInput.value;
+            novaSenhaConfirmacaoInput.setCustomValidity(novasSenhasIguais ? "" : "As senhas não coincidem.");
+
+            if (!formRedefinirSenhaAluno.checkValidity()) {
+                event.preventDefault();
+                formRedefinirSenhaAluno.reportValidity();
+            }
+        });
+    }
 });

@@ -112,9 +112,10 @@
                     <button type="button" class="admin-primary-btn" data-open-modal="aluno-novo">Adicionar Novo</button>
                 </div>
 
-                <output class="admin-feedback" id="alunoFormFeedback" aria-live="polite"></output>
-                <output class="admin-feedback" id="alunoSenhaFeedback" aria-live="polite"></output>
-                <output class="admin-feedback" id="alunoEditFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="alunoFormFeedback" aria-live="polite" th:text="${alunoFormFeedback}"></output>
+                <output class="admin-feedback" id="alunoSenhaFeedback" aria-live="polite" th:text="${alunoSenhaFeedback}"></output>
+                <output class="admin-feedback" id="alunoEditFeedback" aria-live="polite" th:text="${alunoEditFeedback}"></output>
+                <output class="admin-feedback" id="alunoDeleteFeedback" aria-live="polite" th:text="${alunoDeleteFeedback}"></output>
 
                 <div class="admin-search-row">
                     <input type="search" class="admin-search" placeholder="Pesquisar por nome, turma ou telefone">
@@ -133,91 +134,60 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>Rafael Alves</td>
-                            <td>Kids 2</td>
-                            <td>Luciana Alves</td>
-                            <td><span class="status-chip success">Ativo</span></td>
-                            <td>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="aluno-senha" data-aluno-nome="Rafael Alves">Redefinir senha</button>
-                            </td>
-                            <td>
-                                <div class="action-icons">
-                                    <button class="icon-btn" type="button" aria-label="Editar"
-                                        data-open-modal="aluno-editar"
-                                        data-aluno-id="1"
-                                        data-aluno-nome="Rafael Alves"
-                                        data-aluno-turma="2"
-                                        data-aluno-responsavel="Luciana Alves"
-                                        data-aluno-telefone="(88) 99881-2211"
-                                        data-aluno-email="rafael.alves@email.com"
-                                        data-aluno-login="rafael.alves"
-                                        data-aluno-status="ATIVO"
-                                        data-aluno-observacoes="Prefere aulas aos sabados.">
-                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18 9.5 14.5 6 4 16.5Zm15.7-9.8a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 0L15.3 5.3 18.8 8.8l.9-2.1Z" fill="currentColor"/></svg>
-                                    </button>
-                                    <button class="icon-btn" type="button" aria-label="Visualizar"
-                                        data-open-modal="aluno-visualizar"
-                                        data-aluno-id="1"
-                                        data-aluno-nome="Rafael Alves"
-                                        data-aluno-data-nascimento="2013-04-19"
-                                        data-aluno-turma-label="Kids 2"
-                                        data-aluno-nivel-label="Basico"
-                                        data-aluno-responsavel="Luciana Alves"
-                                        data-aluno-telefone="(88) 99881-2211"
-                                        data-aluno-email="rafael.alves@email.com"
-                                        data-aluno-login="rafael.alves"
-                                        data-aluno-status-label="Ativo"
-                                        data-aluno-observacoes="Prefere aulas aos sabados.">
-                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5.6 0 9.4 5.4 9.6 5.6a1 1 0 0 1 0 .8C21.4 11.6 17.6 17 12 17S2.6 11.6 2.4 11.4a1 1 0 0 1 0-.8C2.6 10.4 6.4 5 12 5Zm0 2c-3.6 0-6.5 2.9-6.9 3.6.4.7 3.3 3.6 6.9 3.6s6.5-2.9 6.9-3.6C18.5 9.9 15.6 7 12 7Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="currentColor"/></svg>
-                                    </button>
-                                    <button class="icon-btn danger" type="button" aria-label="Excluir">
-                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Z" fill="currentColor"/></svg>
-                                    </button>
-                                </div>
-                            </td>
+                        <tr th:if="${#lists.isEmpty(usuariosAlunos)}">
+                            <td colspan="6">Nenhum aluno cadastrado ainda.</td>
                         </tr>
-                        <tr>
-                            <td>Helena Martins</td>
-                            <td>Adults 2</td>
-                            <td>Próprio aluno</td>
-                            <td><span class="status-chip success">Ativo</span></td>
+                        <tr th:each="usuario : ${usuariosAlunos}">
+                            <td th:text="${usuario.nome}">Nome do aluno</td>
+                            <td th:text="${usuario.aluno.turma != null ? usuario.aluno.turma.nome : '-'}">Turma</td>
+                            <td>-</td>
                             <td>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="aluno-senha" data-aluno-nome="Helena Martins">Redefinir senha</button>
+                                <span class="status-chip" th:classappend="${usuario.ativo} ? ' success' : ' warn'" th:text="${usuario.ativo} ? 'Ativo' : 'Inativo'">Ativo</span>
+                            </td>
+                            <td>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="aluno-senha" th:attr="data-aluno-id=${usuario.aluno.id},data-aluno-nome=${usuario.nome},data-aluno-login=${usuario.email}">Redefinir senha</button>
                             </td>
                             <td>
                                 <div class="action-icons">
                                     <button class="icon-btn" type="button" aria-label="Editar"
                                         data-open-modal="aluno-editar"
-                                        data-aluno-id="2"
-                                        data-aluno-nome="Helena Martins"
-                                        data-aluno-turma="4"
-                                        data-aluno-responsavel="Proprio aluno"
-                                        data-aluno-telefone="(88) 99922-1133"
-                                        data-aluno-email="helena.martins@email.com"
-                                        data-aluno-login="helena.martins"
-                                        data-aluno-status="ATIVO"
-                                        data-aluno-observacoes="Disponivel para aulas extras no periodo noturno.">
+                                        th:attr="
+                                            data-aluno-id=${usuario.aluno.id},
+                                            data-aluno-nome=${usuario.nome},
+                                            data-aluno-turma=${usuario.aluno.turma != null ? usuario.aluno.turma.id : ''},
+                                            data-aluno-responsavel='-',
+                                            data-aluno-telefone=${usuario.aluno.telefone},
+                                            data-aluno-email=${usuario.email},
+                                            data-aluno-login=${usuario.email},
+                                            data-aluno-status=${usuario.ativo ? 'ATIVO' : 'INATIVO'},
+                                            data-aluno-observacoes='-'
+                                        ">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18 9.5 14.5 6 4 16.5Zm15.7-9.8a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 0L15.3 5.3 18.8 8.8l.9-2.1Z" fill="currentColor"/></svg>
                                     </button>
                                     <button class="icon-btn" type="button" aria-label="Visualizar"
                                         data-open-modal="aluno-visualizar"
-                                        data-aluno-id="2"
-                                        data-aluno-nome="Helena Martins"
-                                        data-aluno-data-nascimento="2006-11-02"
-                                        data-aluno-turma-label="Adults 2"
-                                        data-aluno-nivel-label="Intermediario"
-                                        data-aluno-responsavel="Proprio aluno"
-                                        data-aluno-telefone="(88) 99922-1133"
-                                        data-aluno-email="helena.martins@email.com"
-                                        data-aluno-login="helena.martins"
-                                        data-aluno-status-label="Ativo"
-                                        data-aluno-observacoes="Disponivel para aulas extras no periodo noturno.">
+                                        th:attr="
+                                            data-aluno-id=${usuario.aluno.id},
+                                            data-aluno-nome=${usuario.nome},
+                                            data-aluno-data-nascimento=${usuario.aluno.dataNascimento},
+                                            data-aluno-turma-label=${usuario.aluno.turma != null ? usuario.aluno.turma.nome : '-'},
+                                            data-aluno-nivel-label=${usuario.aluno.nivelAtual},
+                                            data-aluno-responsavel='-',
+                                            data-aluno-telefone=${usuario.aluno.telefone},
+                                            data-aluno-email=${usuario.email},
+                                            data-aluno-login=${usuario.email},
+                                            data-aluno-status-label=${usuario.ativo ? 'Ativo' : 'Inativo'},
+                                            data-aluno-observacoes='-'
+                                        ">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5.6 0 9.4 5.4 9.6 5.6a1 1 0 0 1 0 .8C21.4 11.6 17.6 17 12 17S2.6 11.6 2.4 11.4a1 1 0 0 1 0-.8C2.6 10.4 6.4 5 12 5Zm0 2c-3.6 0-6.5 2.9-6.9 3.6.4.7 3.3 3.6 6.9 3.6s6.5-2.9 6.9-3.6C18.5 9.9 15.6 7 12 7Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="currentColor"/></svg>
                                     </button>
-                                    <button class="icon-btn danger" type="button" aria-label="Excluir">
-                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Z" fill="currentColor"/></svg>
-                                    </button>
+                                    <form th:action="@{/admin/alunos/excluir}" action="/admin/alunos/excluir" method="post" onsubmit="return confirm('Deseja realmente excluir este aluno?');">
+                                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                        <input type="hidden" name="alunoId" th:value="${usuario.aluno.id}">
+                                        <button class="icon-btn danger" type="submit" aria-label="Excluir">
+                                            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Z" fill="currentColor"/></svg>
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
@@ -225,9 +195,7 @@
                 </table>
 
                 <div class="pagination">
-                    <button type="button">Anterior</button>
-                    <span>Página 1 de 8</span>
-                    <button type="button">Próxima</button>
+                    <span th:text="'Total de alunos cadastrados: ' + ${#lists.size(usuariosAlunos)}">Total de alunos cadastrados: 0</span>
                 </div>
             </div>
         </article>
@@ -2609,7 +2577,7 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formNovoAluno" th:action="@{/admin/alunos}" action="/admin/alunos" method="post" data-static-submit="true" data-feedback-target="alunoFormFeedback">
+            <form id="formNovoAluno" th:action="@{/admin/alunos}" action="/admin/alunos" method="post">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="modal-body">
@@ -2627,10 +2595,7 @@
                         <label for="alunoTurma">Turma</label>
                         <select id="alunoTurma" name="turmaId" required>
                             <option value="">Selecione</option>
-                            <option value="1">Kids 1</option>
-                            <option value="2">Kids 2</option>
-                            <option value="3">Teens 1</option>
-                            <option value="4">Adults 1</option>
+                            <option th:each="turma : ${turmas}" th:value="${turma.id}" th:text="${turma.nome}"></option>
                         </select>
                     </div>
 
@@ -2638,7 +2603,7 @@
                         <label for="alunoNivel">Nível</label>
                         <select id="alunoNivel" name="nivel" required>
                             <option value="">Selecione</option>
-                            <option value="BASICO">Básico</option>
+                            <option value="INICIANTE">Iniciante</option>
                             <option value="INTERMEDIARIO">Intermediário</option>
                             <option value="AVANCADO">Avançado</option>
                         </select>
@@ -2712,8 +2677,9 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formRedefinirSenhaAluno" th:action="@{/admin/alunos/redefinir-senha}" action="/admin/alunos/redefinir-senha" method="post" data-static-submit="true" data-feedback-target="alunoSenhaFeedback">
+            <form id="formRedefinirSenhaAluno" th:action="@{/admin/alunos/redefinir-senha}" action="/admin/alunos/redefinir-senha" method="post">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" id="alunoSenhaId" name="alunoId">
 
                 <div class="modal-body">
                     <div class="modal-field modal-field-full">
@@ -2723,7 +2689,7 @@
 
                     <div class="modal-field modal-field-full">
                         <label for="alunoSenhaLogin">Login atual</label>
-                        <input id="alunoSenhaLogin" name="usuarioLogin" type="text" placeholder="login.aluno" required>
+                        <input id="alunoSenhaLogin" name="usuarioLogin" type="text" readonly required>
                     </div>
 
                     <div class="modal-field">
@@ -2756,7 +2722,7 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formEditarAluno" th:action="@{/admin/alunos/editar}" action="/admin/alunos/editar" method="post" data-static-submit="true" data-feedback-target="alunoEditFeedback">
+            <form id="formEditarAluno" th:action="@{/admin/alunos/editar}" action="/admin/alunos/editar" method="post">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <input type="hidden" id="editarAlunoId" name="alunoId">
 
@@ -2770,10 +2736,7 @@
                         <label for="editarAlunoTurma">Turma</label>
                         <select id="editarAlunoTurma" name="turmaId" required>
                             <option value="">Selecione</option>
-                            <option value="1">Kids 1</option>
-                            <option value="2">Kids 2</option>
-                            <option value="3">Teens 1</option>
-                            <option value="4">Adults 1</option>
+                            <option th:each="turma : ${turmas}" th:value="${turma.id}" th:text="${turma.nome}"></option>
                         </select>
                     </div>
 

@@ -10,4 +10,6 @@ import com.stepbystep.school.model.Usuario;
 public interface UsuarioRepository extends JpaRepository<Usuario, UUID> {
 
 	Optional<Usuario> findByEmail(String email);
+
+	Optional<Usuario> findByAlunoId(UUID alunoId);
 }
