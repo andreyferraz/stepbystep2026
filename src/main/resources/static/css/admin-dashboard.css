@@ -1192,6 +1192,104 @@ body.admin-body {
     font-size: 0.84rem;
 }
 
+.livros-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.livros-toolbar {
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.livros-filter {
+    border: 1px solid var(--admin-line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: #fff;
+    color: var(--admin-ink);
+    font: inherit;
+    min-width: 170px;
+}
+
+.livros-metric-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.livros-metric-card {
+    border: 1px solid var(--admin-line);
+    border-radius: 12px;
+    background: linear-gradient(180deg, #fff, #f8fbff);
+    padding: 12px;
+}
+
+.livros-metric-card p {
+    margin: 0;
+    color: var(--admin-muted);
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+
+.livros-metric-card strong {
+    margin-top: 6px;
+    display: block;
+    color: var(--admin-brand-900);
+    font-size: 1.1rem;
+}
+
+.livros-grid {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.livros-side {
+    display: grid;
+    gap: 10px;
+}
+
+.livros-block .admin-card-header h3 {
+    margin: 0;
+    color: var(--admin-brand-900);
+    font-size: 1rem;
+}
+
+.livros-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+}
+
+.livros-list li {
+    border: 1px solid var(--admin-line);
+    border-radius: 12px;
+    background: #f9fcff;
+    padding: 10px;
+}
+
+.livros-list strong {
+    display: block;
+    color: var(--admin-brand-900);
+    font-size: 0.92rem;
+}
+
+.livros-list span {
+    margin-top: 3px;
+    display: block;
+    color: var(--admin-muted);
+    font-size: 0.84rem;
+}
+
 .modal-overlay {
     position: fixed;
     inset: 0;
@@ -1362,6 +1460,14 @@ body.admin-body {
     .blog-grid {
         grid-template-columns: 1fr;
     }
+
+    .livros-metric-grid {
+        grid-template-columns: repeat(2, minmax(160px, 1fr));
+    }
+
+    .livros-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 960px) {
@@ -1461,6 +1567,12 @@ body.admin-body {
         flex-wrap: wrap;
     }
 
+    .livros-actions {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
     .notas-metric-grid {
         grid-template-columns: 1fr;
     }
@@ -1478,6 +1590,10 @@ body.admin-body {
     }
 
     .blog-metric-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .livros-metric-grid {
         grid-template-columns: 1fr;
     }
 

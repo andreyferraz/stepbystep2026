@@ -2075,7 +2075,283 @@
         </div>
     </dialog>
 
-    <section class="admin-panel" data-panel="livros"><div class="placeholder-box">Tela estática de Obras Literárias para catálogo e gerenciamento.</div></section>
+    <section class="admin-panel" data-panel="livros">
+        <article class="admin-card">
+            <div class="admin-card-content">
+                <div class="section-head">
+                    <h2>Obras Literarias</h2>
+                    <div class="livros-actions">
+                        <button type="button" class="admin-secondary-btn" data-open-modal="livro-editar">Editar obra</button>
+                        <button type="button" class="admin-primary-btn" data-open-modal="livro-novo">Nova obra</button>
+                    </div>
+                </div>
+
+                <output class="admin-feedback" id="livroFormFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="livroEditFeedback" aria-live="polite"></output>
+
+                <div class="livros-toolbar">
+                    <input type="search" class="admin-search" placeholder="Pesquisar por titulo, autor ou ano">
+                    <select class="livros-filter" aria-label="Filtrar por status da obra">
+                        <option value="">Todos os status</option>
+                        <option value="destaque">Em destaque</option>
+                        <option value="catalogo">No catalogo</option>
+                        <option value="rascunho">Rascunho</option>
+                    </select>
+                    <select class="livros-filter" aria-label="Filtrar por genero literario">
+                        <option value="">Todos os generos</option>
+                        <option value="infantil">Infantil</option>
+                        <option value="classico">Classico</option>
+                        <option value="contemporaneo">Contemporaneo</option>
+                    </select>
+                </div>
+
+                <div class="livros-metric-grid">
+                    <article class="livros-metric-card">
+                        <p>Obras no catalogo</p>
+                        <strong>48</strong>
+                    </article>
+                    <article class="livros-metric-card">
+                        <p>Novas obras no mes</p>
+                        <strong>5</strong>
+                    </article>
+                    <article class="livros-metric-card">
+                        <p>Mais visualizada</p>
+                        <strong>O Pequeno Principe</strong>
+                    </article>
+                    <article class="livros-metric-card">
+                        <p>Em destaque</p>
+                        <strong>12</strong>
+                    </article>
+                </div>
+
+                <div class="livros-grid">
+                    <article class="admin-card livros-block">
+                        <header class="admin-card-header">
+                            <h3>Catalogo literario</h3>
+                        </header>
+                        <div class="admin-card-content">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Titulo</th>
+                                        <th>Genero</th>
+                                        <th>Ano</th>
+                                        <th>Status</th>
+                                        <th>Link de compra</th>
+                                        <th>Acoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>O Pequeno Principe</td>
+                                        <td>Classico</td>
+                                        <td>1943</td>
+                                        <td><span class="status-chip success">Em destaque</span></td>
+                                        <td><a href="#">Abrir</a></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="livro-editar">Editar</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Matilda</td>
+                                        <td>Infantil</td>
+                                        <td>1988</td>
+                                        <td><span class="status-chip success">No catalogo</span></td>
+                                        <td><a href="#">Abrir</a></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Detalhes</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Extraordinario</td>
+                                        <td>Contemporaneo</td>
+                                        <td>2012</td>
+                                        <td><span class="status-chip warn">Rascunho</span></td>
+                                        <td><a href="#">Abrir</a></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="livro-editar">Continuar</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Dom Casmurro</td>
+                                        <td>Classico</td>
+                                        <td>1899</td>
+                                        <td><span class="status-chip success">No catalogo</span></td>
+                                        <td><a href="#">Abrir</a></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Metricas</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="pagination">
+                                <button type="button">Anterior</button>
+                                <span>Pagina 1 de 3</span>
+                                <button type="button">Proxima</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <aside class="livros-side" aria-label="Resumo de obras literarias">
+                        <article class="admin-card livros-block">
+                            <header class="admin-card-header">
+                                <h3>Mais procuradas</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="livros-list">
+                                    <li>
+                                        <strong>O Pequeno Principe</strong>
+                                        <span>412 acessos no ultimo mes.</span>
+                                    </li>
+                                    <li>
+                                        <strong>Matilda</strong>
+                                        <span>289 acessos no ultimo mes.</span>
+                                    </li>
+                                    <li>
+                                        <strong>A Bolsa Amarela</strong>
+                                        <span>241 acessos no ultimo mes.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article class="admin-card livros-block">
+                            <header class="admin-card-header">
+                                <h3>Atualizacoes pendentes</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="livros-list">
+                                    <li>
+                                        <strong>Extraordinario</strong>
+                                        <span>Adicionar capa e revisar sinopse.</span>
+                                    </li>
+                                    <li>
+                                        <strong>Percy Jackson</strong>
+                                        <span>Atualizar link de compra.</span>
+                                    </li>
+                                    <li>
+                                        <strong>Sherlock Holmes</strong>
+                                        <span>Definir se entra em destaque.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+                    </aside>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <dialog class="modal-overlay" data-modal="livro-novo" aria-labelledby="modalNovoLivroTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalNovoLivroTitulo">Nova obra literaria</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formNovoLivro" th:action="@{/admin/livros}" action="/admin/livros" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="livroFormFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="livroTitulo">Titulo</label>
+                        <input id="livroTitulo" name="titulo" type="text" placeholder="Ex.: O Pequeno Principe" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="livroGenero">Genero</label>
+                        <select id="livroGenero" name="genero" required>
+                            <option value="">Selecione</option>
+                            <option value="infantil">Infantil</option>
+                            <option value="classico">Classico</option>
+                            <option value="contemporaneo">Contemporaneo</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="livroAno">Ano de lancamento</label>
+                        <input id="livroAno" name="anoLancamento" type="number" min="1500" max="2100" placeholder="Ex.: 1943" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="livroSinopse">Sinopse</label>
+                        <textarea id="livroSinopse" name="sinopse" rows="4" placeholder="Resumo da obra para exibicao no catalogo." required></textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="livroImagemCapa">Imagem de capa</label>
+                        <input id="livroImagemCapa" name="imagemCapa" type="file" accept="image/*" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="livroLinkCompra">Link de compra</label>
+                        <input id="livroLinkCompra" name="linkCompra" type="url" placeholder="https://loja.com/livro">
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para salvar dados da obra e upload da capa.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar obra</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="livro-editar" aria-labelledby="modalEditarLivroTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalEditarLivroTitulo">Editar obra literaria</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formEditarLivro" th:action="@{/admin/livros/editar}" action="/admin/livros/editar" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="livroEditFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="livroEditarTitulo">Titulo</label>
+                        <input id="livroEditarTitulo" name="titulo" type="text" value="Extraordinario" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="livroEditarGenero">Genero</label>
+                        <select id="livroEditarGenero" name="genero" required>
+                            <option value="contemporaneo" selected>Contemporaneo</option>
+                            <option value="classico">Classico</option>
+                            <option value="infantil">Infantil</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="livroEditarAno">Ano de lancamento</label>
+                        <input id="livroEditarAno" name="anoLancamento" type="number" min="1500" max="2100" value="2012" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="livroEditarSinopse">Sinopse</label>
+                        <textarea id="livroEditarSinopse" name="sinopse" rows="4" required>A historia de Auggie, um menino que enfrenta desafios de inclusao e empatia, inspirando alunos e familias.</textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="livroEditarImagemCapa">Imagem de capa</label>
+                        <input id="livroEditarImagemCapa" name="imagemCapa" type="file" accept="image/*">
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="livroEditarLinkCompra">Link de compra</label>
+                        <input id="livroEditarLinkCompra" name="linkCompra" type="url" value="https://loja.com/extraordinario">
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Edicao estatica para demonstracao. Integre ao backend para atualizar cadastro, capa e disponibilidade da obra.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar alteracoes</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
     <section class="admin-panel" data-panel="galeria"><div class="placeholder-box">Tela estática de Galeria de Fotos para upload e organização por álbum.</div></section>
 
     <dialog class="modal-overlay" data-modal="aluno-novo" aria-labelledby="modalNovoAlunoTitulo">

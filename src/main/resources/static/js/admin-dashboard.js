@@ -274,6 +274,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     feedback.textContent = "Postagem preparada em modo estatico. Integre ao backend para salvar e publicar no blog da escola.";
                 } else if (feedbackTarget === "blogEditFeedback") {
                     feedback.textContent = "Edicao de postagem preparada em modo estatico. Integre ao backend para versionar e atualizar o conteudo publicado.";
+                } else if (feedbackTarget === "livroFormFeedback") {
+                    feedback.textContent = "Obra literaria preparada em modo estatico. Integre ao backend para salvar dados e upload da imagem de capa.";
+                } else if (feedbackTarget === "livroEditFeedback") {
+                    feedback.textContent = "Edicao da obra preparada em modo estatico. Integre ao backend para atualizar catalogo, capa e link de compra.";
                 } else {
                     feedback.textContent = "Aluno e credenciais de acesso preparados para cadastro. Integre este formulário ao backend para persistir no banco.";
                 }
