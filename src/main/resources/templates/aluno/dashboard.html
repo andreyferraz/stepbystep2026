@@ -5,15 +5,141 @@
     <title>Painel do Aluno - Step By Step</title>
 </head>
 <main>
-    <section class="contact-section">
-        <div class="contact-map-header">
-            <p class="section-kicker">Área do Aluno</p>
-            <h1>Painel do Aluno</h1>
-            <p>
-                Esta é uma página temporária de dashboard do aluno.
-            </p>
+    <section class="student-dashboard" aria-label="Painel do aluno">
+        <aside class="student-sidebar" aria-label="Menu do aluno">
+            <p class="student-sidebar-kicker">Área do Aluno</p>
+            <h1>Meu Painel</h1>
+            <nav class="student-nav" aria-label="Navegação principal">
+                <button class="student-nav-item is-active" type="button" data-student-nav="painel">
+                    <span>Início</span>
+                    <small>Meu Painel</small>
+                </button>
+                <button class="student-nav-item" type="button" data-student-nav="materiais">
+                    <span>Sala de Aula</span>
+                    <small>Materiais</small>
+                </button>
+                <button class="student-nav-item" type="button" data-student-nav="boletim">
+                    <span>Boletim</span>
+                    <small>Notas e Faltas</small>
+                </button>
+                <button class="student-nav-item" type="button" data-student-nav="financeiro">
+                    <span>Financeiro</span>
+                    <small>Pagamentos</small>
+                </button>
+            </nav>
+        </aside>
+
+        <div class="student-content" data-student-content>
+            <article class="student-panel is-active" data-student-panel="painel">
+                <header class="student-panel-header">
+                    <p class="student-panel-kicker">Início</p>
+                    <h2>Resumo da sua jornada</h2>
+                </header>
+                <div class="student-overview-grid">
+                    <section class="student-card">
+                        <h3>Próxima aula</h3>
+                        <p>Quinta-feira, 19:00</p>
+                    </section>
+                    <section class="student-card">
+                        <h3>Material novo</h3>
+                        <p>2 PDFs e 1 áudio disponíveis.</p>
+                    </section>
+                    <section class="student-card">
+                        <h3>Frequência</h3>
+                        <p>92% no último bimestre.</p>
+                    </section>
+                    <section class="student-card">
+                        <h3>Mensalidade</h3>
+                        <p>Vencimento em 10 dias.</p>
+                    </section>
+                </div>
+            </article>
+
+            <article class="student-panel" data-student-panel="materiais">
+                <header class="student-panel-header">
+                    <p class="student-panel-kicker">Sala de Aula</p>
+                    <h2>Materiais da turma</h2>
+                </header>
+                <div class="student-list">
+                    <div class="student-list-item">
+                        <div>
+                            <h3>Workbook Unit 05 (PDF)</h3>
+                            <p>Prática de vocabulário e exercícios de leitura.</p>
+                        </div>
+                        <a href="#" class="student-action-link">Baixar</a>
+                    </div>
+                    <div class="student-list-item">
+                        <div>
+                            <h3>Listening - Unit 05 (Áudio)</h3>
+                            <p>Treino de compreensão para a próxima aula.</p>
+                        </div>
+                        <a href="#" class="student-action-link">Ouvir</a>
+                    </div>
+                </div>
+            </article>
+
+            <article class="student-panel" data-student-panel="boletim">
+                <header class="student-panel-header">
+                    <p class="student-panel-kicker">Boletim</p>
+                    <h2>Notas e faltas</h2>
+                </header>
+                <div class="student-overview-grid">
+                    <section class="student-card">
+                        <h3>Média B1</h3>
+                        <p>8,7</p>
+                    </section>
+                    <section class="student-card">
+                        <h3>Média B2</h3>
+                        <p>9,1</p>
+                    </section>
+                    <section class="student-card">
+                        <h3>Faltas</h3>
+                        <p>2 no semestre.</p>
+                    </section>
+                </div>
+            </article>
+
+            <article class="student-panel" data-student-panel="financeiro">
+                <header class="student-panel-header">
+                    <p class="student-panel-kicker">Financeiro</p>
+                    <h2>Pagamentos</h2>
+                </header>
+                <div class="student-list">
+                    <div class="student-list-item">
+                        <div>
+                            <h3>Mensalidade Março/2026</h3>
+                            <p>R$ 320,00 - Vencimento: 25/03/2026</p>
+                        </div>
+                        <a href="#" class="student-action-link">Pagar</a>
+                    </div>
+                    <div class="student-list-item">
+                        <div>
+                            <h3>Comprovante Fevereiro/2026</h3>
+                            <p>Pagamento confirmado em 23/02/2026.</p>
+                        </div>
+                        <a href="#" class="student-action-link">Ver recibo</a>
+                    </div>
+                </div>
+            </article>
         </div>
+
+        <nav class="student-bottom-nav" aria-label="Navegação do aluno no celular">
+            <button class="student-bottom-nav-item is-active" type="button" data-student-nav="painel">
+                <span>Início</span>
+            </button>
+            <button class="student-bottom-nav-item" type="button" data-student-nav="materiais">
+                <span>Sala</span>
+            </button>
+            <button class="student-bottom-nav-item" type="button" data-student-nav="boletim">
+                <span>Boletim</span>
+            </button>
+            <button class="student-bottom-nav-item" type="button" data-student-nav="financeiro">
+                <span>Financeiro</span>
+            </button>
+        </nav>
     </section>
+
+    <script th:src="@{/js/aluno-dashboard.js}" src="/js/aluno-dashboard.js"></script>
 </main>
 
 </html>
