@@ -1182,7 +1182,306 @@
         </div>
     </dialog>
 
-    <section class="admin-panel" data-panel="inadimplencia"><div class="placeholder-box">Tela estática de Inadimplência com ações de cobrança e contato.</div></section>
+    <section class="admin-panel" data-panel="inadimplencia">
+        <article class="admin-card">
+            <div class="admin-card-content">
+                <div class="section-head">
+                    <h2>Controle de Inadimplencia</h2>
+                    <div class="inadimplencia-actions">
+                        <button type="button" class="admin-secondary-btn" data-open-modal="inadimplencia-lembrete">Enviar lembrete</button>
+                        <button type="button" class="admin-primary-btn" data-open-modal="inadimplencia-acordo">Registrar acordo</button>
+                    </div>
+                </div>
+
+                <output class="admin-feedback" id="inadimplenciaLembreteFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="inadimplenciaAcordoFeedback" aria-live="polite"></output>
+
+                <div class="inadimplencia-toolbar">
+                    <input type="search" class="admin-search" placeholder="Pesquisar por aluno, responsavel ou telefone">
+                    <select class="inadimplencia-filter" aria-label="Filtrar por atraso">
+                        <option value="">Todas as faixas</option>
+                        <option value="ate15">Ate 15 dias</option>
+                        <option value="16a30">16 a 30 dias</option>
+                        <option value="31a60">31 a 60 dias</option>
+                        <option value="60mais">Mais de 60 dias</option>
+                    </select>
+                    <select class="inadimplencia-filter" aria-label="Filtrar por status de contato">
+                        <option value="">Todos os contatos</option>
+                        <option value="sem-contato">Sem contato</option>
+                        <option value="negociando">Negociando</option>
+                        <option value="acordo">Com acordo</option>
+                    </select>
+                </div>
+
+                <div class="inadimplencia-metric-grid">
+                    <article class="inadimplencia-metric-card">
+                        <p>Alunos inadimplentes</p>
+                        <strong>17</strong>
+                    </article>
+                    <article class="inadimplencia-metric-card">
+                        <p>Valor total em aberto</p>
+                        <strong>R$ 8.940</strong>
+                    </article>
+                    <article class="inadimplencia-metric-card">
+                        <p>Acordos ativos</p>
+                        <strong>6</strong>
+                    </article>
+                    <article class="inadimplencia-metric-card">
+                        <p>Lembretes enviados hoje</p>
+                        <strong>12</strong>
+                    </article>
+                </div>
+
+                <div class="inadimplencia-grid">
+                    <article class="admin-card inadimplencia-block">
+                        <header class="admin-card-header">
+                            <h3>Carteira de cobranca</h3>
+                        </header>
+                        <div class="admin-card-content">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>Aluno</th>
+                                        <th>Turma</th>
+                                        <th>Valor em aberto</th>
+                                        <th>Dias em atraso</th>
+                                        <th>Ultimo contato</th>
+                                        <th>Status</th>
+                                        <th>Acoes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Gabriel Souza</td>
+                                        <td>Kids 1</td>
+                                        <td>R$ 580</td>
+                                        <td>31</td>
+                                        <td>10/03/2026</td>
+                                        <td><span class="status-chip warn">Negociando</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="inadimplencia-acordo">Acordo</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Isabela Rocha</td>
+                                        <td>Adults 1</td>
+                                        <td>R$ 320</td>
+                                        <td>14</td>
+                                        <td>15/03/2026</td>
+                                        <td><span class="status-chip warn">Lembrete enviado</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="inadimplencia-lembrete">Cobrar</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Matheus Lima</td>
+                                        <td>Teens 2</td>
+                                        <td>R$ 840</td>
+                                        <td>63</td>
+                                        <td>08/03/2026</td>
+                                        <td><span class="status-chip warn">Sem retorno</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="inadimplencia-lembrete">Reenviar</button></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Beatriz Costa</td>
+                                        <td>Kids 2</td>
+                                        <td>R$ 290</td>
+                                        <td>8</td>
+                                        <td>16/03/2026</td>
+                                        <td><span class="status-chip success">Acordo fechado</span></td>
+                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Historico</button></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            <div class="pagination">
+                                <button type="button">Anterior</button>
+                                <span>Pagina 1 de 3</span>
+                                <button type="button">Proxima</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <aside class="inadimplencia-side" aria-label="Resumo de inadimplencia">
+                        <article class="admin-card inadimplencia-block">
+                            <header class="admin-card-header">
+                                <h3>Fila de contato hoje</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="inadimplencia-list">
+                                    <li>
+                                        <strong>09:30 - Gabriel Souza</strong>
+                                        <span>Retorno solicitado pela responsavel.</span>
+                                    </li>
+                                    <li>
+                                        <strong>11:00 - Matheus Lima</strong>
+                                        <span>Enviar segunda proposta de acordo.</span>
+                                    </li>
+                                    <li>
+                                        <strong>15:40 - Isabela Rocha</strong>
+                                        <span>Confirmar previsao de pagamento.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article class="admin-card inadimplencia-block">
+                            <header class="admin-card-header">
+                                <h3>Distribuicao por atraso</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="inadimplencia-list">
+                                    <li>
+                                        <strong>Ate 15 dias</strong>
+                                        <span>6 alunos - R$ 1.860</span>
+                                    </li>
+                                    <li>
+                                        <strong>16 a 30 dias</strong>
+                                        <span>5 alunos - R$ 2.450</span>
+                                    </li>
+                                    <li>
+                                        <strong>Acima de 30 dias</strong>
+                                        <span>6 alunos - R$ 4.630</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+                    </aside>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <dialog class="modal-overlay" data-modal="inadimplencia-lembrete" aria-labelledby="modalLembreteInadimplenciaTitulo">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h3 id="modalLembreteInadimplenciaTitulo">Enviar lembrete de cobranca</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formEnviarLembreteInadimplencia" th:action="@{/admin/inadimplencia/enviar-lembrete}" action="/admin/inadimplencia/enviar-lembrete" method="post" data-static-submit="true" data-feedback-target="inadimplenciaLembreteFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="inadimplenciaAlunoLembrete">Aluno</label>
+                        <select id="inadimplenciaAlunoLembrete" name="aluno" required>
+                            <option value="">Selecione</option>
+                            <option value="gabriel-souza">Gabriel Souza</option>
+                            <option value="isabela-rocha">Isabela Rocha</option>
+                            <option value="matheus-lima">Matheus Lima</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="inadimplenciaCanalLembrete">Canal</label>
+                        <select id="inadimplenciaCanalLembrete" name="canal" required>
+                            <option value="">Selecione</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="email">E-mail</option>
+                            <option value="telefone">Ligacao</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="inadimplenciaTemplateLembrete">Modelo</label>
+                        <select id="inadimplenciaTemplateLembrete" name="template" required>
+                            <option value="">Selecione</option>
+                            <option value="cordial">Cordial</option>
+                            <option value="urgente">Urgente</option>
+                            <option value="acordo">Convite para acordo</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="inadimplenciaMensagemLembrete">Mensagem</label>
+                        <textarea id="inadimplenciaMensagemLembrete" name="mensagem" rows="4" placeholder="Mensagem de lembrete para envio ao responsavel."></textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Fluxo estatico para demonstracao. Integre ao backend para disparar mensagens reais e registrar historico de contato.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Enviar lembrete</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="inadimplencia-acordo" aria-labelledby="modalAcordoInadimplenciaTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalAcordoInadimplenciaTitulo">Registrar acordo de pagamento</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formRegistrarAcordoInadimplencia" th:action="@{/admin/inadimplencia/acordo}" action="/admin/inadimplencia/acordo" method="post" data-static-submit="true" data-feedback-target="inadimplenciaAcordoFeedback">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label for="inadimplenciaAlunoAcordo">Aluno</label>
+                        <select id="inadimplenciaAlunoAcordo" name="aluno" required>
+                            <option value="">Selecione</option>
+                            <option value="gabriel-souza">Gabriel Souza</option>
+                            <option value="matheus-lima">Matheus Lima</option>
+                            <option value="beatriz-costa">Beatriz Costa</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="inadimplenciaValorAcordo">Valor negociado</label>
+                        <input id="inadimplenciaValorAcordo" name="valor" type="text" placeholder="Ex.: 580,00" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="inadimplenciaParcelasAcordo">Parcelas</label>
+                        <select id="inadimplenciaParcelasAcordo" name="parcelas" required>
+                            <option value="">Selecione</option>
+                            <option value="1">1x</option>
+                            <option value="2">2x</option>
+                            <option value="3">3x</option>
+                            <option value="4">4x</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="inadimplenciaPrimeiroVencimento">Primeiro vencimento</label>
+                        <input id="inadimplenciaPrimeiroVencimento" name="primeiroVencimento" type="date" required>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="inadimplenciaCanalAcordo">Canal da negociacao</label>
+                        <select id="inadimplenciaCanalAcordo" name="canal" required>
+                            <option value="">Selecione</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="telefone">Ligacao</option>
+                            <option value="presencial">Presencial</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="inadimplenciaResponsavelAcordo">Responsavel no atendimento</label>
+                        <input id="inadimplenciaResponsavelAcordo" name="responsavel" type="text" placeholder="Nome de quem negociou" required>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="inadimplenciaObservacaoAcordo">Observacoes</label>
+                        <textarea id="inadimplenciaObservacaoAcordo" name="observacoes" rows="3" placeholder="Condicoes combinadas, desconto aplicado e detalhes do compromisso."></textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para salvar acordo, recalcular saldo devedor e controlar vencimentos futuros.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar acordo</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
     <section class="admin-panel" data-panel="pre-inscricoes"><div class="placeholder-box">Tela estática de Pré-inscrições para acompanhar leads (Pendente, Contatado, Matriculado).</div></section>
     <section class="admin-panel" data-panel="blog"><div class="placeholder-box">Tela estática de Postagens do Blog com editor e calendário editorial.</div></section>
     <section class="admin-panel" data-panel="livros"><div class="placeholder-box">Tela estática de Obras Literárias para catálogo e gerenciamento.</div></section>

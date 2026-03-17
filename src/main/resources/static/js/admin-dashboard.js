@@ -262,6 +262,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     feedback.textContent = "Pagamento registrado em modo estatico. Integre este formulario ao backend para atualizar status da mensalidade e salvar a baixa.";
                 } else if (feedbackTarget === "mensalidadeCobrancaFeedback") {
                     feedback.textContent = "Cobranca gerada em modo estatico. Integre este formulario ao backend para emitir PIX/boleto e notificar os responsaveis.";
+                } else if (feedbackTarget === "inadimplenciaLembreteFeedback") {
+                    feedback.textContent = "Lembrete preparado em modo estatico. Integre ao backend para enviar a mensagem e registrar o historico de contato.";
+                } else if (feedbackTarget === "inadimplenciaAcordoFeedback") {
+                    feedback.textContent = "Acordo preparado em modo estatico. Integre ao backend para salvar parcelas, vencimentos e saldo devedor atualizado.";
                 } else {
                     feedback.textContent = "Aluno e credenciais de acesso preparados para cadastro. Integre este formulário ao backend para persistir no banco.";
                 }
