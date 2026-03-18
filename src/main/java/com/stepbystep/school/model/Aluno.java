@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import com.stepbystep.school.enums.NivelAtual;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -35,8 +36,14 @@ public class Aluno {
     private String nome;
     private LocalDate dataNascimento;
     private String telefone;
+    private String responsavel;
+
+    @Column(columnDefinition = "TEXT")
+    private String observacoes;
+
     @Enumerated(EnumType.STRING)
     private NivelAtual nivelAtual;
+
     @ManyToOne
     private Turma turma;
 

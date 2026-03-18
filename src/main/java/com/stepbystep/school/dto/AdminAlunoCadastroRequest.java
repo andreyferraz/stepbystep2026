@@ -23,6 +23,10 @@ public class AdminAlunoCadastroRequest {
 
     private String email;
 
+    private String responsavel;
+
+    private String observacoes;
+
     private String usuarioSenha;
 
     private String usuarioSenhaConfirmacao;

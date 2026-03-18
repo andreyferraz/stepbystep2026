@@ -95,6 +95,8 @@ public class DashboardController {
                 .nome(request.getNome().trim())
                 .dataNascimento(request.getDataNascimento())
                 .telefone(request.getTelefone().trim())
+                .responsavel(normalizarTextoOpcional(request.getResponsavel()))
+                .observacoes(normalizarTextoOpcional(request.getObservacoes()))
                 .nivelAtual(nivelAtual)
                 .turma(turmaService.obterTurmaPorId(request.getTurmaId()))
                 .build();
@@ -125,6 +127,8 @@ public class DashboardController {
         @RequestParam("nome") String nome,
         @RequestParam("turmaId") java.util.UUID turmaId,
         @RequestParam("telefone") String telefone,
+        @RequestParam(name = "responsavel", required = false) String responsavel,
+        @RequestParam(name = "observacoes", required = false) String observacoes,
         @RequestParam("email") String email,
         @RequestParam("status") String status,
         RedirectAttributes redirectAttributes
@@ -146,6 +150,8 @@ public class DashboardController {
 
             aluno.setNome(nome.trim());
             aluno.setTelefone(telefone.trim());
+            aluno.setResponsavel(normalizarTextoOpcional(responsavel));
+            aluno.setObservacoes(normalizarTextoOpcional(observacoes));
             aluno.setTurma(turma);
             alunoRepository.save(aluno);
 
@@ -318,5 +324,9 @@ public class DashboardController {
         } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException("Nível do Aluno inválido.");
         }
+    }
+
+    private String normalizarTextoOpcional(String valor) {
+        return valor == null ? "" : valor.trim();
     }
 }

@@ -140,7 +140,7 @@
                         <tr th:each="usuario : ${usuariosAlunos}">
                             <td th:text="${usuario.nome}">Nome do aluno</td>
                             <td th:text="${usuario.aluno.turma != null ? usuario.aluno.turma.nome : '-'}">Turma</td>
-                            <td>-</td>
+                            <td th:text="${#strings.isEmpty(usuario.aluno.responsavel) ? '-' : usuario.aluno.responsavel}">-</td>
                             <td>
                                 <span class="status-chip" th:classappend="${usuario.ativo} ? ' success' : ' warn'" th:text="${usuario.ativo} ? 'Ativo' : 'Inativo'">Ativo</span>
                             </td>
@@ -155,12 +155,12 @@
                                             data-aluno-id=${usuario.aluno.id},
                                             data-aluno-nome=${usuario.nome},
                                             data-aluno-turma=${usuario.aluno.turma != null ? usuario.aluno.turma.id : ''},
-                                            data-aluno-responsavel='-',
+                                            data-aluno-responsavel=${usuario.aluno.responsavel},
                                             data-aluno-telefone=${usuario.aluno.telefone},
                                             data-aluno-email=${usuario.email},
                                             data-aluno-login=${usuario.email},
                                             data-aluno-status=${usuario.ativo ? 'ATIVO' : 'INATIVO'},
-                                            data-aluno-observacoes='-'
+                                            data-aluno-observacoes=${usuario.aluno.observacoes}
                                         ">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18 9.5 14.5 6 4 16.5Zm15.7-9.8a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 0L15.3 5.3 18.8 8.8l.9-2.1Z" fill="currentColor"/></svg>
                                     </button>
@@ -172,12 +172,12 @@
                                             data-aluno-data-nascimento=${usuario.aluno.dataNascimento},
                                             data-aluno-turma-label=${usuario.aluno.turma != null ? usuario.aluno.turma.nome : '-'},
                                             data-aluno-nivel-label=${usuario.aluno.nivelAtual},
-                                            data-aluno-responsavel='-',
+                                            data-aluno-responsavel=${usuario.aluno.responsavel},
                                             data-aluno-telefone=${usuario.aluno.telefone},
                                             data-aluno-email=${usuario.email},
                                             data-aluno-login=${usuario.email},
                                             data-aluno-status-label=${usuario.ativo ? 'Ativo' : 'Inativo'},
-                                            data-aluno-observacoes='-'
+                                            data-aluno-observacoes=${usuario.aluno.observacoes}
                                         ">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5.6 0 9.4 5.4 9.6 5.6a1 1 0 0 1 0 .8C21.4 11.6 17.6 17 12 17S2.6 11.6 2.4 11.4a1 1 0 0 1 0-.8C2.6 10.4 6.4 5 12 5Zm0 2c-3.6 0-6.5 2.9-6.9 3.6.4.7 3.3 3.6 6.9 3.6s6.5-2.9 6.9-3.6C18.5 9.9 15.6 7 12 7Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="currentColor"/></svg>
                                     </button>
