@@ -213,16 +213,18 @@
                 <output class="admin-feedback" id="turmaEditFeedback" aria-live="polite" th:text="${turmaEditFeedback}"></output>
                 <output class="admin-feedback" id="turmaDeleteFeedback" aria-live="polite" th:text="${turmaDeleteFeedback}"></output>
 
-                <div class="admin-search-row">
-                    <input type="search" class="admin-search" placeholder="Pesquisar por nome da turma, nível ou teacher">
-                </div>
+                <form class="admin-search-row admin-search-row-inline" th:action="@{/admin/dashboard}" action="/admin/dashboard" method="get">
+                    <input type="hidden" name="panel" value="turmas">
+                    <input type="search" class="admin-search" name="turmaBusca" th:value="${turmaBusca}" placeholder="Pesquisar por nome da turma, nível ou horário">
+                    <button type="submit" class="admin-secondary-btn">Pesquisar</button>
+                    <a th:if="${!#strings.isEmpty(turmaBusca)}" th:href="@{/admin/dashboard(panel='turmas')}" href="/admin/dashboard?panel=turmas" class="admin-secondary-btn">Limpar</a>
+                </form>
 
                 <table class="admin-table">
                     <thead>
                         <tr>
                             <th>Turma</th>
                             <th>Nível</th>
-                            <th>Teacher</th>
                             <th>Vagas</th>
                             <th>Horário</th>
                             <th>Status</th>
@@ -231,15 +233,20 @@
                     </thead>
                     <tbody>
                         <tr th:if="${#lists.isEmpty(turmas)}">
-                            <td colspan="7">Nenhuma turma cadastrada ainda.</td>
+                            <td colspan="6">Nenhuma turma cadastrada ainda.</td>
                         </tr>
                         <tr th:each="turma : ${turmas}">
                             <td th:text="${turma.nome}">Nome da turma</td>
-                            <td>-</td>
-                            <td>-</td>
-                            <td th:text="${#lists.size(turma.alunos)} + '/-'"></td>
+                            <td th:text="${turma.nivelAtual != null ? turma.nivelAtual : '-'}">Nivel</td>
+                            <td th:text="${turma.vagasOcupadas + '/' + turma.totalVagas}">0/0</td>
                             <td th:text="${turma.diasSemana + ' ' + turma.horario}">Dias e horario</td>
-                            <td><span class="status-chip success">Ativa</span></td>
+                            <td>
+                                <span class="status-chip"
+                                    th:classappend="${(turma.totalVagas > 0 and turma.vagasOcupadas >= turma.totalVagas) ? ' warn' : ' success'}"
+                                    th:text="${(turma.totalVagas > 0 and turma.vagasOcupadas >= turma.totalVagas) ? 'Lotada' : 'Ativa'}">
+                                    Ativa
+                                </span>
+                            </td>
                             <td>
                                 <div class="action-icons">
                                     <button class="icon-btn" type="button" aria-label="Editar"
@@ -247,14 +254,12 @@
                                         th:attr="
                                             data-turma-id=${turma.id},
                                             data-turma-nome=${turma.nome},
-                                            data-turma-nivel='BASICO',
-                                            data-turma-teacher='-',
-                                            data-turma-vagas-total='0',
+                                            data-turma-nivel=${turma.nivelAtual},
+                                            data-turma-vagas-total=${turma.totalVagas},
                                             data-turma-vagas-ocupadas=${#lists.size(turma.alunos)},
                                             data-turma-dias=${turma.diasSemana},
                                             data-turma-horario=${turma.horario},
-                                            data-turma-status='ATIVA',
-                                            data-turma-observacoes='-'
+                                            data-turma-observacoes=${turma.observacoes}
                                         ">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 16.5V20h3.5L18 9.5 14.5 6 4 16.5Zm15.7-9.8a1 1 0 0 0 0-1.4l-1-1a1 1 0 0 0-1.4 0L15.3 5.3 18.8 8.8l.9-2.1Z" fill="currentColor"/></svg>
                                     </button>
@@ -263,19 +268,18 @@
                                         th:attr="
                                             data-turma-id=${turma.id},
                                             data-turma-nome=${turma.nome},
-                                            data-turma-nivel-label='-',
-                                            data-turma-teacher='-',
-                                            data-turma-vagas=${#lists.size(turma.alunos)} + '/-',
+                                            data-turma-nivel-label=${turma.nivelAtual != null ? turma.nivelAtual : '-'},
+                                            data-turma-vagas=${turma.vagasOcupadas + '/' + turma.totalVagas},
                                             data-turma-dias=${turma.diasSemana},
                                             data-turma-horario=${turma.horario},
-                                            data-turma-status-label='Ativa',
-                                            data-turma-observacoes='-'
+                                            data-turma-status-label=${(turma.totalVagas > 0 and turma.vagasOcupadas >= turma.totalVagas) ? 'Lotada' : 'Ativa'},
+                                            data-turma-observacoes=${turma.observacoes}
                                         ">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5c5.6 0 9.4 5.4 9.6 5.6a1 1 0 0 1 0 .8C21.4 11.6 17.6 17 12 17S2.6 11.6 2.4 11.4a1 1 0 0 1 0-.8C2.6 10.4 6.4 5 12 5Zm0 2c-3.6 0-6.5 2.9-6.9 3.6.4.7 3.3 3.6 6.9 3.6s6.5-2.9 6.9-3.6C18.5 9.9 15.6 7 12 7Zm0 1.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5Z" fill="currentColor"/></svg>
                                     </button>
                                     <button class="icon-btn danger" type="button" aria-label="Excluir"
                                         data-open-modal="turma-excluir"
-                                        th:attr="data-turma-id=${turma.id},data-turma-nome=${turma.nome},data-turma-vagas-ocupadas=${#lists.size(turma.alunos)}">
+                                        th:attr="data-turma-id=${turma.id},data-turma-nome=${turma.nome},data-turma-alunos-vinculados=${#lists.size(turma.alunos)}">
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Z" fill="currentColor"/></svg>
                                     </button>
                                 </div>
@@ -2830,23 +2834,9 @@
                         <label for="turmaNivel">Nível</label>
                         <select id="turmaNivel" name="nivel" required>
                             <option value="">Selecione</option>
-                            <option value="BASICO">Básico</option>
+                            <option value="INICIANTE">Básico</option>
                             <option value="INTERMEDIARIO">Intermediário</option>
                             <option value="AVANCADO">Avançado</option>
-                        </select>
-                    </div>
-
-                    <div class="modal-field">
-                        <label for="turmaTeacher">Teacher responsável</label>
-                        <input id="turmaTeacher" name="teacher" type="text" placeholder="Nome do professor" required>
-                    </div>
-
-                    <div class="modal-field">
-                        <label for="turmaStatus">Status</label>
-                        <select id="turmaStatus" name="status" required>
-                            <option value="ATIVA">Ativa</option>
-                            <option value="LOTADA">Lotada</option>
-                            <option value="INATIVA">Inativa</option>
                         </select>
                     </div>
 
@@ -2905,23 +2895,9 @@
                         <label for="editarTurmaNivel">Nível</label>
                         <select id="editarTurmaNivel" name="nivel" required>
                             <option value="">Selecione</option>
-                            <option value="BASICO">Básico</option>
+                            <option value="INICIANTE">Básico</option>
                             <option value="INTERMEDIARIO">Intermediário</option>
                             <option value="AVANCADO">Avançado</option>
-                        </select>
-                    </div>
-
-                    <div class="modal-field">
-                        <label for="editarTurmaTeacher">Teacher responsável</label>
-                        <input id="editarTurmaTeacher" name="teacher" type="text" required>
-                    </div>
-
-                    <div class="modal-field">
-                        <label for="editarTurmaStatus">Status</label>
-                        <select id="editarTurmaStatus" name="status" required>
-                            <option value="ATIVA">Ativa</option>
-                            <option value="LOTADA">Lotada</option>
-                            <option value="INATIVA">Inativa</option>
                         </select>
                     </div>
 
@@ -2932,7 +2908,7 @@
 
                     <div class="modal-field">
                         <label for="editarTurmaVagasOcupadas">Vagas ocupadas</label>
-                        <input id="editarTurmaVagasOcupadas" name="vagasOcupadas" type="number" min="0" max="60" required>
+                        <input id="editarTurmaVagasOcupadas" name="vagasOcupadas" type="number" min="0" max="60" readonly required>
                     </div>
 
                     <div class="modal-field">
@@ -2980,11 +2956,6 @@
                 <div class="modal-field">
                     <label for="visualizarTurmaNivel">Nível</label>
                     <input id="visualizarTurmaNivel" type="text" readonly>
-                </div>
-
-                <div class="modal-field">
-                    <label for="visualizarTurmaTeacher">Teacher</label>
-                    <input id="visualizarTurmaTeacher" type="text" readonly>
                 </div>
 
                 <div class="modal-field">
@@ -3037,7 +3008,7 @@
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Esta ação remove a turma da listagem. Quando integrar backend, valide se há alunos vinculados antes de excluir.</small>
+                        <small class="modal-help-text">Esta ação remove a turma da listagem. A exclusão é bloqueada quando há alunos vinculados.</small>
                     </div>
 
                     <div class="modal-field modal-field-full">

@@ -451,6 +451,20 @@ body.admin-body {
     border-color: var(--admin-brand-500);
 }
 
+.admin-search-row-inline {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+}
+
+.admin-search-row-inline .admin-search {
+    flex: 1 1 auto;
+    max-width: 520px;
+}
+
+.admin-search-row-inline .admin-secondary-btn {
+    white-space: nowrap;
+}
+
 .action-icons {
     display: inline-flex;
     align-items: center;

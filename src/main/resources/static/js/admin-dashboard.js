@@ -153,12 +153,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         "#editarTurmaId": "data-turma-id",
                         "#editarTurmaNome": "data-turma-nome",
                         "#editarTurmaNivel": "data-turma-nivel",
-                        "#editarTurmaTeacher": "data-turma-teacher",
                         "#editarTurmaVagasTotal": "data-turma-vagas-total",
                         "#editarTurmaVagasOcupadas": "data-turma-vagas-ocupadas",
                         "#editarTurmaDias": "data-turma-dias",
                         "#editarTurmaHorario": "data-turma-horario",
-                        "#editarTurmaStatus": "data-turma-status",
                         "#editarTurmaObservacoes": "data-turma-observacoes"
                     };
 
@@ -175,7 +173,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         "#visualizarTurmaId": "data-turma-id",
                         "#visualizarTurmaNome": "data-turma-nome",
                         "#visualizarTurmaNivel": "data-turma-nivel-label",
-                        "#visualizarTurmaTeacher": "data-turma-teacher",
                         "#visualizarTurmaVagas": "data-turma-vagas",
                         "#visualizarTurmaStatus": "data-turma-status-label",
                         "#visualizarTurmaDias": "data-turma-dias",
@@ -196,7 +193,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     var turmaNomeField = modal.querySelector("#excluirTurmaNome");
                     var avisoRegra = modal.querySelector("#excluirTurmaRegraAviso");
                     var confirmarExcluirBtn = modal.querySelector("#confirmarExcluirTurmaBtn");
-                    var vagasOcupadas = Number(button.getAttribute("data-turma-vagas-ocupadas") || "0");
+                    var alunosVinculados = Number(button.getAttribute("data-turma-alunos-vinculados") || button.getAttribute("data-turma-vagas-ocupadas") || "0");
 
                     if (turmaIdField) {
                         turmaIdField.value = button.getAttribute("data-turma-id") || "";
@@ -207,12 +204,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
 
                     if (confirmarExcluirBtn) {
-                        confirmarExcluirBtn.disabled = vagasOcupadas > 0;
+                        confirmarExcluirBtn.disabled = alunosVinculados > 0;
                     }
 
                     if (avisoRegra) {
-                        if (vagasOcupadas > 0) {
-                            avisoRegra.textContent = "Exclusão bloqueada: existem " + vagasOcupadas + " aluno(s) vinculado(s) a esta turma.";
+                        if (alunosVinculados > 0) {
+                            avisoRegra.textContent = "Exclusão bloqueada: existem " + alunosVinculados + " aluno(s) vinculado(s) a esta turma.";
                         } else {
                             avisoRegra.textContent = "Turma sem alunos vinculados. Exclusão liberada.";
                         }

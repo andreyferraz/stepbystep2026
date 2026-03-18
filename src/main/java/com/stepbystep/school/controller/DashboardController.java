@@ -53,6 +53,7 @@ public class DashboardController {
     @GetMapping("/admin/dashboard")
     public String adminDashboard(
         @RequestParam(name = "panel", required = false) String panel,
+        @RequestParam(name = "turmaBusca", required = false) String turmaBusca,
         Model model
     ) {
         List<Usuario> usuariosAlunos = usuarioService.listarUsuarios().stream()
@@ -62,8 +63,9 @@ public class DashboardController {
             .toList();
 
         model.addAttribute("isDashboard", true);
-        model.addAttribute("turmas", turmaService.listarTurmas());
+        model.addAttribute("turmas", turmaService.listarTurmasFiltradas(turmaBusca));
         model.addAttribute("usuariosAlunos", usuariosAlunos);
+        model.addAttribute("turmaBusca", turmaBusca == null ? "" : turmaBusca.trim());
         model.addAttribute("adminPanelInicial", panel == null || panel.isBlank() ? "overview" : panel);
         return "admin/dashboard";
     }
@@ -233,15 +235,25 @@ public class DashboardController {
     @PostMapping("/admin/turmas")
     public String cadastrarTurma(
         @RequestParam("nome") String nome,
+        @RequestParam("nivel") String nivel,
+        @RequestParam("vagasTotal") int vagasTotal,
+        @RequestParam("vagasOcupadas") int vagasOcupadas,
         @RequestParam("diasSemana") String diasSemana,
         @RequestParam("horario") String horario,
+        @RequestParam(name = "observacoes", required = false) String observacoes,
         RedirectAttributes redirectAttributes
     ) {
         try {
+            NivelAtual nivelAtualTurma = parseNivelTurma(nivel);
+
             Turma turma = Turma.builder()
                 .nome(nome)
+                .nivelAtual(nivelAtualTurma)
+                .totalVagas(vagasTotal)
+                .vagasOcupadas(vagasOcupadas)
                 .diasSemana(diasSemana)
                 .horario(horario)
+                .observacoes(normalizarTextoOpcional(observacoes))
                 .build();
 
             turmaService.criarTurma(turma);
@@ -257,17 +269,26 @@ public class DashboardController {
     public String editarTurma(
         @RequestParam("turmaId") java.util.UUID turmaId,
         @RequestParam("nome") String nome,
+        @RequestParam("nivel") String nivel,
+        @RequestParam("vagasTotal") int vagasTotal,
+        @RequestParam("vagasOcupadas") int vagasOcupadas,
         @RequestParam("diasSemana") String diasSemana,
         @RequestParam("horario") String horario,
+        @RequestParam(name = "observacoes", required = false) String observacoes,
         RedirectAttributes redirectAttributes
     ) {
         try {
             ValidationUtils.validarCampoObrigatorio(turmaId, CAMPO_ID_TURMA);
+            NivelAtual nivelAtualTurma = parseNivelTurma(nivel);
 
             Turma turmaAtualizada = Turma.builder()
                 .nome(nome)
+                .nivelAtual(nivelAtualTurma)
+                .totalVagas(vagasTotal)
+                .vagasOcupadas(vagasOcupadas)
                 .diasSemana(diasSemana)
                 .horario(horario)
+                .observacoes(normalizarTextoOpcional(observacoes))
                 .build();
 
             turmaService.editarTurma(turmaId, turmaAtualizada);
@@ -324,6 +345,10 @@ public class DashboardController {
         } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException("Nível do Aluno inválido.");
         }
+    }
+
+    private NivelAtual parseNivelTurma(String nivel) {
+        return parseNivel(nivel);
     }
 
     private String normalizarTextoOpcional(String valor) {
