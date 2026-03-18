@@ -44,11 +44,32 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function syncPanelInUrl(target) {
+        if (!window.history || typeof window.history.replaceState !== "function") {
+            return;
+        }
+
+        var url = new URL(window.location.href);
+        url.searchParams.set("panel", target);
+
+        // Keep only the filter that belongs to the active panel.
+        if (target !== "alunos") {
+            url.searchParams.delete("alunoBusca");
+        }
+
+        if (target !== "turmas") {
+            url.searchParams.delete("turmaBusca");
+        }
+
+        window.history.replaceState({}, "", url.toString());
+    }
+
     navLinks.forEach(function (link) {
         link.addEventListener("click", function () {
             var target = link.getAttribute("data-panel-target");
             var title = link.getAttribute("data-panel-title");
             activatePanel(target, title);
+            syncPanelInUrl(target);
             localStorage.setItem(panelStorageKey, target);
 
             if (window.innerWidth <= 960 && sidebar) {

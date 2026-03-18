@@ -452,6 +452,10 @@ body.admin-body {
 }
 
 .admin-search-row-inline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
     justify-content: flex-start;
     flex-wrap: nowrap;
 }

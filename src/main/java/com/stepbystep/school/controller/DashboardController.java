@@ -53,18 +53,26 @@ public class DashboardController {
     @GetMapping("/admin/dashboard")
     public String adminDashboard(
         @RequestParam(name = "panel", required = false) String panel,
+        @RequestParam(name = "alunoBusca", required = false) String alunoBusca,
         @RequestParam(name = "turmaBusca", required = false) String turmaBusca,
         Model model
     ) {
+        String alunoBuscaNormalizada = alunoBusca == null ? "" : alunoBusca.trim().toLowerCase(Locale.ROOT);
+
         List<Usuario> usuariosAlunos = usuarioService.listarUsuarios().stream()
             .filter(usuario -> usuario.getRole() == Role.ALUNO)
             .filter(usuario -> usuario.getAluno() != null)
+            .filter(usuario -> alunoBuscaNormalizada.isEmpty()
+                || contemTexto(usuario.getNome(), alunoBuscaNormalizada)
+                || contemTexto(usuario.getAluno().getTelefone(), alunoBuscaNormalizada)
+                || (usuario.getAluno().getTurma() != null && contemTexto(usuario.getAluno().getTurma().getNome(), alunoBuscaNormalizada)))
             .sorted(Comparator.comparing(Usuario::getNome, String.CASE_INSENSITIVE_ORDER))
             .toList();
 
         model.addAttribute("isDashboard", true);
         model.addAttribute("turmas", turmaService.listarTurmasFiltradas(turmaBusca));
         model.addAttribute("usuariosAlunos", usuariosAlunos);
+        model.addAttribute("alunoBusca", alunoBusca == null ? "" : alunoBusca.trim());
         model.addAttribute("turmaBusca", turmaBusca == null ? "" : turmaBusca.trim());
         model.addAttribute("adminPanelInicial", panel == null || panel.isBlank() ? "overview" : panel);
         return "admin/dashboard";
@@ -353,5 +361,9 @@ public class DashboardController {
 
     private String normalizarTextoOpcional(String valor) {
         return valor == null ? "" : valor.trim();
+    }
+
+    private boolean contemTexto(String origem, String termoNormalizado) {
+        return origem != null && origem.toLowerCase(Locale.ROOT).contains(termoNormalizado);
     }
 }

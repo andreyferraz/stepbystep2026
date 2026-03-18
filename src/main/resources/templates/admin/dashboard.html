@@ -118,7 +118,12 @@
                 <output class="admin-feedback" id="alunoDeleteFeedback" aria-live="polite" th:text="${alunoDeleteFeedback}"></output>
 
                 <div class="admin-search-row">
-                    <input type="search" class="admin-search" placeholder="Pesquisar por nome, turma ou telefone">
+                    <form class="admin-search-row-inline" th:action="@{/admin/dashboard}" action="/admin/dashboard" method="get">
+                        <input type="hidden" name="panel" value="alunos">
+                        <input type="search" class="admin-search" name="alunoBusca" th:value="${alunoBusca}" placeholder="Pesquisar por nome, turma ou telefone">
+                        <button type="submit" class="admin-secondary-btn">Pesquisar</button>
+                        <a th:if="${!#strings.isEmpty(alunoBusca)}" th:href="@{/admin/dashboard(panel='alunos')}" href="/admin/dashboard?panel=alunos" class="admin-secondary-btn">Limpar</a>
+                    </form>
                     <button type="button" class="admin-secondary-btn" data-open-modal="pagamento">Registrar Pagamento</button>
                 </div>
 
