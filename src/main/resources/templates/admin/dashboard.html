@@ -305,107 +305,77 @@
                 <div class="section-head">
                     <h2>Materiais de Estudo</h2>
                     <div class="materiais-actions">
-                        <button type="button" class="admin-secondary-btn" data-open-modal="material-pasta">Criar pasta</button>
                         <button type="button" class="admin-primary-btn" data-open-modal="material-novo">Novo material</button>
                     </div>
                 </div>
 
-                <output class="admin-feedback" id="materialFormFeedback" aria-live="polite"></output>
-                <output class="admin-feedback" id="materialPastaFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="materialFormFeedback" aria-live="polite" th:text="${materialFormFeedback}"></output>
 
-                <div class="materiais-toolbar">
-                    <input type="search" class="admin-search" placeholder="Pesquisar por titulo, turma ou professor">
-                    <select class="materiais-filter" aria-label="Filtrar por turma">
+                <form class="materiais-toolbar" th:action="@{/admin/dashboard}" action="/admin/dashboard" method="get">
+                    <input type="hidden" name="panel" value="materiais">
+                    <input type="search" class="admin-search" name="materialBusca" th:value="${materialBusca}" placeholder="Pesquisar por titulo, descricao ou turma">
+                    <select class="materiais-filter" name="materialTurmaId" aria-label="Filtrar por turma">
                         <option value="">Todas as turmas</option>
-                        <option value="kids-1">Kids 1</option>
-                        <option value="teens-2">Teens 2</option>
-                        <option value="adults-1">Adults 1</option>
+                        <option th:each="turma : ${turmas}"
+                            th:value="${turma.id}"
+                            th:text="${turma.nome}"
+                            th:selected="${materialTurmaId == turma.id.toString()}">
+                            Turma
+                        </option>
                     </select>
-                    <select class="materiais-filter" aria-label="Filtrar por tipo de arquivo">
-                        <option value="">Todos os formatos</option>
-                        <option value="pdf">PDF</option>
-                        <option value="docx">DOCX</option>
-                        <option value="audio">Audio</option>
-                        <option value="video">Video</option>
-                    </select>
-                </div>
+                    <button type="submit" class="admin-primary-btn">Filtrar</button>
+                    <a th:if="${!#strings.isEmpty(materialBusca) || !#strings.isEmpty(materialTurmaId)}" th:href="@{/admin/dashboard(panel='materiais')}" href="/admin/dashboard?panel=materiais" class="admin-secondary-btn">Limpar</a>
+                </form>
 
                 <div class="materiais-stats">
                     <article class="materiais-stat-card">
                         <p>Arquivos publicados</p>
-                        <strong>127</strong>
+                        <strong th:text="${materiaisTotal}">0</strong>
                     </article>
                     <article class="materiais-stat-card">
-                        <p>Pastas por turma</p>
-                        <strong>18</strong>
+                        <p>Turmas com materiais</p>
+                        <strong th:text="${materiaisTurmasCount}">0</strong>
                     </article>
                     <article class="materiais-stat-card">
                         <p>Uploads nesta semana</p>
-                        <strong>23</strong>
+                        <strong th:text="${materiaisUploadsSemana}">0</strong>
                     </article>
                     <article class="materiais-stat-card">
-                        <p>Downloads dos alunos</p>
-                        <strong>842</strong>
+                        <p>Filtro atual</p>
+                        <strong th:text="${#strings.isEmpty(materialTurmaId) ? 'Todas as turmas' : 'Turma selecionada'}">Todas as turmas</strong>
                     </article>
                 </div>
 
                 <div class="materiais-grid">
                     <section class="materiais-list" aria-label="Lista de materiais por turma">
-                        <article class="material-card">
+                        <article class="material-card" th:each="material : ${materiaisEstudo}">
                             <header>
-                                <h3>Workbook - Unit 4</h3>
+                                <h3 th:text="${material.titulo}">Titulo do material</h3>
                                 <span class="status-chip success">Publicado</span>
                             </header>
-                            <p>Exercicios de leitura e listening para revisar simple present e adverbs of frequency.</p>
+                            <p th:text="${material.descricao}">Descricao do material.</p>
                             <div class="material-meta">
-                                <span>Turma: Kids 1</span>
-                                <span>Formato: PDF</span>
-                                <span>Tamanho: 3.4 MB</span>
-                                <span>Atualizado em: 11/03/2026</span>
+                                <span th:text="'Turma: ' + ${(material.turma != null ? material.turma.nome : 'Sem turma')}">Turma: Sem turma</span>
+                                <span th:text="'Arquivo: ' + ${material.urlArquivo}">Arquivo: arquivo.pdf</span>
+                                <span th:text="'Atualizado em: ' + ${(material.dataUpload != null ? #temporals.format(material.dataUpload, 'dd/MM/yyyy HH:mm') : '-')}">Atualizado em: -</span>
                             </div>
                             <div class="material-actions">
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Editar</button>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Compartilhar</button>
+                                <a class="admin-secondary-btn admin-inline-btn"
+                                    th:href="@{/admin/materiais/arquivo/{materialId}(materialId=${material.id})}">
+                                    Baixar
+                                </a>
+                                <form th:action="@{/admin/materiais/excluir}" action="/admin/materiais/excluir" method="post" class="admin-inline-form">
+                                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <input type="hidden" name="materialId" th:value="${material.id}">
+                                    <button type="submit" class="admin-secondary-btn admin-inline-btn">Excluir</button>
+                                </form>
                             </div>
                         </article>
-
-                        <article class="material-card">
+                        <article class="material-card" th:if="${#lists.isEmpty(materiaisEstudo)}">
                             <header>
-                                <h3>Speaking Challenge - Week 2</h3>
-                                <span class="status-chip warn">Rascunho</span>
+                                <h3>Nenhum material encontrado</h3>
                             </header>
-                            <p>Atividade gravada para pratica de apresentacao pessoal com roteiro guiado.</p>
-                            <div class="material-meta">
-                                <span>Turma: Teens 2</span>
-                                <span>Formato: Video</span>
-                                <span>Tamanho: 48 MB</span>
-                                <span>Atualizado em: 13/03/2026</span>
-                            </div>
-                            <div class="material-actions">
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Editar</button>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Publicar</button>
-                            </div>
-                        </article>
-
-                        <article class="material-card">
-                            <header>
-                                <h3>Grammar Notes - Past Tense</h3>
-                                <span class="status-chip success">Publicado</span>
-                            </header>
-                            <p>Resumo com regras, exemplos e lista de verbos irregulares mais usados em sala.</p>
-                            <div class="material-meta">
-                                <span>Turma: Adults 1</span>
-                                <span>Formato: DOCX</span>
-                                <span>Tamanho: 1.1 MB</span>
-                                <span>Atualizado em: 10/03/2026</span>
-                            </div>
-                            <div class="material-actions">
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Editar</button>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Duplicar</button>
-                            </div>
+                            <p>Cadastre o primeiro material ou ajuste os filtros para visualizar os arquivos.</p>
                         </article>
                     </section>
 
@@ -416,17 +386,13 @@
                             </header>
                             <div class="admin-card-content">
                                 <ul class="materiais-timeline">
-                                    <li>
-                                        <strong>Quiz Vocabulary A2</strong>
-                                        <span>Hoje, 09:42 - por Prof. Elza</span>
+                                    <li th:each="material, iter : ${materiaisEstudo}" th:if="${iter.index < 5}">
+                                        <strong th:text="${material.titulo}">Titulo do material</strong>
+                                        <span th:text="${material.dataUpload != null ? #temporals.format(material.dataUpload, 'dd/MM/yyyy HH:mm') : '-'}">-</span>
                                     </li>
-                                    <li>
-                                        <strong>Audio Practice - Unit 3</strong>
-                                        <span>Ontem, 18:15 - por Prof. Marcos</span>
-                                    </li>
-                                    <li>
-                                        <strong>Homework Sheet - Teens</strong>
-                                        <span>12/03, 20:04 - por Prof. Elza</span>
+                                    <li th:if="${#lists.isEmpty(materiaisEstudo)}">
+                                        <strong>Sem uploads recentes</strong>
+                                        <span>Cadastre materiais para visualizar o histórico.</span>
                                     </li>
                                 </ul>
                             </div>
@@ -439,10 +405,10 @@
                             <div class="admin-card-content">
                                 <div class="materiais-storage">
                                     <div class="materiais-storage-bar">
-                                        <span style="width: 62%"></span>
+                                        <span th:style="${'width:' + (materiaisTotal > 0 ? 100 : 0) + '%'}"></span>
                                     </div>
-                                    <p>62% de 10 GB utilizados</p>
-                                    <small>3.8 GB disponiveis para novos materiais.</small>
+                                    <p th:text="${materiaisTotal + ' arquivo(s) cadastrados'}">0 arquivo(s) cadastrados</p>
+                                    <small>Indicador visual provisório baseado na quantidade de arquivos.</small>
                                 </div>
                             </div>
                         </article>
@@ -458,7 +424,7 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formNovoMaterial" th:action="@{/admin/materiais}" action="/admin/materiais" method="post" data-static-submit="true" data-feedback-target="materialFormFeedback">
+            <form id="formNovoMaterial" th:action="@{/admin/materiais}" action="/admin/materiais" method="post" enctype="multipart/form-data">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="modal-body">
@@ -469,32 +435,9 @@
 
                     <div class="modal-field">
                         <label for="materialTurma">Turma</label>
-                        <select id="materialTurma" name="turma" required>
+                        <select id="materialTurma" name="turmaId" required>
                             <option value="">Selecione</option>
-                            <option value="kids-1">Kids 1</option>
-                            <option value="teens-2">Teens 2</option>
-                            <option value="adults-1">Adults 1</option>
-                        </select>
-                    </div>
-
-                    <div class="modal-field">
-                        <label for="materialTipo">Tipo de arquivo</label>
-                        <select id="materialTipo" name="tipo" required>
-                            <option value="">Selecione</option>
-                            <option value="pdf">PDF</option>
-                            <option value="docx">DOCX</option>
-                            <option value="audio">Audio</option>
-                            <option value="video">Video</option>
-                            <option value="link">Link externo</option>
-                        </select>
-                    </div>
-
-                    <div class="modal-field">
-                        <label for="materialAcesso">Visibilidade</label>
-                        <select id="materialAcesso" name="visibilidade" required>
-                            <option value="">Selecione</option>
-                            <option value="publicado">Publicado</option>
-                            <option value="rascunho">Rascunho</option>
+                            <option th:each="turma : ${turmas}" th:value="${turma.id}" th:text="${turma.nome}">Turma</option>
                         </select>
                     </div>
 
@@ -504,67 +447,23 @@
                     </div>
 
                     <div class="modal-field">
-                        <label for="materialArquivo">Arquivo (simulado)</label>
-                        <input id="materialArquivo" name="arquivo" type="text" placeholder="Ex.: workbook-unit5.pdf" required>
+                        <label for="materialArquivo">Arquivo (PDF ou DOCX)</label>
+                        <input id="materialArquivo" name="arquivo" type="file" accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" required>
                     </div>
 
                     <div class="modal-field">
-                        <label for="materialPublicacao">Data de publicacao</label>
-                        <input id="materialPublicacao" name="dataPublicacao" type="date" required>
+                        <label for="materialPublicacao">Data de upload</label>
+                        <input id="materialPublicacao" name="dataUpload" type="date">
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Este modal esta em modo estatico. Integre o envio ao backend para persistir o material e fazer upload real de arquivo.</small>
+                        <small class="modal-help-text">Ao salvar, o arquivo sera armazenado e o material aparecera automaticamente na lista.</small>
                     </div>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
                     <button type="submit" class="admin-primary-btn">Salvar material</button>
-                </div>
-            </form>
-        </div>
-    </dialog>
-
-    <dialog class="modal-overlay" data-modal="material-pasta" aria-labelledby="modalNovaPastaTitulo">
-        <div class="modal-card">
-            <div class="modal-head">
-                <h3 id="modalNovaPastaTitulo">Criar pasta de materiais</h3>
-                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
-            </div>
-
-            <form id="formNovaPasta" th:action="@{/admin/materiais/pastas}" action="/admin/materiais/pastas" method="post" data-static-submit="true" data-feedback-target="materialPastaFeedback">
-                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
-                <div class="modal-body">
-                    <div class="modal-field">
-                        <label for="pastaNome">Nome da pasta</label>
-                        <input id="pastaNome" name="nome" type="text" placeholder="Ex.: Teens 2 - Listening" required>
-                    </div>
-
-                    <div class="modal-field">
-                        <label for="pastaTurma">Turma vinculada</label>
-                        <select id="pastaTurma" name="turma" required>
-                            <option value="">Selecione</option>
-                            <option value="kids-1">Kids 1</option>
-                            <option value="teens-2">Teens 2</option>
-                            <option value="adults-1">Adults 1</option>
-                        </select>
-                    </div>
-
-                    <div class="modal-field modal-field-full">
-                        <label for="pastaDescricao">Descricao</label>
-                        <textarea id="pastaDescricao" name="descricao" rows="3" placeholder="Use para organizar por unidade, habilidade ou semana."></textarea>
-                    </div>
-
-                    <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Esta criacao de pasta ainda e estatica. Integre ao backend para persistencia e hierarquia real de diretorios.</small>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
-                    <button type="submit" class="admin-primary-btn">Criar pasta</button>
                 </div>
             </form>
         </div>

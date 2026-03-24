@@ -1,21 +1,37 @@
 package com.stepbystep.school.controller;
 
+import java.net.MalformedURLException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import org.springframework.stereotype.Controller;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.stepbystep.school.dto.AdminAlunoCadastroRequest;
 import com.stepbystep.school.enums.NivelAtual;
 import com.stepbystep.school.enums.Role;
 import com.stepbystep.school.model.Aluno;
+import com.stepbystep.school.model.MaterialEstudo;
 import com.stepbystep.school.model.Turma;
 import com.stepbystep.school.model.Usuario;
 import com.stepbystep.school.repository.AlunoRepository;
 import com.stepbystep.school.repository.UsuarioRepository;
+import com.stepbystep.school.service.FileUploadService;
+import com.stepbystep.school.service.MaterialEstudoService;
 import com.stepbystep.school.service.TurmaService;
 import com.stepbystep.school.service.UsuarioService;
 import com.stepbystep.school.util.ValidationUtils;
@@ -23,31 +39,41 @@ import com.stepbystep.school.util.ValidationUtils;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 @Controller
 public class DashboardController {
 
     private static final String REDIRECT_ALUNOS_PANEL = "redirect:/admin/dashboard?panel=alunos";
     private static final String REDIRECT_TURMAS_PANEL = "redirect:/admin/dashboard?panel=turmas";
+    private static final String REDIRECT_MATERIAIS_PANEL = "redirect:/admin/dashboard?panel=materiais";
     private static final String CAMPO_ID_ALUNO = "ID do Aluno";
     private static final String CAMPO_ID_TURMA = "ID da Turma";
+    private static final String CAMPO_ID_MATERIAL = "ID do Material";
+    private static final String FEEDBACK_MATERIAL_FORM = "materialFormFeedback";
     private static final String MSG_USUARIO_ALUNO_NAO_ENCONTRADO = "Usuário do aluno não encontrado.";
 
     private final TurmaService turmaService;
     private final AlunoRepository alunoRepository;
     private final UsuarioRepository usuarioRepository;
     private final UsuarioService usuarioService;
+    private final MaterialEstudoService materialEstudoService;
+    private final FileUploadService fileUploadService;
 
     public DashboardController(
         TurmaService turmaService,
         AlunoRepository alunoRepository,
         UsuarioRepository usuarioRepository,
-        UsuarioService usuarioService
+        UsuarioService usuarioService,
+        MaterialEstudoService materialEstudoService,
+        FileUploadService fileUploadService
     ) {
         this.turmaService = turmaService;
         this.alunoRepository = alunoRepository;
         this.usuarioRepository = usuarioRepository;
         this.usuarioService = usuarioService;
+        this.materialEstudoService = materialEstudoService;
+        this.fileUploadService = fileUploadService;
     }
 
     @GetMapping("/admin/dashboard")
@@ -55,9 +81,12 @@ public class DashboardController {
         @RequestParam(name = "panel", required = false) String panel,
         @RequestParam(name = "alunoBusca", required = false) String alunoBusca,
         @RequestParam(name = "turmaBusca", required = false) String turmaBusca,
+        @RequestParam(name = "materialBusca", required = false) String materialBusca,
+        @RequestParam(name = "materialTurmaId", required = false) String materialTurmaId,
         Model model
     ) {
         String alunoBuscaNormalizada = alunoBusca == null ? "" : alunoBusca.trim().toLowerCase(Locale.ROOT);
+        UUID materialTurmaIdFiltrada = parseUuidOpcional(materialTurmaId);
 
         List<Usuario> usuariosAlunos = usuarioService.listarUsuarios().stream()
             .filter(usuario -> usuario.getRole() == Role.ALUNO)
@@ -69,13 +98,99 @@ public class DashboardController {
             .sorted(Comparator.comparing(Usuario::getNome, String.CASE_INSENSITIVE_ORDER))
             .toList();
 
+        List<MaterialEstudo> materiaisEstudo = materialEstudoService
+            .listarMateriaisFiltrados(materialBusca, materialTurmaIdFiltrada);
+        long turmasComMateriais = materiaisEstudo.stream()
+            .map(MaterialEstudo::getTurma)
+            .filter(turma -> turma != null && turma.getId() != null)
+            .map(Turma::getId)
+            .distinct()
+            .count();
+
         model.addAttribute("isDashboard", true);
         model.addAttribute("turmas", turmaService.listarTurmasFiltradas(turmaBusca));
         model.addAttribute("usuariosAlunos", usuariosAlunos);
+        model.addAttribute("materiaisEstudo", materiaisEstudo);
         model.addAttribute("alunoBusca", alunoBusca == null ? "" : alunoBusca.trim());
         model.addAttribute("turmaBusca", turmaBusca == null ? "" : turmaBusca.trim());
+        model.addAttribute("materialBusca", materialBusca == null ? "" : materialBusca.trim());
+        model.addAttribute("materialTurmaId", materialTurmaId == null ? "" : materialTurmaId.trim());
+        model.addAttribute("materiaisTotal", materiaisEstudo.size());
+        model.addAttribute("materiaisTurmasCount", turmasComMateriais);
+        model.addAttribute("materiaisUploadsSemana", materialEstudoService.contarUploadsUltimosDias(materiaisEstudo, 7));
         model.addAttribute("adminPanelInicial", panel == null || panel.isBlank() ? "overview" : panel);
         return "admin/dashboard";
+    }
+
+    @PostMapping("/admin/materiais")
+    public String cadastrarMaterialEstudo(
+        @RequestParam("titulo") String titulo,
+        @RequestParam("descricao") String descricao,
+        @RequestParam("turmaId") UUID turmaId,
+        @RequestParam("arquivo") MultipartFile arquivo,
+        @RequestParam(name = "dataUpload", required = false) LocalDate dataUpload,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoStringObrigatorio(titulo, "Título do Material");
+            ValidationUtils.validarCampoStringObrigatorio(descricao, "Descrição do Material");
+            ValidationUtils.validarCampoObrigatorio(turmaId, "Turma do Material");
+
+            MaterialEstudo materialEstudo = MaterialEstudo.builder()
+                .titulo(titulo.trim())
+                .descricao(descricao.trim())
+                .turma(turmaService.obterTurmaPorId(turmaId))
+                .dataUpload(dataUpload == null ? LocalDateTime.now() : dataUpload.atStartOfDay())
+                .build();
+
+            materialEstudoService.salvarMaterialEstudo(materialEstudo, arquivo);
+            redirectAttributes.addFlashAttribute(FEEDBACK_MATERIAL_FORM, "Material cadastrado com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_MATERIAL_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_MATERIAIS_PANEL;
+    }
+
+    @PostMapping("/admin/materiais/excluir")
+    public String excluirMaterialEstudo(
+        @RequestParam("materialId") UUID materialId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(materialId, CAMPO_ID_MATERIAL);
+            materialEstudoService.excluirMaterialEstudo(materialId);
+            redirectAttributes.addFlashAttribute(FEEDBACK_MATERIAL_FORM, "Material excluído com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_MATERIAL_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_MATERIAIS_PANEL;
+    }
+
+    @GetMapping("/admin/materiais/arquivo/{materialId}")
+    public ResponseEntity<Resource> baixarArquivoMaterial(@PathVariable("materialId") UUID materialId) {
+        try {
+            MaterialEstudo material = materialEstudoService.obterPorId(materialId);
+            Path caminhoArquivo = fileUploadService.getCaminhoCompleto(material.getUrlArquivo());
+
+            if (!Files.exists(caminhoArquivo)) {
+                throw new IllegalArgumentException("Arquivo do material não encontrado.");
+            }
+
+            Resource recurso = new UrlResource(caminhoArquivo.toUri());
+            String contentType = Files.probeContentType(caminhoArquivo);
+
+            return ResponseEntity.ok()
+                .contentType(contentType == null ? MediaType.APPLICATION_OCTET_STREAM : MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                    ContentDisposition.attachment().filename(material.getUrlArquivo()).build().toString())
+                .body(recurso);
+        } catch (MalformedURLException ex) {
+            throw new IllegalArgumentException("Arquivo do material inválido.");
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Não foi possível baixar o arquivo do material.");
+        }
     }
 
     @PostMapping("/admin/alunos")
@@ -365,5 +480,17 @@ public class DashboardController {
 
     private boolean contemTexto(String origem, String termoNormalizado) {
         return origem != null && origem.toLowerCase(Locale.ROOT).contains(termoNormalizado);
+    }
+
+    private UUID parseUuidOpcional(String valor) {
+        if (valor == null || valor.isBlank()) {
+            return null;
+        }
+
+        try {
+            return UUID.fromString(valor.trim());
+        } catch (IllegalArgumentException ex) {
+            return null;
+        }
     }
 }

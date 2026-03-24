@@ -107,6 +107,16 @@ public class FileUploadService {
      * @throws FileUploadException Se não conseguir remover o arquivo
      */
     public void removerImagem(String nomeArquivo) {
+        removerArquivo(nomeArquivo);
+    }
+
+    /**
+     * Remove um arquivo do diretório de upload.
+     *
+     * @param nomeArquivo O nome do arquivo a ser removido
+     * @throws FileUploadException Se não conseguir remover o arquivo
+     */
+    public void removerArquivo(String nomeArquivo) {
         try {
             if (nomeArquivo != null && !nomeArquivo.isEmpty()) {
                 Path caminhoArquivo = Paths.get(uploadDir, nomeArquivo);

@@ -61,6 +61,11 @@ document.addEventListener("DOMContentLoaded", function () {
             url.searchParams.delete("turmaBusca");
         }
 
+        if (target !== "materiais") {
+            url.searchParams.delete("materialBusca");
+            url.searchParams.delete("materialTurmaId");
+        }
+
         window.history.replaceState({}, "", url.toString());
     }
 
@@ -307,8 +312,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     feedback.textContent = "Exclusão da turma preparada. Integre este formulário ao backend para efetivar a remoção.";
                 } else if (feedbackTarget === "materialFormFeedback") {
                     feedback.textContent = "Material preparado para cadastro. Integre este formulário ao backend para salvar e publicar no portal do aluno.";
-                } else if (feedbackTarget === "materialPastaFeedback") {
-                    feedback.textContent = "Pasta preparada para criacao. Integre este formulário ao backend para persistir a estrutura de materiais.";
                 } else if (feedbackTarget === "notasFormFeedback") {
                     feedback.textContent = "Lancamento de nota e presenca preparado. Integre este formulario ao backend para atualizar diario e boletim.";
                 } else if (feedbackTarget === "mensalidadeFormFeedback") {
@@ -429,4 +432,5 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     }
+
 });

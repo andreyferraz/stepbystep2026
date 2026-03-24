@@ -11,4 +11,6 @@ public interface MaterialEstudoRepository extends JpaRepository<MaterialEstudo, 
 
     List<MaterialEstudo> findByTurmaId(UUID turmaId);
 
+    List<MaterialEstudo> findAllByOrderByDataUploadDesc();
+
 }
