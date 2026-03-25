@@ -1,5 +1,6 @@
 package com.stepbystep.school.model;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
@@ -26,8 +27,12 @@ public class Nota {
     private UUID id;
 
     private Double valor;
-    private int bimestre;
+    private Integer bimestre;
+    private String atividade;
+    private String presenca;
+    private LocalDate dataReferencia;
     private String descricao;
+
     @ManyToOne
     private Aluno aluno;
 

@@ -66,6 +66,12 @@ document.addEventListener("DOMContentLoaded", function () {
             url.searchParams.delete("materialTurmaId");
         }
 
+        if (target !== "notas") {
+            url.searchParams.delete("notaBusca");
+            url.searchParams.delete("notaTurmaId");
+            url.searchParams.delete("notaBimestre");
+        }
+
         window.history.replaceState({}, "", url.toString());
     }
 
@@ -103,6 +109,54 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var openModalButtons = document.querySelectorAll("[data-open-modal]");
     var closeModalButtons = document.querySelectorAll("[data-close-modal]");
+    var notaAlunoSelect = document.getElementById("notaAluno");
+    var notaTurmaSelect = document.getElementById("notaTurma");
+    var notaDataInput = document.getElementById("notaData");
+    var presencaAlunoSelect = document.getElementById("presencaAluno");
+    var presencaTurmaSelect = document.getElementById("presencaTurma");
+    var presencaDataInput = document.getElementById("presencaData");
+
+    function sincronizarTurmaPorAlunoSelecionado(alunoSelect, turmaSelect) {
+        if (!alunoSelect || !turmaSelect) {
+            return;
+        }
+
+        var alunoSelecionado = alunoSelect.options[alunoSelect.selectedIndex];
+        if (!alunoSelecionado) {
+            return;
+        }
+
+        var turmaId = alunoSelecionado.getAttribute("data-turma-id") || "";
+        if (!turmaId) {
+            return;
+        }
+
+        turmaSelect.value = turmaId;
+    }
+
+    function preencherDataAtualNoLancamento(dataInput) {
+        if (!dataInput) {
+            return;
+        }
+
+        var hoje = new Date();
+        var ano = String(hoje.getFullYear());
+        var mes = String(hoje.getMonth() + 1).padStart(2, "0");
+        var dia = String(hoje.getDate()).padStart(2, "0");
+        dataInput.value = ano + "-" + mes + "-" + dia;
+    }
+
+    if (notaAlunoSelect) {
+        notaAlunoSelect.addEventListener("change", function () {
+            sincronizarTurmaPorAlunoSelecionado(notaAlunoSelect, notaTurmaSelect);
+        });
+    }
+
+    if (presencaAlunoSelect) {
+        presencaAlunoSelect.addEventListener("change", function () {
+            sincronizarTurmaPorAlunoSelecionado(presencaAlunoSelect, presencaTurmaSelect);
+        });
+    }
 
     openModalButtons.forEach(function (button) {
         button.addEventListener("click", function () {
@@ -240,6 +294,16 @@ document.addEventListener("DOMContentLoaded", function () {
                             avisoRegra.textContent = "Turma sem alunos vinculados. Exclusão liberada.";
                         }
                     }
+                }
+
+                if (target === "nota-lancar") {
+                    sincronizarTurmaPorAlunoSelecionado(notaAlunoSelect, notaTurmaSelect);
+                    preencherDataAtualNoLancamento(notaDataInput);
+                }
+
+                if (target === "presenca-lancar") {
+                    sincronizarTurmaPorAlunoSelecionado(presencaAlunoSelect, presencaTurmaSelect);
+                    preencherDataAtualNoLancamento(presencaDataInput);
                 }
 
                 modal.classList.add("is-open");

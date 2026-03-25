@@ -812,6 +812,76 @@ body.admin-body {
     font-size: 0.84rem;
 }
 
+.notas-warning-item {
+    display: grid;
+    gap: 8px;
+}
+
+.notas-warning-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.notas-warning-badge {
+    margin-top: 0;
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #eaf6ff;
+    color: #1b4f8b;
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+.notas-warning-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.notas-warning-metric {
+    border: 1px solid var(--admin-line);
+    border-radius: 10px;
+    padding: 8px;
+    background: #fff;
+    display: grid;
+    gap: 2px;
+}
+
+.notas-warning-label {
+    margin-top: 0;
+    display: block;
+    color: var(--admin-muted);
+    font-size: 0.75rem;
+}
+
+.notas-warning-value {
+    color: var(--admin-brand-900);
+    font-size: 1rem;
+    line-height: 1.1;
+}
+
+.notas-warning-summary {
+    margin: 0;
+    color: var(--admin-muted);
+    font-size: 0.84rem;
+    line-height: 1.4;
+}
+
+.notas-warning-summary span {
+    display: inline;
+    margin-top: 0;
+    color: var(--admin-ink);
+    font-weight: 600;
+    font-size: inherit;
+}
+
+.notas-warning-empty {
+    gap: 4px;
+}
+
 .notas-side-actions {
     margin-top: 10px;
     display: flex;

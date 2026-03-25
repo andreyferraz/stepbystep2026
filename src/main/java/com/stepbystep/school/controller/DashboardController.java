@@ -26,12 +26,14 @@ import com.stepbystep.school.enums.NivelAtual;
 import com.stepbystep.school.enums.Role;
 import com.stepbystep.school.model.Aluno;
 import com.stepbystep.school.model.MaterialEstudo;
+import com.stepbystep.school.model.Nota;
 import com.stepbystep.school.model.Turma;
 import com.stepbystep.school.model.Usuario;
 import com.stepbystep.school.repository.AlunoRepository;
 import com.stepbystep.school.repository.UsuarioRepository;
 import com.stepbystep.school.service.FileUploadService;
 import com.stepbystep.school.service.MaterialEstudoService;
+import com.stepbystep.school.service.NotaService;
 import com.stepbystep.school.service.TurmaService;
 import com.stepbystep.school.service.UsuarioService;
 import com.stepbystep.school.util.ValidationUtils;
@@ -47,10 +49,13 @@ public class DashboardController {
     private static final String REDIRECT_ALUNOS_PANEL = "redirect:/admin/dashboard?panel=alunos";
     private static final String REDIRECT_TURMAS_PANEL = "redirect:/admin/dashboard?panel=turmas";
     private static final String REDIRECT_MATERIAIS_PANEL = "redirect:/admin/dashboard?panel=materiais";
+    private static final String REDIRECT_NOTAS_PANEL = "redirect:/admin/dashboard?panel=notas";
     private static final String CAMPO_ID_ALUNO = "ID do Aluno";
     private static final String CAMPO_ID_TURMA = "ID da Turma";
     private static final String CAMPO_ID_MATERIAL = "ID do Material";
     private static final String FEEDBACK_MATERIAL_FORM = "materialFormFeedback";
+    private static final String FEEDBACK_NOTAS_FORM = "notasFormFeedback";
+    private static final String MSG_ALUNO_NAO_ENCONTRADO = "Aluno não encontrado com ID: ";
     private static final String MSG_USUARIO_ALUNO_NAO_ENCONTRADO = "Usuário do aluno não encontrado.";
 
     private final TurmaService turmaService;
@@ -58,6 +63,7 @@ public class DashboardController {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioService usuarioService;
     private final MaterialEstudoService materialEstudoService;
+    private final NotaService notaService;
     private final FileUploadService fileUploadService;
 
     public DashboardController(
@@ -66,6 +72,7 @@ public class DashboardController {
         UsuarioRepository usuarioRepository,
         UsuarioService usuarioService,
         MaterialEstudoService materialEstudoService,
+        NotaService notaService,
         FileUploadService fileUploadService
     ) {
         this.turmaService = turmaService;
@@ -73,6 +80,7 @@ public class DashboardController {
         this.usuarioRepository = usuarioRepository;
         this.usuarioService = usuarioService;
         this.materialEstudoService = materialEstudoService;
+        this.notaService = notaService;
         this.fileUploadService = fileUploadService;
     }
 
@@ -83,10 +91,14 @@ public class DashboardController {
         @RequestParam(name = "turmaBusca", required = false) String turmaBusca,
         @RequestParam(name = "materialBusca", required = false) String materialBusca,
         @RequestParam(name = "materialTurmaId", required = false) String materialTurmaId,
+        @RequestParam(name = "notaBusca", required = false) String notaBusca,
+        @RequestParam(name = "notaTurmaId", required = false) String notaTurmaId,
+        @RequestParam(name = "notaBimestre", required = false) Integer notaBimestre,
         Model model
     ) {
         String alunoBuscaNormalizada = alunoBusca == null ? "" : alunoBusca.trim().toLowerCase(Locale.ROOT);
         UUID materialTurmaIdFiltrada = parseUuidOpcional(materialTurmaId);
+        UUID notaTurmaIdFiltrada = parseUuidOpcional(notaTurmaId);
 
         List<Usuario> usuariosAlunos = usuarioService.listarUsuarios().stream()
             .filter(usuario -> usuario.getRole() == Role.ALUNO)
@@ -100,6 +112,11 @@ public class DashboardController {
 
         List<MaterialEstudo> materiaisEstudo = materialEstudoService
             .listarMateriaisFiltrados(materialBusca, materialTurmaIdFiltrada);
+
+        List<Nota> notasLancadas = notaService.listarNotasFiltradas(notaBusca, notaTurmaIdFiltrada, notaBimestre);
+        List<Nota> notasHoje = notaService.listarLancamentosDoDia(notasLancadas, LocalDate.now());
+        List<NotaService.ResumoTurmaNotas> notasTurmasAtencao = notaService
+            .listarResumoTurmasEmAtencao(notasLancadas, 7.0, 75.0);
         long turmasComMateriais = materiaisEstudo.stream()
             .map(MaterialEstudo::getTurma)
             .filter(turma -> turma != null && turma.getId() != null)
@@ -118,8 +135,132 @@ public class DashboardController {
         model.addAttribute("materiaisTotal", materiaisEstudo.size());
         model.addAttribute("materiaisTurmasCount", turmasComMateriais);
         model.addAttribute("materiaisUploadsSemana", materialEstudoService.contarUploadsUltimosDias(materiaisEstudo, 7));
+        model.addAttribute("notaBusca", notaBusca == null ? "" : notaBusca.trim());
+        model.addAttribute("notaTurmaId", notaTurmaId == null ? "" : notaTurmaId.trim());
+        model.addAttribute("notaBimestre", notaBimestre == null ? "" : notaBimestre);
+        model.addAttribute("notasLancadas", notasLancadas);
+        model.addAttribute("notasHoje", notasHoje);
+        model.addAttribute("notasTurmasAtencao", notasTurmasAtencao);
+        model.addAttribute("notasMediaGeral", String.format(Locale.forLanguageTag("pt-BR"), "%.1f", notaService.calcularMediaNotas(notasLancadas)));
+        model.addAttribute("notasPresencaMedia", Math.round(notaService.calcularMediaPresenca(notasLancadas)));
+        model.addAttribute("notasAbaixo75", notaService.contarAlunosAbaixoDePresenca(notasLancadas, 75.0));
+        model.addAttribute("notasLancamentosTotal", notasLancadas.size());
         model.addAttribute("adminPanelInicial", panel == null || panel.isBlank() ? "overview" : panel);
         return "admin/dashboard";
+    }
+
+    @GetMapping("/admin/notas/boletim/pdf")
+    public ResponseEntity<byte[]> exportarBoletimPdf(
+        @RequestParam(name = "notaBusca", required = false) String notaBusca,
+        @RequestParam(name = "notaTurmaId", required = false) String notaTurmaId,
+        @RequestParam(name = "notaBimestre", required = false) Integer notaBimestre
+    ) {
+        UUID notaTurmaIdFiltrada = parseUuidOpcional(notaTurmaId);
+        List<Nota> notas = notaService.listarNotasFiltradas(notaBusca, notaTurmaIdFiltrada, notaBimestre);
+        byte[] boletimPdf = notaService.gerarBoletimPdf(notas, notaBusca, notaTurmaIdFiltrada, notaBimestre);
+
+        String nomeArquivo = "boletim-" + LocalDate.now() + ".pdf";
+
+        return ResponseEntity.ok()
+            .contentType(MediaType.APPLICATION_PDF)
+            .header(HttpHeaders.CONTENT_DISPOSITION,
+                ContentDisposition.attachment().filename(nomeArquivo).build().toString())
+            .body(boletimPdf);
+    }
+
+    @PostMapping("/admin/notas")
+    public String lancarNota(
+        @RequestParam("alunoId") UUID alunoId,
+        @RequestParam(name = "turmaId", required = false) UUID turmaId,
+        @RequestParam("atividade") String atividade,
+        @RequestParam("valor") Double valor,
+        @RequestParam(name = "presenca", required = false) String presenca,
+        @RequestParam("bimestre") Integer bimestre,
+        @RequestParam(name = "data", required = false) LocalDate data,
+        @RequestParam(name = "observacoes", required = false) String observacoes,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+            ValidationUtils.validarCampoStringObrigatorio(atividade, "Atividade");
+            ValidationUtils.validarCampoObrigatorio(valor, "Valor da nota");
+            ValidationUtils.validarCampoObrigatorio(bimestre, "Bimestre");
+
+            Aluno aluno = alunoRepository.findById(alunoId)
+                .orElseThrow(() -> new IllegalArgumentException(MSG_ALUNO_NAO_ENCONTRADO + alunoId));
+
+            if (aluno.getTurma() == null || aluno.getTurma().getId() == null) {
+                throw new IllegalArgumentException("O aluno selecionado não possui turma associada.");
+            }
+
+            UUID turmaAssociadaAlunoId = aluno.getTurma().getId();
+            if (turmaId != null && !turmaId.equals(turmaAssociadaAlunoId)) {
+                throw new IllegalArgumentException("O aluno selecionado não pertence à turma informada.");
+            }
+
+            LocalDate dataReferencia = data == null ? LocalDate.now() : data;
+
+            Nota nota = Nota.builder()
+                .valor(valor)
+                .bimestre(bimestre)
+                .atividade(atividade)
+                .presenca(presenca)
+                .dataReferencia(dataReferencia)
+                .descricao(normalizarTextoOpcional(observacoes))
+                .build();
+
+            notaService.cadastrarNota(alunoId, nota);
+            redirectAttributes.addFlashAttribute(FEEDBACK_NOTAS_FORM, "Nota lançada com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_NOTAS_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_NOTAS_PANEL;
+    }
+
+    @PostMapping("/admin/presencas")
+    public String lancarPresenca(
+        @RequestParam("alunoId") UUID alunoId,
+        @RequestParam(name = "turmaId", required = false) UUID turmaId,
+        @RequestParam("presenca") String presenca,
+        @RequestParam(name = "data", required = false) LocalDate data,
+        @RequestParam(name = "observacoes", required = false) String observacoes,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+            ValidationUtils.validarCampoStringObrigatorio(presenca, "Presença");
+
+            Aluno aluno = alunoRepository.findById(alunoId)
+                .orElseThrow(() -> new IllegalArgumentException(MSG_ALUNO_NAO_ENCONTRADO + alunoId));
+
+            if (aluno.getTurma() == null || aluno.getTurma().getId() == null) {
+                throw new IllegalArgumentException("O aluno selecionado não possui turma associada.");
+            }
+
+            UUID turmaAssociadaAlunoId = aluno.getTurma().getId();
+            if (turmaId != null && !turmaId.equals(turmaAssociadaAlunoId)) {
+                throw new IllegalArgumentException("O aluno selecionado não pertence à turma informada.");
+            }
+
+            LocalDate dataReferencia = data == null ? LocalDate.now() : data;
+
+            Nota presencaDiaria = Nota.builder()
+                .valor(null)
+                .bimestre(null)
+                .atividade("Registro de presença")
+                .presenca(presenca)
+                .dataReferencia(dataReferencia)
+                .descricao(normalizarTextoOpcional(observacoes))
+                .build();
+
+            notaService.cadastrarNota(alunoId, presencaDiaria);
+            redirectAttributes.addFlashAttribute(FEEDBACK_NOTAS_FORM, "Presença lançada com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_NOTAS_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_NOTAS_PANEL;
     }
 
     @PostMapping("/admin/materiais")
@@ -266,7 +407,7 @@ public class DashboardController {
             ValidationUtils.validarCampoStringObrigatorio(email, "E-mail do Aluno");
 
             Aluno aluno = alunoRepository.findById(alunoId)
-                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado com ID: " + alunoId));
+                .orElseThrow(() -> new IllegalArgumentException(MSG_ALUNO_NAO_ENCONTRADO + alunoId));
 
             Turma turma = turmaService.obterTurmaPorId(turmaId);
 
@@ -305,7 +446,7 @@ public class DashboardController {
                 .orElseThrow(() -> new IllegalArgumentException(MSG_USUARIO_ALUNO_NAO_ENCONTRADO));
 
             Aluno aluno = alunoRepository.findById(alunoId)
-                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado com ID: " + alunoId));
+                .orElseThrow(() -> new IllegalArgumentException(MSG_ALUNO_NAO_ENCONTRADO + alunoId));
 
             usuarioRepository.delete(usuario);
             alunoRepository.delete(aluno);

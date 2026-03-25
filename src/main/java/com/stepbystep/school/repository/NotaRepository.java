@@ -8,4 +8,6 @@ import com.stepbystep.school.model.Nota;
 
 public interface NotaRepository extends JpaRepository<Nota, UUID> {
 
+	java.util.List<Nota> findAllByOrderByDataReferenciaDescIdDesc();
+
 }

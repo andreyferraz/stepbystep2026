@@ -473,55 +473,66 @@
         <article class="admin-card">
             <div class="admin-card-content">
                 <div class="section-head">
-                    <h2>Notas e Presenca</h2>
+                    <h2>Notas e Presença</h2>
                     <div class="notas-actions">
-                        <button type="button" class="admin-secondary-btn">Exportar boletim</button>
-                        <button type="button" class="admin-primary-btn" data-open-modal="nota-presenca-lancar">Lancar nota/presenca</button>
+                        <a class="admin-secondary-btn"
+                            th:href="@{/admin/notas/boletim/pdf(notaBusca=${notaBusca},notaTurmaId=${notaTurmaId},notaBimestre=${notaBimestre})}"
+                            href="/admin/notas/boletim/pdf">
+                            Exportar Boletim
+                        </a>
+                        <button type="button" class="admin-secondary-btn" data-open-modal="presenca-lancar">Lançar presença</button>
+                        <button type="button" class="admin-primary-btn" data-open-modal="nota-lancar">Lançar nota</button>
                     </div>
                 </div>
 
-                <output class="admin-feedback" id="notasFormFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="notasFormFeedback" aria-live="polite" th:text="${notasFormFeedback}"></output>
 
-                <div class="notas-toolbar">
-                    <input type="search" class="admin-search" placeholder="Pesquisar por aluno, turma ou atividade">
-                    <select class="notas-filter" aria-label="Filtrar por turma">
-                        <option value="">Todas as turmas</option>
-                        <option value="kids-2">Kids 2</option>
-                        <option value="teens-1">Teens 1</option>
-                        <option value="adults-1">Adults 1</option>
+                <form class="notas-toolbar" th:action="@{/admin/dashboard}" action="/admin/dashboard" method="get">
+                    <input type="hidden" name="panel" value="notas">
+                    <input type="search" class="admin-search" name="notaBusca" th:value="${notaBusca}" placeholder="Pesquisar por aluno, turma ou atividade">
+                    <select class="notas-filter" name="notaTurmaId" aria-label="Filtrar por turma">
+                        <option value="">Todas as Turmas</option>
+                        <option th:each="turma : ${turmas}"
+                            th:value="${turma.id}"
+                            th:text="${turma.nome}"
+                            th:selected="${notaTurmaId == turma.id.toString()}">
+                            Turma
+                        </option>
                     </select>
-                    <select class="notas-filter" aria-label="Filtrar por bimestre">
-                        <option value="">Bimestre atual</option>
-                        <option value="1">1o bimestre</option>
-                        <option value="2">2o bimestre</option>
-                        <option value="3">3o bimestre</option>
-                        <option value="4">4o bimestre</option>
+                    <select class="notas-filter" name="notaBimestre" aria-label="Filtrar por bimestre">
+                        <option value="">Todos os Bimestres</option>
+                        <option value="1" th:selected="${notaBimestre == 1}">1º bimestre</option>
+                        <option value="2" th:selected="${notaBimestre == 2}">2º bimestre</option>
+                        <option value="3" th:selected="${notaBimestre == 3}">3º bimestre</option>
+                        <option value="4" th:selected="${notaBimestre == 4}">4º bimestre</option>
                     </select>
-                </div>
+                    <button type="submit" class="admin-primary-btn">Filtrar</button>
+                    <a th:if="${!#strings.isEmpty(notaBusca) || !#strings.isEmpty(notaTurmaId) || !#strings.isEmpty(notaBimestre)}" th:href="@{/admin/dashboard(panel='notas')}" href="/admin/dashboard?panel=notas" class="admin-secondary-btn">Limpar</a>
+                </form>
 
                 <div class="notas-metric-grid">
                     <article class="notas-metric-card">
-                        <p>Media geral da escola</p>
-                        <strong>8.4</strong>
+                        <p>Média geral da escola</p>
+                        <strong th:text="${notasMediaGeral}">0.0</strong>
                     </article>
                     <article class="notas-metric-card">
-                        <p>Presenca media do mes</p>
-                        <strong>93%</strong>
+                        <p>Presença media do mês</p>
+                        <strong th:text="${notasPresencaMedia + '%'}">0%</strong>
                     </article>
                     <article class="notas-metric-card">
                         <p>Alunos abaixo de 75%</p>
-                        <strong>7</strong>
+                        <strong th:text="${notasAbaixo75}">0</strong>
                     </article>
                     <article class="notas-metric-card">
-                        <p>Avaliacoes pendentes</p>
-                        <strong>12</strong>
+                        <p>Lançamentos no filtro</p>
+                        <strong th:text="${notasLancamentosTotal}">0</strong>
                     </article>
                 </div>
 
                 <div class="notas-grid">
                     <article class="admin-card notas-block">
                         <header class="admin-card-header">
-                            <h3>Lancamentos recentes</h3>
+                            <h3>Lançamentos recentes</h3>
                         </header>
                         <div class="admin-card-content">
                             <table class="admin-table">
@@ -531,95 +542,80 @@
                                         <th>Turma</th>
                                         <th>Atividade</th>
                                         <th>Nota</th>
-                                        <th>Presenca</th>
+                                        <th>Presença</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Rafael Alves</td>
-                                        <td>Kids 2</td>
-                                        <td>Quiz Vocabulary</td>
-                                        <td>9.2</td>
-                                        <td>Presente</td>
-                                        <td><span class="status-chip success">Lancado</span></td>
+                                    <tr th:each="nota : ${notasLancadas}">
+                                        <td th:text="${nota.aluno != null ? nota.aluno.nome : '-'}">Aluno</td>
+                                        <td th:text="${nota.aluno != null && nota.aluno.turma != null ? nota.aluno.turma.nome : '-'}">Turma</td>
+                                        <td th:text="${#strings.isEmpty(nota.atividade) ? '-' : nota.atividade}">Atividade</td>
+                                        <td th:text="${nota.valor != null ? #numbers.formatDecimal(nota.valor, 1, 1) : '-'}">0.0</td>
+                                        <td th:text="${#strings.isEmpty(nota.presenca) ? '-' : #strings.capitalize(#strings.toLowerCase(nota.presenca))}">Presença</td>
+                                        <td><span class="status-chip success">Lançado</span></td>
                                     </tr>
-                                    <tr>
-                                        <td>Helena Martins</td>
-                                        <td>Adults 1</td>
-                                        <td>Speaking Challenge</td>
-                                        <td>8.7</td>
-                                        <td>Presente</td>
-                                        <td><span class="status-chip success">Lancado</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Joao Pedro</td>
-                                        <td>Teens 1</td>
-                                        <td>Homework Unit 3</td>
-                                        <td>-</td>
-                                        <td>Falta</td>
-                                        <td><span class="status-chip warn">Pendente</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Maria Luisa</td>
-                                        <td>Adults 1</td>
-                                        <td>Listening Test</td>
-                                        <td>7.8</td>
-                                        <td>Presente</td>
-                                        <td><span class="status-chip success">Lancado</span></td>
+                                    <tr th:if="${#lists.isEmpty(notasLancadas)}">
+                                        <td colspan="6">Nenhum lançamento encontrado para os filtros informados.</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
                     </article>
 
-                    <aside class="notas-side" aria-label="Resumo de notas e presenca">
+                    <aside class="notas-side" aria-label="Resumo de notas e presença">
                         <article class="admin-card notas-block">
                             <header class="admin-card-header">
                                 <h3>Chamada de hoje</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="notas-attendance-list">
-                                    <li>
-                                        <span>Ana Clara - Kids 2</span>
-                                        <span class="status-chip success">Presente</span>
+                                    <li th:each="nota : ${notasHoje}">
+                                        <span th:text="${(nota.aluno != null ? nota.aluno.nome : '-') + ' - ' + (nota.aluno != null && nota.aluno.turma != null ? nota.aluno.turma.nome : '-')}">Aluno - Turma</span>
+                                        <span th:classappend="${nota.presenca == 'PRESENTE' ? ' success' : ' warn'}" class="status-chip" th:text="${#strings.capitalize(#strings.toLowerCase(nota.presenca))}">Presença</span>
                                     </li>
-                                    <li>
-                                        <span>Gabriel Souza - Kids 2</span>
-                                        <span class="status-chip success">Presente</span>
-                                    </li>
-                                    <li>
-                                        <span>Joao Pedro - Teens 1</span>
-                                        <span class="status-chip warn">Falta</span>
-                                    </li>
-                                    <li>
-                                        <span>Isabela Rocha - Adults 1</span>
-                                        <span class="status-chip success">Presente</span>
+                                    <li th:if="${#lists.isEmpty(notasHoje)}">
+                                        <span>Nenhum lançamento para hoje</span>
+                                        <span class="status-chip">-</span>
                                     </li>
                                 </ul>
                                 <div class="notas-side-actions">
-                                    <button type="button" class="admin-secondary-btn admin-inline-btn">Ver diario completo</button>
+                                    <a th:href="@{/admin/dashboard(panel='notas')}" href="/admin/dashboard?panel=notas" class="admin-secondary-btn admin-inline-btn">Ver diário completo</a>
                                 </div>
                             </div>
                         </article>
 
                         <article class="admin-card notas-block">
                             <header class="admin-card-header">
-                                <h3>Turmas em atencao</h3>
+                                <h3>Turmas em atenção</h3>
                             </header>
                             <div class="admin-card-content">
-                                <ul class="notas-warning-list">
-                                    <li>
-                                        <strong>Teens 1</strong>
-                                        <span>4 alunos com media abaixo de 7.0</span>
+                                <ul class="notas-warning-list" th:if="${!#lists.isEmpty(notasTurmasAtencao)}">
+                                    <li class="notas-warning-item" th:each="resumo : ${notasTurmasAtencao}">
+                                        <div class="notas-warning-head">
+                                            <strong th:text="${resumo.turmaNome}">Turma</strong>
+                                            <span class="notas-warning-badge" th:text="${resumo.totalAlertas + ' alerta(s)'}">0 alerta(s)</span>
+                                        </div>
+                                        <div class="notas-warning-metrics">
+                                            <div class="notas-warning-metric">
+                                                <span class="notas-warning-label">Média</span>
+                                                <strong class="notas-warning-value" th:text="${#numbers.formatDecimal(resumo.mediaNotas, 1, 1)}">0.0</strong>
+                                            </div>
+                                            <div class="notas-warning-metric">
+                                                <span class="notas-warning-label">Presença</span>
+                                                <strong class="notas-warning-value" th:text="${#numbers.formatDecimal(resumo.mediaPresenca, 1, 0) + '%'}">0%</strong>
+                                            </div>
+                                        </div>
+                                        <p class="notas-warning-summary">
+                                            <span th:text="${resumo.alunosMediaBaixa}">0</span> com média baixa e
+                                            <span th:text="${resumo.alunosAbaixoPresenca}">0</span> com baixa frequência
+                                        </p>
                                     </li>
-                                    <li>
-                                        <strong>Kids 2</strong>
-                                        <span>3 alunos com faltas acima de 20%</span>
-                                    </li>
-                                    <li>
-                                        <strong>Adults 1</strong>
-                                        <span>2 avaliacoes ainda sem lancamento</span>
+                                </ul>
+                                <ul class="notas-warning-list" th:if="${#lists.isEmpty(notasTurmasAtencao)}">
+                                    <li class="notas-warning-item notas-warning-empty">
+                                        <strong>Nenhuma turma em atenção</strong>
+                                        <p class="notas-warning-summary">Sem alertas de média ou frequência no período filtrado.</p>
                                     </li>
                                 </ul>
                             </div>
@@ -630,50 +626,63 @@
         </article>
     </section>
 
-    <dialog class="modal-overlay" data-modal="nota-presenca-lancar" aria-labelledby="modalLancarNotaPresencaTitulo">
+    <dialog class="modal-overlay" data-modal="nota-lancar" aria-labelledby="modalLancarNotaTitulo">
         <div class="modal-card modal-card-wide">
             <div class="modal-head">
-                <h3 id="modalLancarNotaPresencaTitulo">Lancar nota e presenca</h3>
+                <h3 id="modalLancarNotaTitulo">Lançar nota</h3>
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formLancarNotaPresenca" th:action="@{/admin/notas-presenca}" action="/admin/notas-presenca" method="post" data-static-submit="true" data-feedback-target="notasFormFeedback">
+            <form id="formLancarNota" th:action="@{/admin/notas}" action="/admin/notas" method="post">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="modal-body">
                     <div class="modal-field">
                         <label for="notaAluno">Aluno</label>
-                        <select id="notaAluno" name="aluno" required>
+                        <select id="notaAluno" name="alunoId" required>
                             <option value="">Selecione</option>
-                            <option value="rafael-alves">Rafael Alves</option>
-                            <option value="helena-martins">Helena Martins</option>
-                            <option value="joao-pedro">Joao Pedro</option>
+                            <option th:each="usuario : ${usuariosAlunos}"
+                                th:if="${usuario.aluno != null}"
+                                th:value="${usuario.aluno.id}"
+                                th:attr="data-turma-id=${usuario.aluno.turma != null ? usuario.aluno.turma.id : ''}"
+                                th:text="${usuario.nome}">
+                                Aluno
+                            </option>
                         </select>
                     </div>
 
                     <div class="modal-field">
-                        <label for="notaTurma">Turma</label>
-                        <select id="notaTurma" name="turma" required>
+                        <label for="notaTurma">Turma (automática)</label>
+                        <select id="notaTurma" name="turmaId">
                             <option value="">Selecione</option>
-                            <option value="kids-2">Kids 2</option>
-                            <option value="teens-1">Teens 1</option>
-                            <option value="adults-1">Adults 1</option>
+                            <option th:each="turma : ${turmas}" th:value="${turma.id}" th:text="${turma.nome}">Turma</option>
                         </select>
                     </div>
 
                     <div class="modal-field">
                         <label for="notaAtividade">Atividade</label>
-                        <input id="notaAtividade" name="atividade" type="text" placeholder="Ex.: Quiz Vocabulary" required>
+                        <input id="notaAtividade" name="atividade" type="text" placeholder="Ex.: Quiz Vocabulary">
                     </div>
 
                     <div class="modal-field">
                         <label for="notaValor">Nota</label>
-                        <input id="notaValor" name="nota" type="number" min="0" max="10" step="0.1" placeholder="0.0 a 10.0" required>
+                        <input id="notaValor" name="valor" type="number" min="0" max="10" step="0.1" placeholder="0.0 a 10.0">
                     </div>
 
                     <div class="modal-field">
-                        <label for="notaPresenca">Presenca</label>
-                        <select id="notaPresenca" name="presenca" required>
+                        <label for="notaBimestre">Bimestre</label>
+                        <select id="notaBimestre" name="bimestre">
+                            <option value="">Selecione</option>
+                            <option value="1">1º bimestre</option>
+                            <option value="2">2º bimestre</option>
+                            <option value="3">3º bimestre</option>
+                            <option value="4">4º bimestre</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="notaPresenca">Presença</label>
+                        <select id="notaPresenca" name="presenca">
                             <option value="">Selecione</option>
                             <option value="presente">Presente</option>
                             <option value="falta">Falta</option>
@@ -683,22 +692,88 @@
 
                     <div class="modal-field">
                         <label for="notaData">Data</label>
-                        <input id="notaData" name="data" type="date" required>
+                        <input id="notaData" name="data" type="date" required th:value="${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM-dd')}">
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <label for="notaObservacao">Observacoes</label>
-                        <textarea id="notaObservacao" name="observacoes" rows="3" placeholder="Comentarios sobre desempenho, participacao ou recuperacao."></textarea>
+                        <label for="notaObservacao">Observações</label>
+                        <textarea id="notaObservacao" name="observacoes" rows="3" placeholder="Comentários sobre desempenho, participação ou recuperação."></textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para persistir no diario, atualizar media e historico do aluno.</small>
+                        <small class="modal-help-text">Para presença diária: selecione aluno, status da presença e data. A turma será associada automaticamente.</small>
                     </div>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
-                    <button type="submit" class="admin-primary-btn">Salvar lancamento</button>
+                    <button type="submit" class="admin-primary-btn">Salvar nota</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="presenca-lancar" aria-labelledby="modalLancarPresencaTitulo">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-head">
+                <h3 id="modalLancarPresencaTitulo">Lançar presença</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formLancarPresenca" th:action="@{/admin/presencas}" action="/admin/presencas" method="post">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field">
+                        <label for="presencaAluno">Aluno</label>
+                        <select id="presencaAluno" name="alunoId" required>
+                            <option value="">Selecione</option>
+                            <option th:each="usuario : ${usuariosAlunos}"
+                                th:if="${usuario.aluno != null}"
+                                th:value="${usuario.aluno.id}"
+                                th:attr="data-turma-id=${usuario.aluno.turma != null ? usuario.aluno.turma.id : ''}"
+                                th:text="${usuario.nome}">
+                                Aluno
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="presencaTurma">Turma (automática)</label>
+                        <select id="presencaTurma" name="turmaId">
+                            <option value="">Selecione</option>
+                            <option th:each="turma : ${turmas}" th:value="${turma.id}" th:text="${turma.nome}">Turma</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="presencaStatus">Presença</label>
+                        <select id="presencaStatus" name="presenca" required>
+                            <option value="">Selecione</option>
+                            <option value="presente">Presente</option>
+                            <option value="falta">Falta</option>
+                            <option value="justificada">Falta justificada</option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="presencaData">Data</label>
+                        <input id="presencaData" name="data" type="date" required th:value="${#temporals.format(T(java.time.LocalDate).now(), 'yyyy-MM-dd')}">
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="presencaObservacao">Observações</label>
+                        <textarea id="presencaObservacao" name="observacoes" rows="3" placeholder="Observações sobre frequência ou justificativas."></textarea>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <small class="modal-help-text">Fluxo simplificado de presença diária: aluno, turma automática, status e data.</small>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar presença</button>
                 </div>
             </form>
         </div>
@@ -708,9 +783,9 @@
         <article class="admin-card">
             <div class="admin-card-content">
                 <div class="section-head">
-                    <h2>Gestao de Mensalidades</h2>
+                    <h2>Gestão de Mensalidades</h2>
                     <div class="mensalidades-actions">
-                        <button type="button" class="admin-secondary-btn" data-open-modal="mensalidade-cobranca">Gerar cobranca</button>
+                        <button type="button" class="admin-secondary-btn" data-open-modal="mensalidade-cobranca">Gerar cobrança</button>
                         <button type="button" class="admin-primary-btn" data-open-modal="mensalidade-registrar">Registrar pagamento</button>
                     </div>
                 </div>
