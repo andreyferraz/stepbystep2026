@@ -421,6 +421,15 @@ body.admin-body {
     font-size: 0.82rem;
 }
 
+.admin-danger-btn {
+    border-color: rgba(190, 47, 63, 0.35);
+    color: var(--admin-danger);
+}
+
+.admin-danger-btn:hover {
+    background: rgba(190, 47, 63, 0.08);
+}
+
 .admin-search-row {
     margin-bottom: 12px;
     display: flex;
@@ -900,6 +909,69 @@ body.admin-body {
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
+}
+
+.mensalidade-next-step {
+    margin-bottom: 14px;
+    border: 1px dashed var(--admin-line);
+    border-radius: 12px;
+    background: #f7fbff;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.mensalidade-next-step p {
+    margin: 0;
+    color: var(--admin-ink);
+    font-weight: 600;
+}
+
+.mensalidade-pix-card {
+    margin-bottom: 14px;
+}
+
+.mensalidade-pix-content {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 14px;
+    align-items: center;
+}
+
+.mensalidade-pix-qrcode {
+    width: 140px;
+    height: 140px;
+    border-radius: 10px;
+    border: 1px solid var(--admin-line);
+    background: #fff;
+    padding: 8px;
+}
+
+.mensalidade-pix-copy {
+    display: grid;
+    gap: 8px;
+}
+
+.mensalidade-pix-copy label {
+    font-weight: 700;
+    color: var(--admin-brand-900);
+}
+
+.mensalidade-pix-copy-row {
+    display: flex;
+    gap: 8px;
+}
+
+.mensalidade-pix-copy-row input {
+    flex: 1;
+    min-width: 0;
+    border: 1px solid var(--admin-line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font: inherit;
 }
 
 .mensalidades-filter {

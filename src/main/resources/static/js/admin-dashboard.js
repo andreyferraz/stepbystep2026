@@ -115,6 +115,19 @@ document.addEventListener("DOMContentLoaded", function () {
     var presencaAlunoSelect = document.getElementById("presencaAluno");
     var presencaTurmaSelect = document.getElementById("presencaTurma");
     var presencaDataInput = document.getElementById("presencaData");
+    var cobrancaAlunoSelect = document.getElementById("cobrancaAluno");
+    var cobrancaMensalidadeSelect = document.getElementById("cobrancaMensalidade");
+    var mensalidadeAlunoSelect = document.getElementById("mensalidadeAluno");
+    var mensalidadeFinanceiraSelect = document.getElementById("mensalidadeFinanceira");
+    var copiarPixBtn = document.getElementById("copiarPixBtn");
+
+    // Defensive reset: prevents stale dialog/backdrop state after form submit + navigation.
+    document.querySelectorAll(".modal-overlay").forEach(function (modal) {
+        modal.classList.remove("is-open");
+        if (typeof modal.close === "function" && modal.open) {
+            modal.close();
+        }
+    });
 
     function sincronizarTurmaPorAlunoSelecionado(alunoSelect, turmaSelect) {
         if (!alunoSelect || !turmaSelect) {
@@ -146,6 +159,52 @@ document.addEventListener("DOMContentLoaded", function () {
         dataInput.value = ano + "-" + mes + "-" + dia;
     }
 
+    function filtrarMensalidadesPorAluno() {
+        if (!cobrancaAlunoSelect || !cobrancaMensalidadeSelect) {
+            return;
+        }
+
+        var alunoIdSelecionado = cobrancaAlunoSelect.value || "";
+
+        Array.from(cobrancaMensalidadeSelect.options).forEach(function (option, index) {
+            if (index === 0) {
+                option.hidden = false;
+                return;
+            }
+
+            var alunoIdOption = option.getAttribute("data-aluno-id") || "";
+            var deveExibir = !alunoIdSelecionado || alunoIdOption === alunoIdSelecionado;
+            option.hidden = !deveExibir;
+
+            if (!deveExibir && option.selected) {
+                cobrancaMensalidadeSelect.value = "";
+            }
+        });
+    }
+
+    function filtrarMensalidadesPagamentoManual() {
+        if (!mensalidadeAlunoSelect || !mensalidadeFinanceiraSelect) {
+            return;
+        }
+
+        var alunoIdSelecionado = mensalidadeAlunoSelect.value || "";
+
+        Array.from(mensalidadeFinanceiraSelect.options).forEach(function (option, index) {
+            if (index === 0) {
+                option.hidden = false;
+                return;
+            }
+
+            var alunoIdOption = option.getAttribute("data-aluno-id") || "";
+            var deveExibir = !alunoIdSelecionado || alunoIdOption === alunoIdSelecionado;
+            option.hidden = !deveExibir;
+
+            if (!deveExibir && option.selected) {
+                mensalidadeFinanceiraSelect.value = "";
+            }
+        });
+    }
+
     if (notaAlunoSelect) {
         notaAlunoSelect.addEventListener("change", function () {
             sincronizarTurmaPorAlunoSelecionado(notaAlunoSelect, notaTurmaSelect);
@@ -155,6 +214,29 @@ document.addEventListener("DOMContentLoaded", function () {
     if (presencaAlunoSelect) {
         presencaAlunoSelect.addEventListener("change", function () {
             sincronizarTurmaPorAlunoSelecionado(presencaAlunoSelect, presencaTurmaSelect);
+        });
+    }
+
+    if (cobrancaAlunoSelect) {
+        cobrancaAlunoSelect.addEventListener("change", filtrarMensalidadesPorAluno);
+        filtrarMensalidadesPorAluno();
+    }
+
+    if (mensalidadeAlunoSelect) {
+        mensalidadeAlunoSelect.addEventListener("change", filtrarMensalidadesPagamentoManual);
+        filtrarMensalidadesPagamentoManual();
+    }
+
+    if (copiarPixBtn) {
+        copiarPixBtn.addEventListener("click", function () {
+            var chavePix = copiarPixBtn.getAttribute("data-pix") || "";
+            if (!chavePix) {
+                return;
+            }
+
+            if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+                navigator.clipboard.writeText(chavePix);
+            }
         });
     }
 
@@ -304,6 +386,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (target === "presenca-lancar") {
                     sincronizarTurmaPorAlunoSelecionado(presencaAlunoSelect, presencaTurmaSelect);
                     preencherDataAtualNoLancamento(presencaDataInput);
+                }
+
+                if (target === "mensalidade-cobranca") {
+                    if (cobrancaAlunoSelect) {
+                        cobrancaAlunoSelect.value = button.getAttribute("data-aluno-id") || cobrancaAlunoSelect.value;
+                    }
+                    filtrarMensalidadesPorAluno();
+                    if (cobrancaMensalidadeSelect) {
+                        cobrancaMensalidadeSelect.value = button.getAttribute("data-mensalidade-id") || cobrancaMensalidadeSelect.value;
+                    }
+                }
+
+                if (target === "mensalidade-registrar") {
+                    if (mensalidadeAlunoSelect) {
+                        mensalidadeAlunoSelect.value = button.getAttribute("data-aluno-id") || mensalidadeAlunoSelect.value;
+                    }
+                    filtrarMensalidadesPagamentoManual();
+                    if (mensalidadeFinanceiraSelect) {
+                        mensalidadeFinanceiraSelect.value = button.getAttribute("data-mensalidade-id") || mensalidadeFinanceiraSelect.value;
+                    }
                 }
 
                 modal.classList.add("is-open");

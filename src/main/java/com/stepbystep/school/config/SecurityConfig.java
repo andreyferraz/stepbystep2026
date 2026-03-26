@@ -39,6 +39,7 @@ public class SecurityConfig {
                     "/contato",
                     "/login",
                     "/acesso-negado",
+                    "/api/webhooks/**",
                     "/css/**",
                     "/js/**",
                     "/img/**"
@@ -55,6 +56,9 @@ public class SecurityConfig {
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout")
                 .permitAll()
+            )
+            .csrf(csrf -> csrf
+                .ignoringRequestMatchers("/api/webhooks/**")
             )
             .exceptionHandling(ex -> ex
                 .accessDeniedPage("/acesso-negado")

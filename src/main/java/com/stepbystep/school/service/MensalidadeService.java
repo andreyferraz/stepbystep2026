@@ -7,9 +7,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.imageio.ImageIO;
@@ -31,10 +34,14 @@ import com.stepbystep.school.util.ValidationUtils;
 public class MensalidadeService {
 
     private static final String CAMPO_ID_ALUNO = "ID do aluno";
+    private static final String CAMPO_ID_MENSALIDADE = "ID da mensalidade";
+    private static final String CAMPO_TXID_PIX = "TXID PIX";
     private static final String MSG_MENSALIDADE_NAO_ENCONTRADA = "Mensalidade não encontrada com ID: ";
+    private static final String PIX_REFERENCE_LABEL_ESTATICO = "***";
 
     private final AlunoService alunoService;
     private final MensalidadeRepository mensalidadeRepository;
+    private final MercadoPagoPixApiService mercadoPagoPixApiService;
 
     @Value("${pix.chave:00000000000}")
     private String pixChave;
@@ -45,9 +52,17 @@ public class MensalidadeService {
     @Value("${pix.cidade:SAO PAULO}")
     private String pixCidade;
 
-    public MensalidadeService(AlunoService alunoService, MensalidadeRepository mensalidadeRepository) {
+    @Value("${mercadopago.api.enabled:true}")
+    private boolean mercadoPagoApiEnabled;
+
+    public MensalidadeService(
+        AlunoService alunoService,
+        MensalidadeRepository mensalidadeRepository,
+        MercadoPagoPixApiService mercadoPagoPixApiService
+    ) {
         this.alunoService = alunoService;
         this.mensalidadeRepository = mensalidadeRepository;
+        this.mercadoPagoPixApiService = mercadoPagoPixApiService;
     }
 
     public List<Mensalidade> listarMensalidadesPorAluno(UUID alunoId) {
@@ -56,9 +71,93 @@ public class MensalidadeService {
         return mensalidadeRepository.findByAlunoIdOrderByDataVencimentoAsc(alunoId);
     }
 
+    public Mensalidade criarMensalidade(UUID alunoId, BigDecimal valor, LocalDate dataVencimento) {
+        ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+        ValidationUtils.validarCampoObrigatorio(valor, "Valor da mensalidade");
+        ValidationUtils.validarCampoObrigatorio(dataVencimento, "Data de vencimento");
+
+        if (valor.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Valor da mensalidade deve ser maior que zero.");
+        }
+
+        Mensalidade mensalidade = Mensalidade.builder()
+            .aluno(alunoService.obterAlunoPorId(alunoId))
+            .valor(valor.setScale(2, RoundingMode.HALF_UP))
+            .dataVencimento(dataVencimento)
+            .status(StatusMensalidade.PENDENTE)
+            .build();
+
+        return mensalidadeRepository.save(mensalidade);
+    }
+
+    public List<Mensalidade> listarMensalidadesFinanceiro() {
+        return mensalidadeRepository.findAll().stream()
+            .sorted((a, b) -> {
+                LocalDate da = a.getDataVencimento();
+                LocalDate db = b.getDataVencimento();
+                if (da == null && db == null) {
+                    return 0;
+                }
+                if (da == null) {
+                    return 1;
+                }
+                if (db == null) {
+                    return -1;
+                }
+                return db.compareTo(da);
+            })
+            .toList();
+    }
+
+    public List<Mensalidade> listarMensalidadesCobraveis(List<Mensalidade> mensalidades) {
+        return mensalidades.stream()
+            .filter(mensalidade -> mensalidade.getStatus() != StatusMensalidade.PAGO)
+            .toList();
+    }
+
+    public BigDecimal calcularTotalRecebidoNoMes(List<Mensalidade> mensalidades, YearMonth referencia) {
+        return mensalidades.stream()
+            .filter(mensalidade -> mensalidade.getStatus() == StatusMensalidade.PAGO)
+            .filter(mensalidade -> mensalidade.getDataPagamento() != null)
+            .filter(mensalidade -> YearMonth.from(mensalidade.getDataPagamento().toLocalDate()).equals(referencia))
+            .map(Mensalidade::getValor)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public BigDecimal calcularTotalAReceberNoMes(List<Mensalidade> mensalidades, YearMonth referencia) {
+        return mensalidades.stream()
+            .filter(mensalidade -> mensalidade.getStatus() != StatusMensalidade.PAGO)
+            .filter(mensalidade -> mensalidade.getDataVencimento() != null)
+            .filter(mensalidade -> YearMonth.from(mensalidade.getDataVencimento()).equals(referencia))
+            .map(Mensalidade::getValor)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public long contarMensalidadesAtrasadas(List<Mensalidade> mensalidades, LocalDate hoje) {
+        return mensalidades.stream()
+            .filter(mensalidade -> mensalidade.getStatus() != StatusMensalidade.PAGO)
+            .filter(mensalidade -> mensalidade.getDataVencimento() != null)
+            .filter(mensalidade -> mensalidade.getDataVencimento().isBefore(hoje))
+            .count();
+    }
+
+    public int calcularTaxaAdimplencia(List<Mensalidade> mensalidades) {
+        if (mensalidades.isEmpty()) {
+            return 0;
+        }
+
+        long pagas = mensalidades.stream()
+            .filter(mensalidade -> mensalidade.getStatus() == StatusMensalidade.PAGO)
+            .count();
+
+        return (int) Math.round((pagas * 100.0) / mensalidades.size());
+    }
+
     public Mensalidade gerarPix(UUID alunoId, UUID mensalidadeId) {
         ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
-        ValidationUtils.validarCampoObrigatorio(mensalidadeId, "ID da mensalidade");
+        ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
         alunoService.obterAlunoPorId(alunoId);
 
         Mensalidade mensalidade = mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)
@@ -72,11 +171,17 @@ public class MensalidadeService {
             mensalidade.setStatus(StatusMensalidade.PENDENTE);
         }
 
-        if (mensalidade.getPixCopiaECola() == null || mensalidade.getPixCopiaECola().isBlank()) {
-            String txid = mensalidade.getId().toString().replace("-", "").substring(0, 25).toUpperCase(Locale.ROOT);
-            mensalidade.setPixCopiaECola(gerarPixCopiaECola(mensalidade.getValor(), txid));
-            mensalidade = mensalidadeRepository.save(mensalidade);
+        String txid = gerarTxidMensalidade(mensalidade.getId());
+        if (mercadoPagoApiEnabled) {
+            MercadoPagoPixApiService.DynamicPixPayload payload = mercadoPagoPixApiService
+                .criarCobrancaPix(mensalidade, txid);
+            mensalidade.setPixCopiaECola(payload.pixCopiaECola());
+            mensalidade.setPixTxid(payload.txid());
+        } else {
+            mensalidade.setPixCopiaECola(gerarPixCopiaECola(mensalidade.getValor()));
+            mensalidade.setPixTxid(txid);
         }
+        mensalidade = mensalidadeRepository.save(mensalidade);
 
         return mensalidade;
     }
@@ -96,7 +201,7 @@ public class MensalidadeService {
 
     public Mensalidade confirmarPagamento(UUID alunoId, UUID mensalidadeId) {
         ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
-        ValidationUtils.validarCampoObrigatorio(mensalidadeId, "ID da mensalidade");
+        ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
         alunoService.obterAlunoPorId(alunoId);
 
         Mensalidade mensalidade = mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)
@@ -107,11 +212,59 @@ public class MensalidadeService {
         return mensalidadeRepository.save(mensalidade);
     }
 
-    private String gerarPixCopiaECola(BigDecimal valor, String txid) {
+    public Mensalidade registrarPagamentoManual(UUID alunoId, UUID mensalidadeId, LocalDate dataPagamento) {
+        ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+        ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+        alunoService.obterAlunoPorId(alunoId);
+
+        Mensalidade mensalidade = mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)
+                .orElseThrow(() -> new IllegalArgumentException(MSG_MENSALIDADE_NAO_ENCONTRADA + mensalidadeId));
+
+        mensalidade.setStatus(StatusMensalidade.PAGO);
+        LocalDate dataBase = dataPagamento == null ? LocalDate.now() : dataPagamento;
+        mensalidade.setDataPagamento(dataBase.atTime(LocalDateTime.now().toLocalTime()));
+
+        return mensalidadeRepository.save(mensalidade);
+    }
+
+    public void excluirMensalidade(UUID alunoId, UUID mensalidadeId) {
+        ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+        ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+        alunoService.obterAlunoPorId(alunoId);
+
+        Mensalidade mensalidade = mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)
+                .orElseThrow(() -> new IllegalArgumentException(MSG_MENSALIDADE_NAO_ENCONTRADA + mensalidadeId));
+
+        if (mensalidade.getStatus() == StatusMensalidade.PAGO) {
+            throw new IllegalStateException("Não é possível excluir cobrança de mensalidade já paga.");
+        }
+
+        mensalidadeRepository.delete(mensalidade);
+    }
+
+    public Mensalidade confirmarPagamentoPorTxid(String txid, LocalDateTime dataPagamento) {
+        ValidationUtils.validarCampoStringObrigatorio(txid, CAMPO_TXID_PIX);
+
+        Mensalidade mensalidade = mensalidadeRepository.findByPixTxid(txid.trim().toUpperCase(Locale.ROOT))
+                .orElseThrow(() -> new IllegalArgumentException("Mensalidade não encontrada para o TXID informado."));
+
+        if (mensalidade.getStatus() == StatusMensalidade.PAGO) {
+            return mensalidade;
+        }
+
+        mensalidade.setStatus(StatusMensalidade.PAGO);
+        mensalidade.setDataPagamento(dataPagamento == null ? LocalDateTime.now() : dataPagamento);
+        return mensalidadeRepository.save(mensalidade);
+    }
+
+    private String gerarPixCopiaECola(BigDecimal valor) {
         ValidationUtils.validarCampoObrigatorio(valor, "Valor da mensalidade");
         if (valor.compareTo(BigDecimal.ZERO) <= 0) {
             throw new IllegalArgumentException("Valor da mensalidade deve ser maior que zero");
         }
+
+        // Para QR estático por chave PIX, usar "***" evita rejeição por PSP tentando validar cobrança dinâmica inexistente.
+        String referenceLabel = PIX_REFERENCE_LABEL_ESTATICO;
 
         String merchantAccountInfo = campo("00", "br.gov.bcb.pix") + campo("01", pixChave);
         String payloadSemCrc = campo("00", "01")
@@ -122,15 +275,21 @@ public class MensalidadeService {
                 + campo("58", "BR")
                 + campo("59", limitarTexto(pixRecebedor, 25))
                 + campo("60", limitarTexto(pixCidade, 15))
-                + campo("62", campo("05", limitarTexto(txid, 25)))
+                + campo("62", campo("05", referenceLabel))
                 + "6304";
 
         String crc = calcularCrc16(payloadSemCrc);
         return payloadSemCrc + crc;
     }
 
+    private String gerarTxidMensalidade(UUID mensalidadeId) {
+        String txidBase = mensalidadeId.toString().replace("-", "").toUpperCase(Locale.ROOT);
+        return limitarTexto(txidBase, 25);
+    }
+
     private String campo(String id, String valor) {
-        String tamanho = String.format("%02d", valor.length());
+        int tamanhoUtf8 = valor.getBytes(StandardCharsets.UTF_8).length;
+        String tamanho = String.format("%02d", tamanhoUtf8);
         return id + tamanho + valor;
     }
 

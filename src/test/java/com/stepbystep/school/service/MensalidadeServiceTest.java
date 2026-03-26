@@ -229,6 +229,49 @@ class MensalidadeServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("excluirMensalidade")
+    class ExcluirMensalidade {
+
+        @Test
+        @DisplayName("Deve excluir cobrança pendente")
+        void deveExcluirCobrancaPendente() {
+            when(alunoService.obterAlunoPorId(alunoId)).thenReturn(Aluno.builder().id(alunoId).build());
+            when(mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)).thenReturn(Optional.of(mensalidade));
+
+            mensalidadeService.excluirMensalidade(alunoId, mensalidadeId);
+
+            verify(mensalidadeRepository, times(1)).delete(mensalidade);
+        }
+
+        @Test
+        @DisplayName("Deve bloquear exclusão quando mensalidade já está paga")
+        void deveBloquearExclusaoQuandoMensalidadePaga() {
+            mensalidade.setStatus(StatusMensalidade.PAGO);
+            when(alunoService.obterAlunoPorId(alunoId)).thenReturn(Aluno.builder().id(alunoId).build());
+            when(mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)).thenReturn(Optional.of(mensalidade));
+
+            IllegalStateException ex = assertThrows(IllegalStateException.class,
+                    () -> mensalidadeService.excluirMensalidade(alunoId, mensalidadeId));
+
+            assertTrue(ex.getMessage().contains("já paga"));
+            verify(mensalidadeRepository, never()).delete(any());
+        }
+
+        @Test
+        @DisplayName("Deve lançar exceção quando mensalidade não encontrada")
+        void deveLancarExcecaoQuandoMensalidadeNaoEncontrada() {
+            when(alunoService.obterAlunoPorId(alunoId)).thenReturn(Aluno.builder().id(alunoId).build());
+            when(mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)).thenReturn(Optional.empty());
+
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                    () -> mensalidadeService.excluirMensalidade(alunoId, mensalidadeId));
+
+            assertTrue(ex.getMessage().contains("Mensalidade não encontrada"));
+            verify(mensalidadeRepository, never()).delete(any());
+        }
+    }
+
     private void setPrivateField(Object target, String fieldName, Object value) {
         try {
             Field field = target.getClass().getDeclaredField(fieldName);

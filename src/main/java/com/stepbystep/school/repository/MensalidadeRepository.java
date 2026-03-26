@@ -14,4 +14,6 @@ public interface MensalidadeRepository extends JpaRepository<Mensalidade, UUID> 
 
 	Optional<Mensalidade> findByIdAndAlunoId(UUID mensalidadeId, UUID alunoId);
 
+	Optional<Mensalidade> findByPixTxid(String pixTxid);
+
 }

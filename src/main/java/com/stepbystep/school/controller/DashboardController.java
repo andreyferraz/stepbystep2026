@@ -1,10 +1,14 @@
 package com.stepbystep.school.controller;
 
 import java.net.MalformedURLException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.format.DateTimeParseException;
 import org.springframework.stereotype.Controller;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -24,8 +28,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.stepbystep.school.dto.AdminAlunoCadastroRequest;
 import com.stepbystep.school.enums.NivelAtual;
 import com.stepbystep.school.enums.Role;
+import com.stepbystep.school.enums.StatusMensalidade;
 import com.stepbystep.school.model.Aluno;
 import com.stepbystep.school.model.MaterialEstudo;
+import com.stepbystep.school.model.Mensalidade;
 import com.stepbystep.school.model.Nota;
 import com.stepbystep.school.model.Turma;
 import com.stepbystep.school.model.Usuario;
@@ -33,10 +39,12 @@ import com.stepbystep.school.repository.AlunoRepository;
 import com.stepbystep.school.repository.UsuarioRepository;
 import com.stepbystep.school.service.FileUploadService;
 import com.stepbystep.school.service.MaterialEstudoService;
+import com.stepbystep.school.service.MensalidadeService;
 import com.stepbystep.school.service.NotaService;
 import com.stepbystep.school.service.TurmaService;
 import com.stepbystep.school.service.UsuarioService;
 import com.stepbystep.school.util.ValidationUtils;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Comparator;
 import java.util.List;
@@ -44,17 +52,23 @@ import java.util.Locale;
 import java.util.UUID;
 
 @Controller
+@RequiredArgsConstructor
 public class DashboardController {
 
     private static final String REDIRECT_ALUNOS_PANEL = "redirect:/admin/dashboard?panel=alunos";
     private static final String REDIRECT_TURMAS_PANEL = "redirect:/admin/dashboard?panel=turmas";
     private static final String REDIRECT_MATERIAIS_PANEL = "redirect:/admin/dashboard?panel=materiais";
     private static final String REDIRECT_NOTAS_PANEL = "redirect:/admin/dashboard?panel=notas";
+    private static final String REDIRECT_MENSALIDADES_PANEL = "redirect:/admin/dashboard?panel=mensalidades";
     private static final String CAMPO_ID_ALUNO = "ID do Aluno";
     private static final String CAMPO_ID_TURMA = "ID da Turma";
     private static final String CAMPO_ID_MATERIAL = "ID do Material";
+    private static final String CAMPO_ID_MENSALIDADE = "ID da Mensalidade";
     private static final String FEEDBACK_MATERIAL_FORM = "materialFormFeedback";
     private static final String FEEDBACK_NOTAS_FORM = "notasFormFeedback";
+    private static final String FEEDBACK_MENSALIDADE_FORM = "mensalidadeFormFeedback";
+    private static final String FEEDBACK_MENSALIDADE_CRIACAO = "mensalidadeCriacaoFeedback";
+    private static final String FEEDBACK_MENSALIDADE_COBRANCA = "mensalidadeCobrancaFeedback";
     private static final String MSG_ALUNO_NAO_ENCONTRADO = "Aluno não encontrado com ID: ";
     private static final String MSG_USUARIO_ALUNO_NAO_ENCONTRADO = "Usuário do aluno não encontrado.";
 
@@ -64,25 +78,8 @@ public class DashboardController {
     private final UsuarioService usuarioService;
     private final MaterialEstudoService materialEstudoService;
     private final NotaService notaService;
+    private final MensalidadeService mensalidadeService;
     private final FileUploadService fileUploadService;
-
-    public DashboardController(
-        TurmaService turmaService,
-        AlunoRepository alunoRepository,
-        UsuarioRepository usuarioRepository,
-        UsuarioService usuarioService,
-        MaterialEstudoService materialEstudoService,
-        NotaService notaService,
-        FileUploadService fileUploadService
-    ) {
-        this.turmaService = turmaService;
-        this.alunoRepository = alunoRepository;
-        this.usuarioRepository = usuarioRepository;
-        this.usuarioService = usuarioService;
-        this.materialEstudoService = materialEstudoService;
-        this.notaService = notaService;
-        this.fileUploadService = fileUploadService;
-    }
 
     @GetMapping("/admin/dashboard")
     public String adminDashboard(
@@ -117,6 +114,12 @@ public class DashboardController {
         List<Nota> notasHoje = notaService.listarLancamentosDoDia(notasLancadas, LocalDate.now());
         List<NotaService.ResumoTurmaNotas> notasTurmasAtencao = notaService
             .listarResumoTurmasEmAtencao(notasLancadas, 7.0, 75.0);
+        List<Mensalidade> mensalidadesFinanceiro = mensalidadeService.listarMensalidadesFinanceiro();
+        List<Mensalidade> mensalidadesCobraveis = mensalidadeService.listarMensalidadesCobraveis(mensalidadesFinanceiro);
+        BigDecimal mensalidadesRecebidoMes = mensalidadeService.calcularTotalRecebidoNoMes(mensalidadesFinanceiro, YearMonth.now());
+        BigDecimal mensalidadesAReceberMes = mensalidadeService.calcularTotalAReceberNoMes(mensalidadesFinanceiro, YearMonth.now());
+        long mensalidadesAtrasadas = mensalidadeService.contarMensalidadesAtrasadas(mensalidadesFinanceiro, LocalDate.now());
+        int mensalidadesTaxaAdimplencia = mensalidadeService.calcularTaxaAdimplencia(mensalidadesFinanceiro);
         long turmasComMateriais = materiaisEstudo.stream()
             .map(MaterialEstudo::getTurma)
             .filter(turma -> turma != null && turma.getId() != null)
@@ -145,8 +148,127 @@ public class DashboardController {
         model.addAttribute("notasPresencaMedia", Math.round(notaService.calcularMediaPresenca(notasLancadas)));
         model.addAttribute("notasAbaixo75", notaService.contarAlunosAbaixoDePresenca(notasLancadas, 75.0));
         model.addAttribute("notasLancamentosTotal", notasLancadas.size());
+        model.addAttribute("mensalidadesLista", mensalidadesFinanceiro);
+        model.addAttribute("mensalidadesCobraveis", mensalidadesCobraveis);
+        model.addAttribute("mensalidadesRecebidoMesFmt", formatarMoeda(mensalidadesRecebidoMes));
+        model.addAttribute("mensalidadesAReceberMesFmt", formatarMoeda(mensalidadesAReceberMes));
+        model.addAttribute("mensalidadesAtrasadas", mensalidadesAtrasadas);
+        model.addAttribute("mensalidadesTaxaAdimplencia", mensalidadesTaxaAdimplencia);
         model.addAttribute("adminPanelInicial", panel == null || panel.isBlank() ? "overview" : panel);
         return "admin/dashboard";
+    }
+
+    @PostMapping("/admin/mensalidades/gerar-cobranca")
+    public String gerarCobrancaMensalidade(
+        @RequestParam("alunoId") UUID alunoId,
+        @RequestParam("mensalidadeId") UUID mensalidadeId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+            ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+
+            Mensalidade mensalidade = mensalidadeService.gerarPix(alunoId, mensalidadeId);
+            String qrCodeBase64 = mensalidadeService.gerarQrCodeBase64(mensalidade.getPixCopiaECola());
+
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_COBRANCA, "Cobrança PIX gerada com sucesso.");
+            redirectAttributes.addFlashAttribute("mensalidadePixCopiaCola", mensalidade.getPixCopiaECola());
+            redirectAttributes.addFlashAttribute("mensalidadePixQrBase64", qrCodeBase64);
+            redirectAttributes.addFlashAttribute("mensalidadePixId", mensalidade.getId());
+            redirectAttributes.addFlashAttribute("mensalidadePixAlunoId", alunoId);
+            redirectAttributes.addFlashAttribute("mensalidadePixStatus", mensalidade.getStatus() == null ? StatusMensalidade.PENDENTE.name() : mensalidade.getStatus().name());
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_COBRANCA, ex.getMessage());
+        }
+
+        return REDIRECT_MENSALIDADES_PANEL;
+    }
+
+    @PostMapping("/admin/mensalidades")
+    public String criarMensalidade(
+        @RequestParam("alunoId") UUID alunoId,
+        @RequestParam("valor") String valor,
+        @RequestParam("dataVencimento") String dataVencimento,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+            ValidationUtils.validarCampoStringObrigatorio(valor, "Valor da Mensalidade");
+            ValidationUtils.validarCampoStringObrigatorio(dataVencimento, "Data de Vencimento");
+
+            BigDecimal valorMonetario = parseValorMonetario(valor);
+            LocalDate vencimento = parseData(dataVencimento);
+            Mensalidade mensalidade = mensalidadeService.criarMensalidade(alunoId, valorMonetario, vencimento);
+
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_CRIACAO, "Mensalidade criada com sucesso. Gere o QR Code para cobrança.");
+            redirectAttributes.addFlashAttribute("mensalidadeCriadaAlunoId", alunoId);
+            redirectAttributes.addFlashAttribute("mensalidadeCriadaId", mensalidade.getId());
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_MENSALIDADES_PANEL;
+    }
+
+    @PostMapping("/admin/mensalidades/confirmar-pagamento")
+    public String confirmarPagamentoMensalidade(
+        @RequestParam("alunoId") UUID alunoId,
+        @RequestParam("mensalidadeId") UUID mensalidadeId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+            ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+
+            mensalidadeService.confirmarPagamento(alunoId, mensalidadeId);
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_FORM, "Pagamento confirmado e status atualizado para PAGO.");
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_MENSALIDADES_PANEL;
+    }
+
+    @PostMapping("/admin/mensalidades/registrar-pagamento")
+    public String registrarPagamentoMensalidade(
+        @RequestParam("alunoId") UUID alunoId,
+        @RequestParam("mensalidadeId") UUID mensalidadeId,
+        @RequestParam("metodo") String metodo,
+        @RequestParam(name = "dataPagamento", required = false) LocalDate dataPagamento,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+            ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+            ValidationUtils.validarCampoStringObrigatorio(metodo, "Método de Pagamento");
+
+            mensalidadeService.registrarPagamentoManual(alunoId, mensalidadeId, dataPagamento);
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_FORM,
+                "Pagamento registrado manualmente com sucesso (" + metodo.trim() + ").");
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_MENSALIDADES_PANEL;
+    }
+
+    @PostMapping("/admin/mensalidades/excluir")
+    public String excluirMensalidade(
+        @RequestParam("alunoId") UUID alunoId,
+        @RequestParam("mensalidadeId") UUID mensalidadeId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+            ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+
+            mensalidadeService.excluirMensalidade(alunoId, mensalidadeId);
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_FORM, "Cobrança excluída com sucesso.");
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_MENSALIDADES_PANEL;
     }
 
     @GetMapping("/admin/notas/boletim/pdf")
@@ -632,6 +754,31 @@ public class DashboardController {
             return UUID.fromString(valor.trim());
         } catch (IllegalArgumentException ex) {
             return null;
+        }
+    }
+
+    private String formatarMoeda(BigDecimal valor) {
+        BigDecimal seguro = valor == null ? BigDecimal.ZERO : valor;
+        NumberFormat formatador = NumberFormat.getCurrencyInstance(Locale.forLanguageTag("pt-BR"));
+        return formatador.format(seguro);
+    }
+
+    private BigDecimal parseValorMonetario(String valor) {
+        String normalizado = valor == null ? "" : valor.trim();
+        normalizado = normalizado.replace("R$", "").replace(" ", "").replace(".", "").replace(",", ".");
+
+        try {
+            return new BigDecimal(normalizado);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Valor da mensalidade inválido.");
+        }
+    }
+
+    private LocalDate parseData(String data) {
+        try {
+            return LocalDate.parse(data.trim());
+        } catch (DateTimeParseException | NullPointerException ex) {
+            throw new IllegalArgumentException("Data de vencimento inválida.");
         }
     }
 }

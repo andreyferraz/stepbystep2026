@@ -44,6 +44,9 @@ public class Mensalidade {
     @Column(columnDefinition = "TEXT")
     private String pixCopiaECola;
 
+    @Column(length = 25)
+    private String pixTxid;
+
     @ManyToOne
     private Aluno aluno;
 
