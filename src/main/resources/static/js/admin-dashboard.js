@@ -120,6 +120,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var mensalidadeAlunoSelect = document.getElementById("mensalidadeAluno");
     var mensalidadeFinanceiraSelect = document.getElementById("mensalidadeFinanceira");
     var copiarPixBtn = document.getElementById("copiarPixBtn");
+    var copiarPixBtnLabelPadrao = copiarPixBtn ? copiarPixBtn.textContent.trim() : "Copiar";
+    var copiarPixBtnResetTimer = null;
 
     // Defensive reset: prevents stale dialog/backdrop state after form submit + navigation.
     document.querySelectorAll(".modal-overlay").forEach(function (modal) {
@@ -228,6 +230,44 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (copiarPixBtn) {
+        function atualizarEstadoBotaoCopiarPix(copiado) {
+            copiarPixBtn.classList.toggle("is-copied", copiado);
+            copiarPixBtn.innerHTML = copiado
+                ? "<span class=\"copiar-pix-icon\" aria-hidden=\"true\">✓</span>Copiado"
+                : copiarPixBtnLabelPadrao;
+        }
+
+        function copiarFallback(texto) {
+            var areaTemporaria = document.createElement("textarea");
+            areaTemporaria.value = texto;
+            areaTemporaria.setAttribute("readonly", "");
+            areaTemporaria.style.position = "absolute";
+            areaTemporaria.style.left = "-9999px";
+            document.body.appendChild(areaTemporaria);
+            areaTemporaria.select();
+
+            var sucesso = false;
+            try {
+                sucesso = document.execCommand("copy");
+            } catch (error) {
+                sucesso = false;
+            }
+
+            document.body.removeChild(areaTemporaria);
+            return sucesso;
+        }
+
+        function onCopySuccess() {
+            atualizarEstadoBotaoCopiarPix(true);
+            if (copiarPixBtnResetTimer) {
+                clearTimeout(copiarPixBtnResetTimer);
+            }
+
+            copiarPixBtnResetTimer = window.setTimeout(function () {
+                atualizarEstadoBotaoCopiarPix(false);
+            }, 1800);
+        }
+
         copiarPixBtn.addEventListener("click", function () {
             var chavePix = copiarPixBtn.getAttribute("data-pix") || "";
             if (!chavePix) {
@@ -235,7 +275,18 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-                navigator.clipboard.writeText(chavePix);
+                navigator.clipboard.writeText(chavePix)
+                    .then(onCopySuccess)
+                    .catch(function () {
+                        if (copiarFallback(chavePix)) {
+                            onCopySuccess();
+                        }
+                    });
+                return;
+            }
+
+            if (copiarFallback(chavePix)) {
+                onCopySuccess();
             }
         });
     }

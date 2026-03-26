@@ -46,6 +46,9 @@ public class MercadoPagoPixApiService {
     @Value("${mercadopago.api.notification-url:}")
     private String notificationUrl;
 
+    @Value("${mercadopago.api.allow-live-token:false}")
+    private boolean allowLiveToken;
+
     public DynamicPixPayload criarCobrancaPix(Mensalidade mensalidade, String txid) {
         validarConfiguracao();
 
@@ -81,6 +84,15 @@ public class MercadoPagoPixApiService {
         }
         if (baseUrl == null || baseUrl.isBlank()) {
             throw new IllegalStateException("Configure mercadopago.api.base-url para gerar cobrança PIX dinâmica.");
+        }
+
+        String token = accessToken.trim().toUpperCase(Locale.ROOT);
+        if (!allowLiveToken && token.startsWith("APP_USR-")) {
+            throw new IllegalStateException(
+                "Token Mercado Pago em modo live detectado (prefixo APP_USR). "
+                    + "Para testes, use Access Token com prefixo TEST- "
+                    + "ou habilite mercadopago.api.allow-live-token=true conscientemente."
+            );
         }
     }
 

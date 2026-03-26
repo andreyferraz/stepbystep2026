@@ -965,6 +965,22 @@ body.admin-body {
     gap: 8px;
 }
 
+#copiarPixBtn {
+    min-width: 96px;
+}
+
+#copiarPixBtn.is-copied {
+    border-color: rgba(21, 128, 61, 0.35);
+    color: #14532d;
+    background: #ffffff;
+}
+
+.copiar-pix-icon {
+    display: inline-block;
+    margin-right: 6px;
+    font-weight: 800;
+}
+
 .mensalidade-pix-copy-row input {
     flex: 1;
     min-width: 0;

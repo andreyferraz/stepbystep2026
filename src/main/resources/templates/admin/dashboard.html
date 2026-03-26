@@ -947,17 +947,13 @@
                             </header>
                             <div class="admin-card-content">
                                 <ul class="mensalidades-list">
-                                    <li>
-                                        <strong>Isabela Rocha</strong>
-                                        <span>Vence em 16/03 - R$ 320</span>
+                                    <li th:each="mensalidade : ${mensalidadesProximosVencimentos}">
+                                        <strong th:text="${mensalidade.aluno != null ? mensalidade.aluno.nome : 'Aluno'}">Aluno</strong>
+                                        <span th:text="${'Vence em ' + #temporals.format(mensalidade.dataVencimento, 'dd/MM') + ' - R$ ' + (mensalidade.valor != null ? #numbers.formatDecimal(mensalidade.valor, 1, 2) : '0,00')}">Vence em 16/03 - R$ 320,00</span>
                                     </li>
-                                    <li>
-                                        <strong>Matheus Lima</strong>
-                                        <span>Vence em 17/03 - R$ 280</span>
-                                    </li>
-                                    <li>
-                                        <strong>Ana Clara</strong>
-                                        <span>Vence em 18/03 - R$ 290</span>
+                                    <li th:if="${#lists.isEmpty(mensalidadesProximosVencimentos)}">
+                                        <strong>Sem vencimentos proximos</strong>
+                                        <span>Nenhuma mensalidade pendente com vencimento a partir de hoje.</span>
                                     </li>
                                 </ul>
                             </div>
@@ -970,16 +966,16 @@
                             <div class="admin-card-content">
                                 <ul class="mensalidades-list">
                                     <li>
-                                        <strong>PIX enviado hoje</strong>
-                                        <span>9 cobrancas encaminhadas por WhatsApp.</span>
+                                        <strong>PIX gerado</strong>
+                                        <span th:text="${mensalidadesPixGeradasQtd + ' cobranca(s) com chave PIX criada.'}">0 cobranca(s) com chave PIX criada.</span>
                                     </li>
                                     <li>
-                                        <strong>Boletos gerados no mes</strong>
-                                        <span>34 documentos emitidos para alunos ativos.</span>
+                                        <strong>Pagamentos confirmados no mes</strong>
+                                        <span th:text="${mensalidadesPagasMesQtd + ' pagamento(s) baixados neste mes.'}">0 pagamento(s) baixados neste mes.</span>
                                     </li>
                                     <li>
                                         <strong>Cobrancas pendentes</strong>
-                                        <span>17 alunos aguardando confirmacao de pagamento.</span>
+                                        <span th:text="${mensalidadesPendentesQtd + ' mensalidade(s) aguardando confirmacao.'}">0 mensalidade(s) aguardando confirmacao.</span>
                                     </li>
                                 </ul>
                             </div>

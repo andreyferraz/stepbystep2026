@@ -116,6 +116,21 @@ public class DashboardController {
             .listarResumoTurmasEmAtencao(notasLancadas, 7.0, 75.0);
         List<Mensalidade> mensalidadesFinanceiro = mensalidadeService.listarMensalidadesFinanceiro();
         List<Mensalidade> mensalidadesCobraveis = mensalidadeService.listarMensalidadesCobraveis(mensalidadesFinanceiro);
+        List<Mensalidade> mensalidadesProximosVencimentos = mensalidadesCobraveis.stream()
+            .filter(mensalidade -> mensalidade.getDataVencimento() != null)
+            .filter(mensalidade -> !mensalidade.getDataVencimento().isBefore(LocalDate.now()))
+            .sorted(Comparator.comparing(Mensalidade::getDataVencimento))
+            .limit(3)
+            .toList();
+        long mensalidadesPixGeradas = mensalidadesFinanceiro.stream()
+            .filter(mensalidade -> mensalidade.getPixCopiaECola() != null && !mensalidade.getPixCopiaECola().isBlank())
+            .count();
+        long mensalidadesPagasMesQtd = mensalidadesFinanceiro.stream()
+            .filter(mensalidade -> mensalidade.getStatus() == StatusMensalidade.PAGO)
+            .filter(mensalidade -> mensalidade.getDataPagamento() != null)
+            .filter(mensalidade -> YearMonth.from(mensalidade.getDataPagamento().toLocalDate()).equals(YearMonth.now()))
+            .count();
+        long mensalidadesPendentesQtd = mensalidadesCobraveis.size();
         BigDecimal mensalidadesRecebidoMes = mensalidadeService.calcularTotalRecebidoNoMes(mensalidadesFinanceiro, YearMonth.now());
         BigDecimal mensalidadesAReceberMes = mensalidadeService.calcularTotalAReceberNoMes(mensalidadesFinanceiro, YearMonth.now());
         long mensalidadesAtrasadas = mensalidadeService.contarMensalidadesAtrasadas(mensalidadesFinanceiro, LocalDate.now());
@@ -150,6 +165,10 @@ public class DashboardController {
         model.addAttribute("notasLancamentosTotal", notasLancadas.size());
         model.addAttribute("mensalidadesLista", mensalidadesFinanceiro);
         model.addAttribute("mensalidadesCobraveis", mensalidadesCobraveis);
+        model.addAttribute("mensalidadesProximosVencimentos", mensalidadesProximosVencimentos);
+        model.addAttribute("mensalidadesPixGeradasQtd", mensalidadesPixGeradas);
+        model.addAttribute("mensalidadesPagasMesQtd", mensalidadesPagasMesQtd);
+        model.addAttribute("mensalidadesPendentesQtd", mensalidadesPendentesQtd);
         model.addAttribute("mensalidadesRecebidoMesFmt", formatarMoeda(mensalidadesRecebidoMes));
         model.addAttribute("mensalidadesAReceberMesFmt", formatarMoeda(mensalidadesAReceberMes));
         model.addAttribute("mensalidadesAtrasadas", mensalidadesAtrasadas);
