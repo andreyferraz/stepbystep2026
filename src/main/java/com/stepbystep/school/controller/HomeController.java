@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.stepbystep.school.model.PreInscricao;
-import com.stepbystep.school.service.PreInscricaoEmailService;
 import com.stepbystep.school.service.PreInscricaoService;
 import com.stepbystep.school.util.ValidationUtils;
 
@@ -17,14 +15,9 @@ import com.stepbystep.school.util.ValidationUtils;
 public class HomeController {
 
     private final PreInscricaoService preInscricaoService;
-    private final PreInscricaoEmailService preInscricaoEmailService;
 
-    public HomeController(
-        PreInscricaoService preInscricaoService,
-        PreInscricaoEmailService preInscricaoEmailService
-    ) {
+    public HomeController(PreInscricaoService preInscricaoService) {
         this.preInscricaoService = preInscricaoService;
-        this.preInscricaoEmailService = preInscricaoEmailService;
     }
 
     @GetMapping("/")
@@ -46,8 +39,11 @@ public class HomeController {
             ValidationUtils.validarCampoStringObrigatorio(nivel, "Nível de Inglês");
 
             String mensagem = montarMensagemPreInscricao(nivel, duvidas);
-            PreInscricao preInscricao = preInscricaoService.criarPreInscricao(nome, whatsapp, mensagem);
-            enviarNotificacaoPreInscricao(preInscricao, nivel, duvidas, redirectAttributes);
+            preInscricaoService.criarPreInscricao(nome, whatsapp, mensagem);
+            redirectAttributes.addFlashAttribute(
+                "preInscricaoFeedback",
+                "Pré-inscrição enviada com sucesso. Em breve entraremos em contato."
+            );
         } catch (IllegalArgumentException ex) {
             redirectAttributes.addFlashAttribute("preInscricaoErro", ex.getMessage());
         }
@@ -65,25 +61,5 @@ public class HomeController {
         }
 
         return mensagem.toString();
-    }
-
-    private void enviarNotificacaoPreInscricao(
-        PreInscricao preInscricao,
-        String nivel,
-        String duvidas,
-        RedirectAttributes redirectAttributes
-    ) {
-        try {
-            preInscricaoEmailService.enviarNotificacaoNovaPreInscricao(preInscricao, nivel, duvidas);
-            redirectAttributes.addFlashAttribute(
-                "preInscricaoFeedback",
-                "Pré-inscrição enviada com sucesso. Em breve entraremos em contato."
-            );
-        } catch (Exception ex) {
-            redirectAttributes.addFlashAttribute(
-                "preInscricaoErro",
-                "Pré-inscrição registrada, mas não foi possível enviar o e-mail automaticamente."
-            );
-        }
     }
 }

@@ -997,6 +997,23 @@ body {
     color: rgba(255, 255, 255, 0.92);
 }
 
+.lead-copy-feedback {
+    margin-top: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(147, 255, 196, 0.6);
+    background: rgba(18, 88, 49, 0.36);
+    padding: 10px 12px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #ecfff2;
+}
+
+.lead-copy-feedback-error {
+    border-color: rgba(255, 190, 190, 0.6);
+    background: rgba(125, 28, 28, 0.36);
+    color: #ffecec;
+}
+
 .lead-form {
     background: #ffffff;
     border-radius: 16px;
@@ -1045,24 +1062,6 @@ body {
 
 .form-field-full {
     grid-column: 1 / -1;
-}
-
-.lead-form-feedback {
-    grid-column: 1 / -1;
-    margin: 0;
-    border-radius: 10px;
-    padding: 10px 12px;
-    font-size: 0.92rem;
-    font-weight: 700;
-    color: #0f5132;
-    background: #d1e7dd;
-    border: 1px solid #badbcc;
-}
-
-.lead-form-feedback-error {
-    color: #842029;
-    background: #f8d7da;
-    border-color: #f5c2c7;
 }
 
 .lead-submit {

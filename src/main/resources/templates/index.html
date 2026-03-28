@@ -190,17 +190,16 @@
                     Preencha os dados abaixo para demonstrar seu interesse. Em breve, entraremos em contato
                     para orientar a melhor turma para o seu momento.
                 </p>
+
+                <p class="lead-copy-feedback" th:if="${preInscricaoFeedback != null}" th:text="${preInscricaoFeedback}">
+                    Pré-inscrição enviada com sucesso. Em breve entraremos em contato.
+                </p>
+                <p class="lead-copy-feedback lead-copy-feedback-error" th:if="${preInscricaoErro != null}" th:text="${preInscricaoErro}">
+                    Não foi possível processar sua pré-inscrição.
+                </p>
             </div>
 
-            <form class="lead-form" th:action="@{/pre-inscricao}" action="/pre-inscricao" method="post">
-                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
-                <p class="lead-form-feedback" th:if="${preInscricaoFeedback != null}" th:text="${preInscricaoFeedback}">
-                    Pré-inscrição enviada com sucesso.
-                </p>
-                <p class="lead-form-feedback lead-form-feedback-error" th:if="${preInscricaoErro != null}" th:text="${preInscricaoErro}">
-                    Não foi possível enviar sua pré-inscrição.
-                </p>
+            <form class="lead-form" action="/pre-inscricao" method="post">
 
                 <div class="form-field">
                     <label for="lead-nome">Nome</label>
