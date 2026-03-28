@@ -210,11 +210,79 @@
     });
 }
 
+    function initPreInscricaoForm() {
+        var form = document.querySelector('[data-pre-inscricao-form]');
+        if (!form) {
+            return;
+        }
+
+        var feedback = form.querySelector('[data-pre-inscricao-feedback]');
+        var submitButton = form.querySelector('.lead-submit');
+        if (!feedback || !submitButton) {
+            return;
+        }
+
+        function mostrarFeedback(mensagem, sucesso) {
+            feedback.hidden = false;
+            feedback.textContent = mensagem;
+            feedback.classList.toggle('lead-submit-feedback-error', !sucesso);
+            feedback.setAttribute('aria-live', sucesso ? 'polite' : 'assertive');
+        }
+
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Enviando...';
+            feedback.hidden = true;
+            feedback.classList.remove('lead-submit-feedback-error');
+
+            try {
+                var resposta = await fetch(form.action, {
+                    method: form.method || 'POST',
+                    body: new FormData(form),
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                var dados = null;
+                try {
+                    dados = await resposta.json();
+                } catch (_) {
+                    dados = null;
+                }
+
+                if (!resposta.ok) {
+                    var mensagemErro = dados && dados.mensagem
+                        ? dados.mensagem
+                        : 'Nao foi possivel processar sua pre-inscricao. Tente novamente.';
+                    mostrarFeedback(mensagemErro, false);
+                    return;
+                }
+
+                var mensagemSucesso = dados && dados.mensagem
+                    ? dados.mensagem
+                    : 'Pre-inscricao enviada com sucesso. Em breve entraremos em contato.';
+                mostrarFeedback(mensagemSucesso, true);
+                form.reset();
+            } catch (_) {
+                mostrarFeedback('Falha de conexao. Verifique sua internet e tente novamente.', false);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.textContent = 'Enviar Interesse';
+            }
+        });
+    }
+
     initSpaceCarousel();
 
     initGallery();
 
     initPasswordToggle();
+
+    initPreInscricaoForm();
 
     if (!toggle || !menu) {
         return;

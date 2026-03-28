@@ -190,16 +190,9 @@
                     Preencha os dados abaixo para demonstrar seu interesse. Em breve, entraremos em contato
                     para orientar a melhor turma para o seu momento.
                 </p>
-
-                <p class="lead-copy-feedback" th:if="${preInscricaoFeedback != null}" th:text="${preInscricaoFeedback}">
-                    Pré-inscrição enviada com sucesso. Em breve entraremos em contato.
-                </p>
-                <p class="lead-copy-feedback lead-copy-feedback-error" th:if="${preInscricaoErro != null}" th:text="${preInscricaoErro}">
-                    Não foi possível processar sua pré-inscrição.
-                </p>
             </div>
 
-            <form class="lead-form" action="/pre-inscricao" method="post">
+            <form class="lead-form" action="/pre-inscricao" method="post" data-pre-inscricao-form>
 
                 <div class="form-field">
                     <label for="lead-nome">Nome</label>
@@ -228,6 +221,19 @@
                 </div>
 
                 <button class="lead-submit" type="submit">Enviar Interesse</button>
+
+                <output
+                    class="lead-submit-feedback"
+                    data-pre-inscricao-feedback
+                    aria-live="polite"
+                    hidden
+                ></output>
+                <output class="lead-submit-feedback" th:if="${preInscricaoFeedback != null}" th:text="${preInscricaoFeedback}" aria-live="polite">
+                    Pré-inscrição enviada com sucesso. Em breve entraremos em contato.
+                </output>
+                <output class="lead-submit-feedback lead-submit-feedback-error" th:if="${preInscricaoErro != null}" th:text="${preInscricaoErro}" aria-live="assertive">
+                    Não foi possível processar sua pré-inscrição.
+                </output>
             </form>
         </div>
     </section>

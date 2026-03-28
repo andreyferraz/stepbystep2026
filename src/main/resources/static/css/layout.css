@@ -997,7 +997,8 @@ body {
     color: rgba(255, 255, 255, 0.92);
 }
 
-.lead-copy-feedback {
+.lead-copy-feedback,
+.lead-submit-feedback {
     margin-top: 12px;
     border-radius: 10px;
     border: 1px solid rgba(147, 255, 196, 0.6);
@@ -1008,7 +1009,8 @@ body {
     color: #ecfff2;
 }
 
-.lead-copy-feedback-error {
+.lead-copy-feedback-error,
+.lead-submit-feedback-error {
     border-color: rgba(255, 190, 190, 0.6);
     background: rgba(125, 28, 28, 0.36);
     color: #ffecec;
@@ -1080,6 +1082,12 @@ body {
 .lead-submit:focus-visible {
     filter: brightness(1.04);
     outline: none;
+}
+
+.lead-submit[disabled] {
+    cursor: wait;
+    opacity: 0.85;
+    filter: saturate(0.78);
 }
 
 .gallery-section {
