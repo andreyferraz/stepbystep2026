@@ -37,6 +37,7 @@ public class SecurityConfig {
                     "/galeria",
                     "/livros",
                     "/contato",
+                    "/pre-inscricao",
                     "/login",
                     "/acesso-negado",
                     "/api/webhooks/**",
