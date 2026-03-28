@@ -1158,56 +1158,53 @@
         <article class="admin-card">
             <div class="admin-card-content">
                 <div class="section-head">
-                    <h2>Controle de Inadimplencia</h2>
+                    <h2>Controle de Inadimplência</h2>
                     <div class="inadimplencia-actions">
                         <button type="button" class="admin-secondary-btn" data-open-modal="inadimplencia-lembrete">Enviar lembrete</button>
                         <button type="button" class="admin-primary-btn" data-open-modal="inadimplencia-acordo">Registrar acordo</button>
                     </div>
                 </div>
 
-                <output class="admin-feedback" id="inadimplenciaLembreteFeedback" aria-live="polite"></output>
-                <output class="admin-feedback" id="inadimplenciaAcordoFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="inadimplenciaLembreteFeedback" aria-live="polite" th:text="${inadimplenciaLembreteFeedback}"></output>
+                <output class="admin-feedback" id="inadimplenciaAcordoFeedback" aria-live="polite" th:text="${inadimplenciaAcordoFeedback}"></output>
 
-                <div class="inadimplencia-toolbar">
-                    <input type="search" class="admin-search" placeholder="Pesquisar por aluno, responsavel ou telefone">
-                    <select class="inadimplencia-filter" aria-label="Filtrar por atraso">
-                        <option value="">Todas as faixas</option>
-                        <option value="ate15">Ate 15 dias</option>
-                        <option value="16a30">16 a 30 dias</option>
-                        <option value="31a60">31 a 60 dias</option>
-                        <option value="60mais">Mais de 60 dias</option>
+                <form class="inadimplencia-toolbar" th:action="@{/admin/dashboard}" action="/admin/dashboard" method="get">
+                    <input type="hidden" name="panel" value="inadimplencia">
+                    <input type="search" class="admin-search" name="inadBusca" th:value="${inadBusca}" placeholder="Pesquisar por aluno, responsavel, telefone ou turma">
+                    <select class="inadimplencia-filter" name="inadFaixa" aria-label="Filtrar por atraso">
+                        <option value="" th:selected="${#strings.isEmpty(inadFaixa)}">Todas as faixas</option>
+                        <option value="ate15" th:selected="${inadFaixa == 'ate15'}">Ate 15 dias</option>
+                        <option value="16a30" th:selected="${inadFaixa == '16a30'}">16 a 30 dias</option>
+                        <option value="31a60" th:selected="${inadFaixa == '31a60'}">31 a 60 dias</option>
+                        <option value="60mais" th:selected="${inadFaixa == '60mais'}">Mais de 60 dias</option>
                     </select>
-                    <select class="inadimplencia-filter" aria-label="Filtrar por status de contato">
-                        <option value="">Todos os contatos</option>
-                        <option value="sem-contato">Sem contato</option>
-                        <option value="negociando">Negociando</option>
-                        <option value="acordo">Com acordo</option>
-                    </select>
-                </div>
+                    <button type="submit" class="admin-primary-btn">Filtrar</button>
+                    <a th:if="${!#strings.isEmpty(inadBusca) || !#strings.isEmpty(inadFaixa)}" th:href="@{/admin/dashboard(panel='inadimplencia')}" href="/admin/dashboard?panel=inadimplencia" class="admin-secondary-btn">Limpar</a>
+                </form>
 
                 <div class="inadimplencia-metric-grid">
                     <article class="inadimplencia-metric-card">
                         <p>Alunos inadimplentes</p>
-                        <strong>17</strong>
+                        <strong th:text="${inadimplenciaAlunosQtd}">0</strong>
                     </article>
                     <article class="inadimplencia-metric-card">
                         <p>Valor total em aberto</p>
-                        <strong>R$ 8.940</strong>
+                        <strong th:text="${inadimplenciaValorAbertoFmt}">R$ 0,00</strong>
                     </article>
                     <article class="inadimplencia-metric-card">
-                        <p>Acordos ativos</p>
-                        <strong>6</strong>
+                        <p>Casos críticos (&gt; 30 dias)</p>
+                        <strong th:text="${inadimplenciaCasosCriticosQtd}">0</strong>
                     </article>
                     <article class="inadimplencia-metric-card">
-                        <p>Lembretes enviados hoje</p>
-                        <strong>12</strong>
+                        <p>Títulos em atraso</p>
+                        <strong th:text="${inadimplenciaTitulosAtrasoQtd}">0</strong>
                     </article>
                 </div>
 
                 <div class="inadimplencia-grid">
                     <article class="admin-card inadimplencia-block">
                         <header class="admin-card-header">
-                            <h3>Carteira de cobranca</h3>
+                            <h3>Carteira de cobrança</h3>
                         </header>
                         <div class="admin-card-content">
                             <table class="admin-table">
@@ -1215,79 +1212,68 @@
                                     <tr>
                                         <th>Aluno</th>
                                         <th>Turma</th>
+                                        <th>Responsável</th>
+                                        <th>Telefone</th>
                                         <th>Valor em aberto</th>
                                         <th>Dias em atraso</th>
-                                        <th>Ultimo contato</th>
                                         <th>Status</th>
-                                        <th>Acoes</th>
+                                        <th>Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Gabriel Souza</td>
-                                        <td>Kids 1</td>
-                                        <td>R$ 580</td>
-                                        <td>31</td>
-                                        <td>10/03/2026</td>
-                                        <td><span class="status-chip warn">Negociando</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="inadimplencia-acordo">Acordo</button></td>
+                                    <tr th:each="item : ${inadimplenciaCarteira}">
+                                        <td th:text="${item.alunoNome}">Aluno</td>
+                                        <td th:text="${item.turmaNome}">Turma</td>
+                                        <td th:text="${item.responsavel}">Responsável</td>
+                                        <td th:text="${item.telefone}">Telefone</td>
+                                        <td th:text="${'R$ ' + #numbers.formatDecimal(item.valorEmAberto, 1, 2)}">R$ 0,00</td>
+                                        <td th:text="${item.diasEmAtraso}">0</td>
+                                        <td>
+                                            <span class="status-chip" th:classappend="${item.diasEmAtraso > 30} ? ' warn' : ' success'" th:text="${item.status}">Status</span>
+                                        </td>
+                                        <td>
+                                            <div class="action-icons">
+                                                <button type="button"
+                                                    class="admin-secondary-btn admin-inline-btn"
+                                                    data-open-modal="inadimplencia-lembrete"
+                                                    th:attr="data-aluno-id=${item.alunoId},data-mensalidade-id=${item.mensalidadeId}">
+                                                    Cobrar
+                                                </button>
+                                                <button type="button"
+                                                    class="admin-secondary-btn admin-inline-btn"
+                                                    data-open-modal="inadimplencia-acordo"
+                                                    th:attr="data-aluno-id=${item.alunoId},data-mensalidade-id=${item.mensalidadeId}">
+                                                    Acordo
+                                                </button>
+                                            </div>
+                                        </td>
                                     </tr>
-                                    <tr>
-                                        <td>Isabela Rocha</td>
-                                        <td>Adults 1</td>
-                                        <td>R$ 320</td>
-                                        <td>14</td>
-                                        <td>15/03/2026</td>
-                                        <td><span class="status-chip warn">Lembrete enviado</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="inadimplencia-lembrete">Cobrar</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Matheus Lima</td>
-                                        <td>Teens 2</td>
-                                        <td>R$ 840</td>
-                                        <td>63</td>
-                                        <td>08/03/2026</td>
-                                        <td><span class="status-chip warn">Sem retorno</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="inadimplencia-lembrete">Reenviar</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Beatriz Costa</td>
-                                        <td>Kids 2</td>
-                                        <td>R$ 290</td>
-                                        <td>8</td>
-                                        <td>16/03/2026</td>
-                                        <td><span class="status-chip success">Acordo fechado</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Historico</button></td>
+                                    <tr th:if="${#lists.isEmpty(inadimplenciaCarteira)}">
+                                        <td colspan="8">Nenhum caso de inadimplência encontrado para os filtros selecionados.</td>
                                     </tr>
                                 </tbody>
                             </table>
-
-                            <div class="pagination">
-                                <button type="button">Anterior</button>
-                                <span>Pagina 1 de 3</span>
-                                <button type="button">Proxima</button>
-                            </div>
                         </div>
                     </article>
 
                     <aside class="inadimplencia-side" aria-label="Resumo de inadimplencia">
                         <article class="admin-card inadimplencia-block">
                             <header class="admin-card-header">
-                                <h3>Fila de contato hoje</h3>
+                                <h3>Resumo da carteira</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="inadimplencia-list">
                                     <li>
-                                        <strong>09:30 - Gabriel Souza</strong>
-                                        <span>Retorno solicitado pela responsavel.</span>
+                                        <strong>Alunos em atraso</strong>
+                                        <span th:text="${inadimplenciaAlunosQtd + ' aluno(s) no filtro atual.'}">0 aluno(s)</span>
                                     </li>
                                     <li>
-                                        <strong>11:00 - Matheus Lima</strong>
-                                        <span>Enviar segunda proposta de acordo.</span>
+                                        <strong>Títulos vencidos</strong>
+                                        <span th:text="${inadimplenciaTitulosAtrasoQtd + ' mensalidade(s) em atraso.'}">0 mensalidade(s)</span>
                                     </li>
                                     <li>
-                                        <strong>15:40 - Isabela Rocha</strong>
-                                        <span>Confirmar previsao de pagamento.</span>
+                                        <strong>Valor total aberto</strong>
+                                        <span th:text="${inadimplenciaValorAbertoFmt}">R$ 0,00</span>
                                     </li>
                                 </ul>
                             </div>
@@ -1295,21 +1281,25 @@
 
                         <article class="admin-card inadimplencia-block">
                             <header class="admin-card-header">
-                                <h3>Distribuicao por atraso</h3>
+                                <h3>Distribuição por atraso</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="inadimplencia-list">
                                     <li>
                                         <strong>Ate 15 dias</strong>
-                                        <span>6 alunos - R$ 1.860</span>
+                                        <span th:text="${inadimplenciaFaixaAte15Qtd + ' aluno(s) - ' + inadimplenciaFaixaAte15ValorFmt}">0 aluno(s) - R$ 0,00</span>
                                     </li>
                                     <li>
                                         <strong>16 a 30 dias</strong>
-                                        <span>5 alunos - R$ 2.450</span>
+                                        <span th:text="${inadimplenciaFaixa16a30Qtd + ' aluno(s) - ' + inadimplenciaFaixa16a30ValorFmt}">0 aluno(s) - R$ 0,00</span>
                                     </li>
                                     <li>
-                                        <strong>Acima de 30 dias</strong>
-                                        <span>6 alunos - R$ 4.630</span>
+                                        <strong>31 a 60 dias</strong>
+                                        <span th:text="${inadimplenciaFaixa31a60Qtd + ' aluno(s) - ' + inadimplenciaFaixa31a60ValorFmt}">0 aluno(s) - R$ 0,00</span>
+                                    </li>
+                                    <li>
+                                        <strong>Mais de 60 dias</strong>
+                                        <span th:text="${inadimplenciaFaixa60MaisQtd + ' aluno(s) - ' + inadimplenciaFaixa60MaisValorFmt}">0 aluno(s) - R$ 0,00</span>
                                     </li>
                                 </ul>
                             </div>
@@ -1323,21 +1313,36 @@
     <dialog class="modal-overlay" data-modal="inadimplencia-lembrete" aria-labelledby="modalLembreteInadimplenciaTitulo">
         <div class="modal-card">
             <div class="modal-head">
-                <h3 id="modalLembreteInadimplenciaTitulo">Enviar lembrete de cobranca</h3>
+                <h3 id="modalLembreteInadimplenciaTitulo">Enviar lembrete de cobrança</h3>
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formEnviarLembreteInadimplencia" th:action="@{/admin/inadimplencia/enviar-lembrete}" action="/admin/inadimplencia/enviar-lembrete" method="post" data-static-submit="true" data-feedback-target="inadimplenciaLembreteFeedback">
+            <form id="formEnviarLembreteInadimplencia" th:action="@{/admin/inadimplencia/enviar-lembrete}" action="/admin/inadimplencia/enviar-lembrete" method="post">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="modal-body">
                     <div class="modal-field modal-field-full">
                         <label for="inadimplenciaAlunoLembrete">Aluno</label>
-                        <select id="inadimplenciaAlunoLembrete" name="aluno" required>
-                            <option value="">Selecione</option>
-                            <option value="gabriel-souza">Gabriel Souza</option>
-                            <option value="isabela-rocha">Isabela Rocha</option>
-                            <option value="matheus-lima">Matheus Lima</option>
+                        <select id="inadimplenciaAlunoLembrete" name="alunoId" required>
+                            <option value="" th:text="${#lists.isEmpty(inadimplenciaCarteira) ? 'Nenhum aluno em atraso' : 'Selecione'}">Selecione</option>
+                            <option th:each="item : ${inadimplenciaCarteira}"
+                                th:value="${item.alunoId}"
+                                th:text="${item.alunoNome + ' - ' + item.diasEmAtraso + ' dia(s) de atraso'}">
+                                Aluno
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="inadimplenciaMensalidadeLembrete">Mensalidade em atraso</label>
+                        <select id="inadimplenciaMensalidadeLembrete" name="mensalidadeId" required>
+                            <option value="" th:text="${#lists.isEmpty(inadimplenciaMensalidades) ? 'Nenhuma mensalidade em atraso' : 'Selecione'}">Selecione</option>
+                            <option th:each="mensalidade : ${inadimplenciaMensalidades}"
+                                th:value="${mensalidade.id}"
+                                th:attr="data-aluno-id=${mensalidade.aluno != null ? mensalidade.aluno.id : ''}"
+                                th:text="${(mensalidade.aluno != null ? mensalidade.aluno.nome : 'Aluno') + ' | Venc: ' + (mensalidade.dataVencimento != null ? #temporals.format(mensalidade.dataVencimento, 'dd/MM/yyyy') : '-') + ' | R$ ' + (mensalidade.valor != null ? #numbers.formatDecimal(mensalidade.valor, 1, 2) : '0,00')}">
+                                Mensalidade
+                            </option>
                         </select>
                     </div>
 
@@ -1367,7 +1372,7 @@
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Fluxo estatico para demonstracao. Integre ao backend para disparar mensagens reais e registrar historico de contato.</small>
+                        <small class="modal-help-text">O lembrete e registrado no backend para controle de cobranca. Integre um gateway (WhatsApp/E-mail) para envio automatico.</small>
                     </div>
                 </div>
 
@@ -1386,17 +1391,32 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formRegistrarAcordoInadimplencia" th:action="@{/admin/inadimplencia/acordo}" action="/admin/inadimplencia/acordo" method="post" data-static-submit="true" data-feedback-target="inadimplenciaAcordoFeedback">
+            <form id="formRegistrarAcordoInadimplencia" th:action="@{/admin/inadimplencia/acordo}" action="/admin/inadimplencia/acordo" method="post">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="modal-body">
                     <div class="modal-field">
                         <label for="inadimplenciaAlunoAcordo">Aluno</label>
-                        <select id="inadimplenciaAlunoAcordo" name="aluno" required>
-                            <option value="">Selecione</option>
-                            <option value="gabriel-souza">Gabriel Souza</option>
-                            <option value="matheus-lima">Matheus Lima</option>
-                            <option value="beatriz-costa">Beatriz Costa</option>
+                        <select id="inadimplenciaAlunoAcordo" name="alunoId" required>
+                            <option value="" th:text="${#lists.isEmpty(inadimplenciaCarteira) ? 'Nenhum aluno em atraso' : 'Selecione'}">Selecione</option>
+                            <option th:each="item : ${inadimplenciaCarteira}"
+                                th:value="${item.alunoId}"
+                                th:text="${item.alunoNome + ' - ' + item.titulosEmAtraso + ' titulo(s)'}">
+                                Aluno
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="inadimplenciaMensalidadeAcordo">Mensalidade base</label>
+                        <select id="inadimplenciaMensalidadeAcordo" name="mensalidadeId" required>
+                            <option value="" th:text="${#lists.isEmpty(inadimplenciaMensalidades) ? 'Nenhuma mensalidade em atraso' : 'Selecione'}">Selecione</option>
+                            <option th:each="mensalidade : ${inadimplenciaMensalidades}"
+                                th:value="${mensalidade.id}"
+                                th:attr="data-aluno-id=${mensalidade.aluno != null ? mensalidade.aluno.id : ''}"
+                                th:text="${(mensalidade.aluno != null ? mensalidade.aluno.nome : 'Aluno') + ' | Venc: ' + (mensalidade.dataVencimento != null ? #temporals.format(mensalidade.dataVencimento, 'dd/MM/yyyy') : '-') + ' | R$ ' + (mensalidade.valor != null ? #numbers.formatDecimal(mensalidade.valor, 1, 2) : '0,00')}">
+                                Mensalidade
+                            </option>
                         </select>
                     </div>
 
@@ -1422,27 +1442,27 @@
                     </div>
 
                     <div class="modal-field">
-                        <label for="inadimplenciaCanalAcordo">Canal da negociacao</label>
+                        <label for="inadimplenciaCanalAcordo">Canal da negociação</label>
                         <select id="inadimplenciaCanalAcordo" name="canal" required>
                             <option value="">Selecione</option>
                             <option value="whatsapp">WhatsApp</option>
-                            <option value="telefone">Ligacao</option>
+                            <option value="telefone">Ligação</option>
                             <option value="presencial">Presencial</option>
                         </select>
                     </div>
 
                     <div class="modal-field">
-                        <label for="inadimplenciaResponsavelAcordo">Responsavel no atendimento</label>
+                        <label for="inadimplenciaResponsavelAcordo">Responsável no atendimento</label>
                         <input id="inadimplenciaResponsavelAcordo" name="responsavel" type="text" placeholder="Nome de quem negociou" required>
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <label for="inadimplenciaObservacaoAcordo">Observacoes</label>
+                        <label for="inadimplenciaObservacaoAcordo">Observações</label>
                         <textarea id="inadimplenciaObservacaoAcordo" name="observacoes" rows="3" placeholder="Condicoes combinadas, desconto aplicado e detalhes do compromisso."></textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para salvar acordo, recalcular saldo devedor e controlar vencimentos futuros.</small>
+                        <small class="modal-help-text">Ao salvar, o backend renegocia a mensalidade selecionada e cria novas parcelas pendentes com os vencimentos do acordo.</small>
                     </div>
                 </div>
 

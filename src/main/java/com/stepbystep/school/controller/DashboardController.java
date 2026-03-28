@@ -49,7 +49,10 @@ import lombok.RequiredArgsConstructor;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Controller
 @RequiredArgsConstructor
@@ -60,6 +63,7 @@ public class DashboardController {
     private static final String REDIRECT_MATERIAIS_PANEL = "redirect:/admin/dashboard?panel=materiais";
     private static final String REDIRECT_NOTAS_PANEL = "redirect:/admin/dashboard?panel=notas";
     private static final String REDIRECT_MENSALIDADES_PANEL = "redirect:/admin/dashboard?panel=mensalidades";
+    private static final String REDIRECT_INADIMPLENCIA_PANEL = "redirect:/admin/dashboard?panel=inadimplencia";
     private static final String CAMPO_ID_ALUNO = "ID do Aluno";
     private static final String CAMPO_ID_TURMA = "ID da Turma";
     private static final String CAMPO_ID_MATERIAL = "ID do Material";
@@ -69,6 +73,8 @@ public class DashboardController {
     private static final String FEEDBACK_MENSALIDADE_FORM = "mensalidadeFormFeedback";
     private static final String FEEDBACK_MENSALIDADE_CRIACAO = "mensalidadeCriacaoFeedback";
     private static final String FEEDBACK_MENSALIDADE_COBRANCA = "mensalidadeCobrancaFeedback";
+    private static final String FEEDBACK_INADIMPLENCIA_LEMBRETE = "inadimplenciaLembreteFeedback";
+    private static final String FEEDBACK_INADIMPLENCIA_ACORDO = "inadimplenciaAcordoFeedback";
     private static final String MSG_ALUNO_NAO_ENCONTRADO = "Aluno não encontrado com ID: ";
     private static final String MSG_USUARIO_ALUNO_NAO_ENCONTRADO = "Usuário do aluno não encontrado.";
 
@@ -90,22 +96,18 @@ public class DashboardController {
         @RequestParam(name = "materialTurmaId", required = false) String materialTurmaId,
         @RequestParam(name = "notaBusca", required = false) String notaBusca,
         @RequestParam(name = "notaTurmaId", required = false) String notaTurmaId,
+        @RequestParam(name = "inadBusca", required = false) String inadBusca,
+        @RequestParam(name = "inadFaixa", required = false) String inadFaixa,
         @RequestParam(name = "notaBimestre", required = false) Integer notaBimestre,
         Model model
     ) {
         String alunoBuscaNormalizada = alunoBusca == null ? "" : alunoBusca.trim().toLowerCase(Locale.ROOT);
+        String inadBuscaNormalizada = inadBusca == null ? "" : inadBusca.trim().toLowerCase(Locale.ROOT);
+        String inadFaixaNormalizada = inadFaixa == null ? "" : inadFaixa.trim().toLowerCase(Locale.ROOT);
         UUID materialTurmaIdFiltrada = parseUuidOpcional(materialTurmaId);
         UUID notaTurmaIdFiltrada = parseUuidOpcional(notaTurmaId);
 
-        List<Usuario> usuariosAlunos = usuarioService.listarUsuarios().stream()
-            .filter(usuario -> usuario.getRole() == Role.ALUNO)
-            .filter(usuario -> usuario.getAluno() != null)
-            .filter(usuario -> alunoBuscaNormalizada.isEmpty()
-                || contemTexto(usuario.getNome(), alunoBuscaNormalizada)
-                || contemTexto(usuario.getAluno().getTelefone(), alunoBuscaNormalizada)
-                || (usuario.getAluno().getTurma() != null && contemTexto(usuario.getAluno().getTurma().getNome(), alunoBuscaNormalizada)))
-            .sorted(Comparator.comparing(Usuario::getNome, String.CASE_INSENSITIVE_ORDER))
-            .toList();
+        List<Usuario> usuariosAlunos = listarUsuariosAlunosFiltrados(alunoBuscaNormalizada);
 
         List<MaterialEstudo> materiaisEstudo = materialEstudoService
             .listarMateriaisFiltrados(materialBusca, materialTurmaIdFiltrada);
@@ -116,12 +118,7 @@ public class DashboardController {
             .listarResumoTurmasEmAtencao(notasLancadas, 7.0, 75.0);
         List<Mensalidade> mensalidadesFinanceiro = mensalidadeService.listarMensalidadesFinanceiro();
         List<Mensalidade> mensalidadesCobraveis = mensalidadeService.listarMensalidadesCobraveis(mensalidadesFinanceiro);
-        List<Mensalidade> mensalidadesProximosVencimentos = mensalidadesCobraveis.stream()
-            .filter(mensalidade -> mensalidade.getDataVencimento() != null)
-            .filter(mensalidade -> !mensalidade.getDataVencimento().isBefore(LocalDate.now()))
-            .sorted(Comparator.comparing(Mensalidade::getDataVencimento))
-            .limit(3)
-            .toList();
+        List<Mensalidade> mensalidadesProximosVencimentos = listarProximosVencimentos(mensalidadesCobraveis, LocalDate.now());
         long mensalidadesPixGeradas = mensalidadesFinanceiro.stream()
             .filter(mensalidade -> mensalidade.getPixCopiaECola() != null && !mensalidade.getPixCopiaECola().isBlank())
             .count();
@@ -134,6 +131,12 @@ public class DashboardController {
         BigDecimal mensalidadesRecebidoMes = mensalidadeService.calcularTotalRecebidoNoMes(mensalidadesFinanceiro, YearMonth.now());
         BigDecimal mensalidadesAReceberMes = mensalidadeService.calcularTotalAReceberNoMes(mensalidadesFinanceiro, YearMonth.now());
         long mensalidadesAtrasadas = mensalidadeService.contarMensalidadesAtrasadas(mensalidadesFinanceiro, LocalDate.now());
+        InadimplenciaPainelResumo inadimplenciaResumo = montarResumoInadimplencia(
+            mensalidadesFinanceiro,
+            inadBuscaNormalizada,
+            inadFaixaNormalizada,
+            LocalDate.now()
+        );
         int mensalidadesTaxaAdimplencia = mensalidadeService.calcularTaxaAdimplencia(mensalidadesFinanceiro);
         long turmasComMateriais = materiaisEstudo.stream()
             .map(MaterialEstudo::getTurma)
@@ -146,15 +149,15 @@ public class DashboardController {
         model.addAttribute("turmas", turmaService.listarTurmasFiltradas(turmaBusca));
         model.addAttribute("usuariosAlunos", usuariosAlunos);
         model.addAttribute("materiaisEstudo", materiaisEstudo);
-        model.addAttribute("alunoBusca", alunoBusca == null ? "" : alunoBusca.trim());
-        model.addAttribute("turmaBusca", turmaBusca == null ? "" : turmaBusca.trim());
-        model.addAttribute("materialBusca", materialBusca == null ? "" : materialBusca.trim());
-        model.addAttribute("materialTurmaId", materialTurmaId == null ? "" : materialTurmaId.trim());
+        model.addAttribute("alunoBusca", textoFiltro(alunoBusca));
+        model.addAttribute("turmaBusca", textoFiltro(turmaBusca));
+        model.addAttribute("materialBusca", textoFiltro(materialBusca));
+        model.addAttribute("materialTurmaId", textoFiltro(materialTurmaId));
         model.addAttribute("materiaisTotal", materiaisEstudo.size());
         model.addAttribute("materiaisTurmasCount", turmasComMateriais);
         model.addAttribute("materiaisUploadsSemana", materialEstudoService.contarUploadsUltimosDias(materiaisEstudo, 7));
-        model.addAttribute("notaBusca", notaBusca == null ? "" : notaBusca.trim());
-        model.addAttribute("notaTurmaId", notaTurmaId == null ? "" : notaTurmaId.trim());
+        model.addAttribute("notaBusca", textoFiltro(notaBusca));
+        model.addAttribute("notaTurmaId", textoFiltro(notaTurmaId));
         model.addAttribute("notaBimestre", notaBimestre == null ? "" : notaBimestre);
         model.addAttribute("notasLancadas", notasLancadas);
         model.addAttribute("notasHoje", notasHoje);
@@ -173,8 +176,123 @@ public class DashboardController {
         model.addAttribute("mensalidadesAReceberMesFmt", formatarMoeda(mensalidadesAReceberMes));
         model.addAttribute("mensalidadesAtrasadas", mensalidadesAtrasadas);
         model.addAttribute("mensalidadesTaxaAdimplencia", mensalidadesTaxaAdimplencia);
+        model.addAttribute("inadBusca", textoFiltro(inadBusca));
+        model.addAttribute("inadFaixa", textoFiltro(inadFaixa));
+        model.addAttribute("inadimplenciaCarteira", inadimplenciaResumo.carteira());
+        model.addAttribute("inadimplenciaMensalidades", inadimplenciaResumo.mensalidadesEmAtraso());
+        model.addAttribute("inadimplenciaAlunosQtd", inadimplenciaResumo.carteira().size());
+        model.addAttribute("inadimplenciaTitulosAtrasoQtd", inadimplenciaResumo.titulosEmAtraso());
+        model.addAttribute("inadimplenciaValorAbertoFmt", formatarMoeda(inadimplenciaResumo.valorEmAberto()));
+        model.addAttribute("inadimplenciaCasosCriticosQtd", inadimplenciaResumo.casosCriticos());
+        model.addAttribute("inadimplenciaFaixaAte15Qtd", inadimplenciaResumo.faixaAte15Qtd());
+        model.addAttribute("inadimplenciaFaixa16a30Qtd", inadimplenciaResumo.faixa16a30Qtd());
+        model.addAttribute("inadimplenciaFaixa31a60Qtd", inadimplenciaResumo.faixa31a60Qtd());
+        model.addAttribute("inadimplenciaFaixa60MaisQtd", inadimplenciaResumo.faixa60MaisQtd());
+        model.addAttribute("inadimplenciaFaixaAte15ValorFmt", formatarMoeda(inadimplenciaResumo.faixaAte15Valor()));
+        model.addAttribute("inadimplenciaFaixa16a30ValorFmt", formatarMoeda(inadimplenciaResumo.faixa16a30Valor()));
+        model.addAttribute("inadimplenciaFaixa31a60ValorFmt", formatarMoeda(inadimplenciaResumo.faixa31a60Valor()));
+        model.addAttribute("inadimplenciaFaixa60MaisValorFmt", formatarMoeda(inadimplenciaResumo.faixa60MaisValor()));
         model.addAttribute("adminPanelInicial", panel == null || panel.isBlank() ? "overview" : panel);
         return "admin/dashboard";
+    }
+
+    @PostMapping("/admin/inadimplencia/enviar-lembrete")
+    public String enviarLembreteInadimplencia(
+        @RequestParam("alunoId") UUID alunoId,
+        @RequestParam("mensalidadeId") UUID mensalidadeId,
+        @RequestParam("canal") String canal,
+        @RequestParam("template") String template,
+        @RequestParam(name = "mensagem", required = false) String mensagem,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+            ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+            ValidationUtils.validarCampoStringObrigatorio(canal, "Canal");
+            ValidationUtils.validarCampoStringObrigatorio(template, "Modelo de lembrete");
+
+            List<Mensalidade> mensalidadesAluno = mensalidadeService.listarMensalidadesPorAluno(alunoId);
+            Mensalidade mensalidade = mensalidadesAluno.stream()
+                .filter(item -> item.getId() != null && item.getId().equals(mensalidadeId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Mensalidade não encontrada para o aluno informado."));
+
+            boolean emAtraso = mensalidade.getStatus() != StatusMensalidade.PAGO
+                && mensalidade.getDataVencimento() != null
+                && mensalidade.getDataVencimento().isBefore(LocalDate.now());
+
+            if (!emAtraso) {
+                throw new IllegalStateException("Lembretes só podem ser enviados para mensalidades em atraso.");
+            }
+
+            String observacaoMensagem = normalizarTextoOpcional(mensagem);
+            String mensagemFinal = "Lembrete registrado para envio via " + canal.trim()
+                + " (modelo " + template.trim() + ")."
+                + (observacaoMensagem.isEmpty() ? "" : " Mensagem personalizada recebida.");
+            redirectAttributes.addFlashAttribute(FEEDBACK_INADIMPLENCIA_LEMBRETE, mensagemFinal);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_INADIMPLENCIA_LEMBRETE, ex.getMessage());
+        }
+
+        return REDIRECT_INADIMPLENCIA_PANEL;
+    }
+
+    @PostMapping("/admin/inadimplencia/acordo")
+    public String registrarAcordoInadimplencia(
+        @RequestParam("alunoId") UUID alunoId,
+        @RequestParam("mensalidadeId") UUID mensalidadeId,
+        @RequestParam("valor") String valor,
+        @RequestParam("parcelas") Integer parcelas,
+        @RequestParam("primeiroVencimento") String primeiroVencimento,
+        @RequestParam(name = "canal", required = false) String canal,
+        @RequestParam(name = "responsavel", required = false) String responsavel,
+        @RequestParam(name = "observacoes", required = false) String observacoes,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+            ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+            ValidationUtils.validarCampoStringObrigatorio(valor, "Valor negociado");
+            ValidationUtils.validarCampoObrigatorio(parcelas, "Parcelas");
+            ValidationUtils.validarCampoStringObrigatorio(primeiroVencimento, "Primeiro vencimento");
+
+            BigDecimal valorNegociado = parseValorMonetario(valor);
+            LocalDate dataPrimeiroVencimento = parseData(primeiroVencimento);
+            int quantidadeParcelas = mensalidadeService.registrarAcordo(
+                alunoId,
+                mensalidadeId,
+                valorNegociado,
+                parcelas,
+                dataPrimeiroVencimento
+            );
+
+            String canalNormalizado = normalizarTextoOpcional(canal);
+            String responsavelNormalizado = normalizarTextoOpcional(responsavel);
+            String observacoesNormalizadas = normalizarTextoOpcional(observacoes);
+
+            StringBuilder mensagem = new StringBuilder();
+            mensagem.append("Acordo registrado com sucesso em ")
+                .append(quantidadeParcelas)
+                .append(quantidadeParcelas == 1 ? " parcela." : " parcelas.");
+
+            if (!canalNormalizado.isEmpty()) {
+                mensagem.append(" Canal: ").append(canalNormalizado).append('.');
+            }
+
+            if (!responsavelNormalizado.isEmpty()) {
+                mensagem.append(" Responsável: ").append(responsavelNormalizado).append('.');
+            }
+
+            if (!observacoesNormalizadas.isEmpty()) {
+                mensagem.append(" Observações registradas.");
+            }
+
+            redirectAttributes.addFlashAttribute(FEEDBACK_INADIMPLENCIA_ACORDO, mensagem.toString());
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_INADIMPLENCIA_ACORDO, ex.getMessage());
+        }
+
+        return REDIRECT_INADIMPLENCIA_PANEL;
     }
 
     @PostMapping("/admin/mensalidades/gerar-cobranca")
@@ -760,8 +878,187 @@ public class DashboardController {
         return valor == null ? "" : valor.trim();
     }
 
+    private List<CarteiraInadimplenciaItem> montarCarteiraInadimplencia(
+        List<Mensalidade> mensalidadesEmAtraso,
+        String termoBusca,
+        String faixaAtraso,
+        LocalDate dataReferencia
+    ) {
+        Map<UUID, List<Mensalidade>> mensalidadesPorAluno = mensalidadesEmAtraso.stream()
+            .filter(mensalidade -> mensalidade.getAluno() != null && mensalidade.getAluno().getId() != null)
+            .collect(Collectors.groupingBy(mensalidade -> mensalidade.getAluno().getId()));
+
+        return mensalidadesPorAluno.values().stream()
+            .map(mensalidadesAluno -> montarCarteiraItem(mensalidadesAluno, dataReferencia))
+            .filter(Objects::nonNull)
+            .filter(item -> pertenceFaixaAtraso(item.diasEmAtraso(), faixaAtraso))
+            .filter(item -> buscaInadimplenciaVazia(termoBusca)
+                || contemTexto(item.alunoNome(), termoBusca)
+                || contemTexto(item.turmaNome(), termoBusca)
+                || contemTexto(item.responsavel(), termoBusca)
+                || contemTexto(item.telefone(), termoBusca))
+            .sorted(Comparator
+                .comparingLong(CarteiraInadimplenciaItem::diasEmAtraso).reversed()
+                .thenComparing(CarteiraInadimplenciaItem::alunoNome, String.CASE_INSENSITIVE_ORDER))
+            .toList();
+    }
+
+    private CarteiraInadimplenciaItem montarCarteiraItem(List<Mensalidade> mensalidadesAluno, LocalDate dataReferencia) {
+        if (mensalidadesAluno == null || mensalidadesAluno.isEmpty()) {
+            return null;
+        }
+
+        Mensalidade mensalidadeMaisAntiga = mensalidadesAluno.stream()
+            .filter(mensalidade -> mensalidade.getDataVencimento() != null)
+            .min(Comparator.comparing(Mensalidade::getDataVencimento))
+            .orElse(mensalidadesAluno.get(0));
+
+        long diasEmAtraso = mensalidadesAluno.stream()
+            .filter(mensalidade -> mensalidade.getDataVencimento() != null)
+            .mapToLong(mensalidade -> java.time.temporal.ChronoUnit.DAYS.between(
+                mensalidade.getDataVencimento(),
+                dataReferencia
+            ))
+            .max()
+            .orElse(0);
+
+        BigDecimal valorEmAberto = mensalidadesAluno.stream()
+            .map(Mensalidade::getValor)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        Aluno aluno = mensalidadeMaisAntiga.getAluno();
+        String turmaNome = aluno.getTurma() == null ? "-" : aluno.getTurma().getNome();
+        String status = resolverStatusInadimplencia(diasEmAtraso);
+
+        return new CarteiraInadimplenciaItem(
+            aluno.getId(),
+            mensalidadeMaisAntiga.getId(),
+            aluno.getNome(),
+            turmaNome == null || turmaNome.isBlank() ? "-" : turmaNome,
+            normalizarTextoOpcional(aluno.getResponsavel()).isBlank() ? "-" : normalizarTextoOpcional(aluno.getResponsavel()),
+            normalizarTextoOpcional(aluno.getTelefone()).isBlank() ? "-" : normalizarTextoOpcional(aluno.getTelefone()),
+            valorEmAberto,
+            diasEmAtraso,
+            status,
+            mensalidadesAluno.size()
+        );
+    }
+
+    private boolean buscaInadimplenciaVazia(String termoBusca) {
+        return termoBusca == null || termoBusca.isBlank();
+    }
+
+    private boolean pertenceFaixaAtraso(long dias, String faixaAtraso) {
+        if (faixaAtraso == null || faixaAtraso.isBlank()) {
+            return true;
+        }
+
+        return switch (faixaAtraso) {
+            case "ate15" -> dias <= 15;
+            case "16a30" -> dias >= 16 && dias <= 30;
+            case "31a60" -> dias >= 31 && dias <= 60;
+            case "60mais" -> dias > 60;
+            default -> true;
+        };
+    }
+
+    private BigDecimal somarValoresPorFaixa(List<CarteiraInadimplenciaItem> carteira, int minimo, int maximo) {
+        return carteira.stream()
+            .filter(item -> item.diasEmAtraso() >= minimo && item.diasEmAtraso() <= maximo)
+            .map(CarteiraInadimplenciaItem::valorEmAberto)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private InadimplenciaPainelResumo montarResumoInadimplencia(
+        List<Mensalidade> mensalidadesFinanceiro,
+        String inadBuscaNormalizada,
+        String inadFaixaNormalizada,
+        LocalDate dataReferencia
+    ) {
+        List<Mensalidade> mensalidadesEmAtraso = mensalidadeService
+            .listarMensalidadesEmAtraso(mensalidadesFinanceiro, dataReferencia);
+        List<CarteiraInadimplenciaItem> carteira = montarCarteiraInadimplencia(
+            mensalidadesEmAtraso,
+            inadBuscaNormalizada,
+            inadFaixaNormalizada,
+            dataReferencia
+        );
+
+        BigDecimal valorEmAberto = carteira.stream()
+            .map(CarteiraInadimplenciaItem::valorEmAberto)
+            .filter(Objects::nonNull)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        long casosCriticos = carteira.stream()
+            .filter(item -> item.diasEmAtraso() > 30)
+            .count();
+
+        long faixaAte15Qtd = carteira.stream().filter(item -> item.diasEmAtraso() <= 15).count();
+        long faixa16a30Qtd = carteira.stream().filter(item -> item.diasEmAtraso() >= 16 && item.diasEmAtraso() <= 30).count();
+        long faixa31a60Qtd = carteira.stream().filter(item -> item.diasEmAtraso() >= 31 && item.diasEmAtraso() <= 60).count();
+        long faixa60MaisQtd = carteira.stream().filter(item -> item.diasEmAtraso() > 60).count();
+
+        BigDecimal faixaAte15Valor = somarValoresPorFaixa(carteira, 0, 15);
+        BigDecimal faixa16a30Valor = somarValoresPorFaixa(carteira, 16, 30);
+        BigDecimal faixa31a60Valor = somarValoresPorFaixa(carteira, 31, 60);
+        BigDecimal faixa60MaisValor = somarValoresPorFaixa(carteira, 61, Integer.MAX_VALUE);
+
+        return new InadimplenciaPainelResumo(
+            carteira,
+            mensalidadesEmAtraso,
+            mensalidadesEmAtraso.size(),
+            valorEmAberto,
+            casosCriticos,
+            faixaAte15Qtd,
+            faixa16a30Qtd,
+            faixa31a60Qtd,
+            faixa60MaisQtd,
+            faixaAte15Valor,
+            faixa16a30Valor,
+            faixa31a60Valor,
+            faixa60MaisValor
+        );
+    }
+
+    private List<Usuario> listarUsuariosAlunosFiltrados(String alunoBuscaNormalizada) {
+        return usuarioService.listarUsuarios().stream()
+            .filter(usuario -> usuario.getRole() == Role.ALUNO)
+            .filter(usuario -> usuario.getAluno() != null)
+            .filter(usuario -> alunoBuscaNormalizada.isEmpty()
+                || contemTexto(usuario.getNome(), alunoBuscaNormalizada)
+                || contemTexto(usuario.getAluno().getTelefone(), alunoBuscaNormalizada)
+                || (usuario.getAluno().getTurma() != null && contemTexto(usuario.getAluno().getTurma().getNome(), alunoBuscaNormalizada)))
+            .sorted(Comparator.comparing(Usuario::getNome, String.CASE_INSENSITIVE_ORDER))
+            .toList();
+    }
+
+    private List<Mensalidade> listarProximosVencimentos(List<Mensalidade> mensalidadesCobraveis, LocalDate referencia) {
+        return mensalidadesCobraveis.stream()
+            .filter(mensalidade -> mensalidade.getDataVencimento() != null)
+            .filter(mensalidade -> !mensalidade.getDataVencimento().isBefore(referencia))
+            .sorted(Comparator.comparing(Mensalidade::getDataVencimento))
+            .limit(3)
+            .toList();
+    }
+
+    private String resolverStatusInadimplencia(long diasEmAtraso) {
+        if (diasEmAtraso <= 15) {
+            return "Lembrete";
+        }
+        if (diasEmAtraso <= 30) {
+            return "Cobrança ativa";
+        }
+        return "Acordo sugerido";
+    }
+
     private boolean contemTexto(String origem, String termoNormalizado) {
         return origem != null && origem.toLowerCase(Locale.ROOT).contains(termoNormalizado);
+    }
+
+    private String textoFiltro(String valor) {
+        return valor == null ? "" : valor.trim();
     }
 
     private UUID parseUuidOpcional(String valor) {
@@ -800,4 +1097,33 @@ public class DashboardController {
             throw new IllegalArgumentException("Data de vencimento inválida.");
         }
     }
+
+    public record CarteiraInadimplenciaItem(
+        UUID alunoId,
+        UUID mensalidadeId,
+        String alunoNome,
+        String turmaNome,
+        String responsavel,
+        String telefone,
+        BigDecimal valorEmAberto,
+        long diasEmAtraso,
+        String status,
+        int titulosEmAtraso
+    ) {}
+
+    private record InadimplenciaPainelResumo(
+        List<CarteiraInadimplenciaItem> carteira,
+        List<Mensalidade> mensalidadesEmAtraso,
+        long titulosEmAtraso,
+        BigDecimal valorEmAberto,
+        long casosCriticos,
+        long faixaAte15Qtd,
+        long faixa16a30Qtd,
+        long faixa31a60Qtd,
+        long faixa60MaisQtd,
+        BigDecimal faixaAte15Valor,
+        BigDecimal faixa16a30Valor,
+        BigDecimal faixa31a60Valor,
+        BigDecimal faixa60MaisValor
+    ) {}
 }

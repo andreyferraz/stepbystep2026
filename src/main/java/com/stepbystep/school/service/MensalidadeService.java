@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +20,7 @@ import javax.imageio.ImageIO;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -112,6 +114,15 @@ public class MensalidadeService {
     public List<Mensalidade> listarMensalidadesCobraveis(List<Mensalidade> mensalidades) {
         return mensalidades.stream()
             .filter(mensalidade -> mensalidade.getStatus() != StatusMensalidade.PAGO)
+            .toList();
+    }
+
+    public List<Mensalidade> listarMensalidadesEmAtraso(List<Mensalidade> mensalidades, LocalDate hoje) {
+        ValidationUtils.validarCampoObrigatorio(hoje, "Data de referência");
+        return mensalidades.stream()
+            .filter(mensalidade -> mensalidade.getStatus() != StatusMensalidade.PAGO)
+            .filter(mensalidade -> mensalidade.getDataVencimento() != null)
+            .filter(mensalidade -> mensalidade.getDataVencimento().isBefore(hoje))
             .toList();
     }
 
@@ -225,6 +236,67 @@ public class MensalidadeService {
         mensalidade.setDataPagamento(dataBase.atTime(LocalDateTime.now().toLocalTime()));
 
         return mensalidadeRepository.save(mensalidade);
+    }
+
+    @Transactional
+    public int registrarAcordo(
+        UUID alunoId,
+        UUID mensalidadeId,
+        BigDecimal valorNegociado,
+        int parcelas,
+        LocalDate primeiroVencimento
+    ) {
+        ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+        ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+        ValidationUtils.validarCampoObrigatorio(valorNegociado, "Valor negociado");
+        ValidationUtils.validarCampoObrigatorio(primeiroVencimento, "Primeiro vencimento");
+
+        if (parcelas <= 0) {
+            throw new IllegalArgumentException("Quantidade de parcelas inválida.");
+        }
+
+        if (valorNegociado.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Valor negociado deve ser maior que zero.");
+        }
+
+        if (parcelas > 24) {
+            throw new IllegalArgumentException("Quantidade máxima de parcelas permitida é 24.");
+        }
+
+        alunoService.obterAlunoPorId(alunoId);
+
+        Mensalidade mensalidadeOriginal = mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)
+            .orElseThrow(() -> new IllegalArgumentException(MSG_MENSALIDADE_NAO_ENCONTRADA + mensalidadeId));
+
+        if (mensalidadeOriginal.getStatus() == StatusMensalidade.PAGO) {
+            throw new IllegalStateException("Não é possível registrar acordo para mensalidade já paga.");
+        }
+
+        BigDecimal valorParcelaBase = valorNegociado
+            .divide(BigDecimal.valueOf(parcelas), 2, RoundingMode.HALF_UP);
+        BigDecimal totalParcelas = valorParcelaBase.multiply(BigDecimal.valueOf(parcelas));
+        BigDecimal diferenca = valorNegociado.subtract(totalParcelas);
+
+        List<Mensalidade> novasParcelas = new ArrayList<>();
+        for (int i = 0; i < parcelas; i++) {
+            BigDecimal valorParcela = i == 0
+                ? valorParcelaBase.add(diferenca)
+                : valorParcelaBase;
+
+            Mensalidade parcela = Mensalidade.builder()
+                .aluno(mensalidadeOriginal.getAluno())
+                .valor(valorParcela)
+                .dataVencimento(primeiroVencimento.plusMonths(i))
+                .status(StatusMensalidade.PENDENTE)
+                .build();
+
+            novasParcelas.add(parcela);
+        }
+
+        mensalidadeRepository.delete(mensalidadeOriginal);
+        mensalidadeRepository.saveAll(novasParcelas);
+
+        return parcelas;
     }
 
     public void excluirMensalidade(UUID alunoId, UUID mensalidadeId) {

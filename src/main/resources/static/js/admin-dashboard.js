@@ -119,6 +119,10 @@ document.addEventListener("DOMContentLoaded", function () {
     var cobrancaMensalidadeSelect = document.getElementById("cobrancaMensalidade");
     var mensalidadeAlunoSelect = document.getElementById("mensalidadeAluno");
     var mensalidadeFinanceiraSelect = document.getElementById("mensalidadeFinanceira");
+    var inadimplenciaAlunoLembreteSelect = document.getElementById("inadimplenciaAlunoLembrete");
+    var inadimplenciaMensalidadeLembreteSelect = document.getElementById("inadimplenciaMensalidadeLembrete");
+    var inadimplenciaAlunoAcordoSelect = document.getElementById("inadimplenciaAlunoAcordo");
+    var inadimplenciaMensalidadeAcordoSelect = document.getElementById("inadimplenciaMensalidadeAcordo");
     var copiarPixBtn = document.getElementById("copiarPixBtn");
     var copiarPixBtnLabelPadrao = copiarPixBtn ? copiarPixBtn.textContent.trim() : "Copiar";
     var copiarPixBtnResetTimer = null;
@@ -207,6 +211,29 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    function filtrarMensalidadesInadimplencia(alunoSelect, mensalidadeSelect) {
+        if (!alunoSelect || !mensalidadeSelect) {
+            return;
+        }
+
+        var alunoIdSelecionado = alunoSelect.value || "";
+
+        Array.from(mensalidadeSelect.options).forEach(function (option, index) {
+            if (index === 0) {
+                option.hidden = false;
+                return;
+            }
+
+            var alunoIdOption = option.getAttribute("data-aluno-id") || "";
+            var deveExibir = !alunoIdSelecionado || alunoIdOption === alunoIdSelecionado;
+            option.hidden = !deveExibir;
+
+            if (!deveExibir && option.selected) {
+                mensalidadeSelect.value = "";
+            }
+        });
+    }
+
     if (notaAlunoSelect) {
         notaAlunoSelect.addEventListener("change", function () {
             sincronizarTurmaPorAlunoSelecionado(notaAlunoSelect, notaTurmaSelect);
@@ -227,6 +254,20 @@ document.addEventListener("DOMContentLoaded", function () {
     if (mensalidadeAlunoSelect) {
         mensalidadeAlunoSelect.addEventListener("change", filtrarMensalidadesPagamentoManual);
         filtrarMensalidadesPagamentoManual();
+    }
+
+    if (inadimplenciaAlunoLembreteSelect && inadimplenciaMensalidadeLembreteSelect) {
+        inadimplenciaAlunoLembreteSelect.addEventListener("change", function () {
+            filtrarMensalidadesInadimplencia(inadimplenciaAlunoLembreteSelect, inadimplenciaMensalidadeLembreteSelect);
+        });
+        filtrarMensalidadesInadimplencia(inadimplenciaAlunoLembreteSelect, inadimplenciaMensalidadeLembreteSelect);
+    }
+
+    if (inadimplenciaAlunoAcordoSelect && inadimplenciaMensalidadeAcordoSelect) {
+        inadimplenciaAlunoAcordoSelect.addEventListener("change", function () {
+            filtrarMensalidadesInadimplencia(inadimplenciaAlunoAcordoSelect, inadimplenciaMensalidadeAcordoSelect);
+        });
+        filtrarMensalidadesInadimplencia(inadimplenciaAlunoAcordoSelect, inadimplenciaMensalidadeAcordoSelect);
     }
 
     if (copiarPixBtn) {
@@ -456,6 +497,26 @@ document.addEventListener("DOMContentLoaded", function () {
                     filtrarMensalidadesPagamentoManual();
                     if (mensalidadeFinanceiraSelect) {
                         mensalidadeFinanceiraSelect.value = button.getAttribute("data-mensalidade-id") || mensalidadeFinanceiraSelect.value;
+                    }
+                }
+
+                if (target === "inadimplencia-lembrete") {
+                    if (inadimplenciaAlunoLembreteSelect) {
+                        inadimplenciaAlunoLembreteSelect.value = button.getAttribute("data-aluno-id") || inadimplenciaAlunoLembreteSelect.value;
+                    }
+                    filtrarMensalidadesInadimplencia(inadimplenciaAlunoLembreteSelect, inadimplenciaMensalidadeLembreteSelect);
+                    if (inadimplenciaMensalidadeLembreteSelect) {
+                        inadimplenciaMensalidadeLembreteSelect.value = button.getAttribute("data-mensalidade-id") || inadimplenciaMensalidadeLembreteSelect.value;
+                    }
+                }
+
+                if (target === "inadimplencia-acordo") {
+                    if (inadimplenciaAlunoAcordoSelect) {
+                        inadimplenciaAlunoAcordoSelect.value = button.getAttribute("data-aluno-id") || inadimplenciaAlunoAcordoSelect.value;
+                    }
+                    filtrarMensalidadesInadimplencia(inadimplenciaAlunoAcordoSelect, inadimplenciaMensalidadeAcordoSelect);
+                    if (inadimplenciaMensalidadeAcordoSelect) {
+                        inadimplenciaMensalidadeAcordoSelect.value = button.getAttribute("data-mensalidade-id") || inadimplenciaMensalidadeAcordoSelect.value;
                     }
                 }
 
