@@ -1,10 +1,217 @@
 document.addEventListener("DOMContentLoaded", function () {
     var panelStorageKey = "adminDashboardActivePanel";
+    var preInscricaoNotificationStorageKey = "adminPreInscricaoLastSeenEpoch";
     var sidebar = document.getElementById("adminSidebar");
     var toggleButton = document.getElementById("adminMenuToggle");
     var panelHeading = document.getElementById("panelHeading");
     var navLinks = document.querySelectorAll(".admin-nav-link[data-panel-target]");
     var panels = document.querySelectorAll(".admin-panel[data-panel]");
+    var bellButton = document.getElementById("adminBellBtn");
+    var bellBadge = document.getElementById("adminBellBadge");
+    var notificationsPanel = document.getElementById("adminNotificationsPanel");
+    var notificationsList = document.getElementById("adminNotificationsList");
+    var notificationsMarkReadButton = document.getElementById("adminNotificationsMarkRead");
+    var latestNotificationEpochMillis = Number(localStorage.getItem(preInscricaoNotificationStorageKey) || "0");
+
+    function formatarDataHora(epochMillis) {
+        if (!epochMillis || Number.isNaN(epochMillis)) {
+            return "agora";
+        }
+
+        return new Date(epochMillis).toLocaleString("pt-BR", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    function atualizarBadgeNotificacoes(unreadCount) {
+        if (!bellBadge) {
+            return;
+        }
+
+        var quantidade = Number(unreadCount || 0);
+        if (quantidade <= 0) {
+            bellBadge.hidden = true;
+            bellBadge.textContent = "0";
+            return;
+        }
+
+        bellBadge.hidden = false;
+        bellBadge.textContent = quantidade > 99 ? "99+" : String(quantidade);
+    }
+
+    function renderizarNotificacoes(items) {
+        if (!notificationsList) {
+            return;
+        }
+
+        notificationsList.innerHTML = "";
+        if (!Array.isArray(items) || items.length === 0) {
+            var empty = document.createElement("li");
+            empty.className = "admin-notification-empty";
+            empty.textContent = "Sem notificações no momento.";
+            notificationsList.appendChild(empty);
+            return;
+        }
+
+        items.forEach(function (item) {
+            var li = document.createElement("li");
+            li.className = "admin-notification-item";
+
+            var link = document.createElement("a");
+            link.className = "admin-notification-link";
+            link.href = item.destinoUrl || "/admin/dashboard?panel=pre-inscricoes";
+
+            var nome = document.createElement("strong");
+            nome.textContent = item.nomeInteressado || "Nova pré-inscrição";
+
+            var causa = document.createElement("p");
+            causa.className = "admin-notification-cause";
+            causa.textContent = item.causa || "Nova pré-inscrição recebida.";
+
+            var detalhes = document.createElement("p");
+            var telefone = item.whatsapp ? " • " + item.whatsapp : "";
+            detalhes.textContent = formatarDataHora(item.dataLeadEpochMillis) + telefone;
+
+            link.appendChild(nome);
+            link.appendChild(causa);
+            link.appendChild(detalhes);
+            li.appendChild(link);
+            notificationsList.appendChild(li);
+        });
+    }
+
+    function destacarLeadPorHash() {
+        var hash = window.location.hash || "";
+        if (hash.indexOf("#lead-") !== 0) {
+            return;
+        }
+
+        var linha = document.querySelector(hash);
+        if (!linha) {
+            return;
+        }
+
+        linha.classList.remove("admin-highlight-row");
+        window.setTimeout(function () {
+            linha.classList.add("admin-highlight-row");
+            linha.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 60);
+    }
+
+    function marcarNotificacoesComoLidas() {
+        if (latestNotificationEpochMillis > 0) {
+            localStorage.setItem(preInscricaoNotificationStorageKey, String(latestNotificationEpochMillis));
+        }
+        atualizarBadgeNotificacoes(0);
+    }
+
+    function painelNotificacoesEstaAberto() {
+        if (!notificationsPanel) {
+            return false;
+        }
+
+        if (typeof notificationsPanel.open === "boolean") {
+            return notificationsPanel.open;
+        }
+
+        return !notificationsPanel.hidden;
+    }
+
+    function abrirPainelNotificacoes() {
+        if (!notificationsPanel) {
+            return;
+        }
+
+        notificationsPanel.hidden = false;
+        if (typeof notificationsPanel.show === "function" && !notificationsPanel.open) {
+            notificationsPanel.show();
+        }
+
+        if (bellButton) {
+            bellButton.setAttribute("aria-expanded", "true");
+        }
+    }
+
+    function fecharPainelNotificacoes() {
+        if (!notificationsPanel) {
+            return;
+        }
+
+        if (typeof notificationsPanel.close === "function" && notificationsPanel.open) {
+            notificationsPanel.close();
+        }
+
+        notificationsPanel.hidden = true;
+        if (bellButton) {
+            bellButton.setAttribute("aria-expanded", "false");
+        }
+    }
+
+    function consultarNotificacoesPreInscricoes() {
+        var afterEpoch = Number(localStorage.getItem(preInscricaoNotificationStorageKey) || "0");
+        var url = "/admin/notificacoes/pre-inscricoes?afterEpochMillis=" + encodeURIComponent(afterEpoch) + "&limit=8";
+
+        fetch(url, { headers: { "Accept": "application/json" } })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("Falha ao carregar notificações");
+                }
+                return response.json();
+            })
+            .then(function (payload) {
+                latestNotificationEpochMillis = Number(payload.latestEpochMillis || 0);
+                atualizarBadgeNotificacoes(payload.unreadCount || 0);
+                renderizarNotificacoes(payload.items || []);
+            })
+            .catch(function () {
+                renderizarNotificacoes([]);
+            });
+    }
+
+    if (bellButton && notificationsPanel) {
+        bellButton.addEventListener("click", function () {
+            if (painelNotificacoesEstaAberto()) {
+                fecharPainelNotificacoes();
+                return;
+            }
+
+            abrirPainelNotificacoes();
+            marcarNotificacoesComoLidas();
+        });
+
+        document.addEventListener("click", function (event) {
+            if (!painelNotificacoesEstaAberto()) {
+                return;
+            }
+
+            if (notificationsPanel.contains(event.target) || bellButton.contains(event.target)) {
+                return;
+            }
+
+            fecharPainelNotificacoes();
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && painelNotificacoesEstaAberto()) {
+                fecharPainelNotificacoes();
+            }
+        });
+    }
+
+    if (notificationsMarkReadButton) {
+        notificationsMarkReadButton.addEventListener("click", function () {
+            marcarNotificacoesComoLidas();
+        });
+    }
+
+    window.addEventListener("hashchange", destacarLeadPorHash);
+
+    consultarNotificacoesPreInscricoes();
+    window.setInterval(consultarNotificacoesPreInscricoes, 30000);
 
     function findLinkByTarget(target) {
         return Array.from(navLinks).find(function (link) {
@@ -100,6 +307,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
     }
+
+    destacarLeadPorHash();
 
     if (toggleButton && sidebar) {
         toggleButton.addEventListener("click", function () {
@@ -517,6 +726,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     filtrarMensalidadesInadimplencia(inadimplenciaAlunoAcordoSelect, inadimplenciaMensalidadeAcordoSelect);
                     if (inadimplenciaMensalidadeAcordoSelect) {
                         inadimplenciaMensalidadeAcordoSelect.value = button.getAttribute("data-mensalidade-id") || inadimplenciaMensalidadeAcordoSelect.value;
+                    }
+                }
+
+                if (target === "preinscricao-contato") {
+                    var preInscricaoLeadSelect = modal.querySelector("#preInscricaoLeadContato");
+                    var preInscricaoId = button.getAttribute("data-preinscricao-id") || "";
+
+                    if (preInscricaoLeadSelect && preInscricaoId) {
+                        preInscricaoLeadSelect.value = preInscricaoId;
                     }
                 }
 

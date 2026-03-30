@@ -21,7 +21,7 @@
             </article>
             <article class="metric-card metric-yellow">
                 <h3>Pré-inscrições pendentes</h3>
-                <strong>12</strong>
+                <strong th:text="${preInscricoesPendentesQtd}">0</strong>
             </article>
         </div>
 
@@ -1485,41 +1485,37 @@
                     </div>
                 </div>
 
-                <output class="admin-feedback" id="preInscricaoContatoFeedback" aria-live="polite"></output>
-                <output class="admin-feedback" id="preInscricaoFormFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="preInscricaoContatoFeedback" aria-live="polite" th:text="${preInscricaoContatoFeedback}"></output>
+                <output class="admin-feedback" id="preInscricaoFormFeedback" aria-live="polite" th:text="${preInscricaoFormFeedback}"></output>
 
-                <div class="preinscricoes-toolbar">
-                    <input type="search" class="admin-search" placeholder="Pesquisar por nome, WhatsApp ou origem">
-                    <select class="preinscricoes-filter" aria-label="Filtrar por status do lead">
-                        <option value="">Todos os status</option>
-                        <option value="pendente">Pendente</option>
-                        <option value="contatado">Contatado</option>
-                        <option value="matriculado">Matriculado</option>
+                <form class="preinscricoes-toolbar" th:action="@{/admin/dashboard}" action="/admin/dashboard" method="get">
+                    <input type="hidden" name="panel" value="pre-inscricoes">
+                    <input type="search" class="admin-search" name="preBusca" th:value="${preBusca}" placeholder="Pesquisar por nome, WhatsApp ou mensagem">
+                    <select class="preinscricoes-filter" name="preStatus" aria-label="Filtrar por status do lead">
+                        <option value="" th:selected="${#strings.isEmpty(preStatus)}">Todos os status</option>
+                        <option value="pendente" th:selected="${preStatus == 'pendente'}">Pendente</option>
+                        <option value="contatado" th:selected="${preStatus == 'contatado'}">Contatado</option>
                     </select>
-                    <select class="preinscricoes-filter" aria-label="Filtrar por interesse">
-                        <option value="">Todos os interesses</option>
-                        <option value="kids">Kids</option>
-                        <option value="teens">Teens</option>
-                        <option value="adults">Adults</option>
-                    </select>
-                </div>
+                    <button type="submit" class="admin-secondary-btn">Filtrar</button>
+                    <a th:if="${!#strings.isEmpty(preBusca) or !#strings.isEmpty(preStatus)}" th:href="@{/admin/dashboard(panel='pre-inscricoes')}" href="/admin/dashboard?panel=pre-inscricoes" class="admin-secondary-btn">Limpar</a>
+                </form>
 
                 <div class="preinscricoes-metric-grid">
                     <article class="preinscricoes-metric-card">
                         <p>Leads pendentes</p>
-                        <strong>12</strong>
+                        <strong th:text="${preInscricoesPendentesQtd}">0</strong>
                     </article>
                     <article class="preinscricoes-metric-card">
-                        <p>Contatados na semana</p>
-                        <strong>19</strong>
+                        <p>Leads contatados</p>
+                        <strong th:text="${preInscricoesContatadasQtd}">0</strong>
                     </article>
                     <article class="preinscricoes-metric-card">
-                        <p>Conversao no mes</p>
-                        <strong>34%</strong>
+                        <p>Novos nos ultimos 7 dias</p>
+                        <strong th:text="${preInscricoesNovasSemanaQtd}">0</strong>
                     </article>
                     <article class="preinscricoes-metric-card">
-                        <p>Matriculas via lead</p>
-                        <strong>8</strong>
+                        <p>Total de leads</p>
+                        <strong th:text="${preInscricoesTotalQtd}">0</strong>
                     </article>
                 </div>
 
@@ -1534,57 +1530,31 @@
                                     <tr>
                                         <th>Interessado</th>
                                         <th>WhatsApp</th>
-                                        <th>Interesse</th>
                                         <th>Data do lead</th>
-                                        <th>Origem</th>
                                         <th>Status</th>
                                         <th>Acoes</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Livia Monteiro</td>
-                                        <td>(88) 99914-7721</td>
-                                        <td>Kids 1</td>
-                                        <td>15/03/2026</td>
-                                        <td>Instagram</td>
-                                        <td><span class="status-chip warn">Pendente</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="preinscricao-contato">Contatar</button></td>
+                                    <tr th:if="${#lists.isEmpty(preInscricoes)}">
+                                        <td colspan="7">Nenhuma pré-inscrição encontrada.</td>
                                     </tr>
-                                    <tr>
-                                        <td>Daniel Ribeiro</td>
-                                        <td>(88) 99873-1020</td>
-                                        <td>Adults 1</td>
-                                        <td>14/03/2026</td>
-                                        <td>Site</td>
-                                        <td><span class="status-chip warn">Contatado</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Detalhes</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Marina Souza</td>
-                                        <td>(88) 99755-6601</td>
-                                        <td>Teens 2</td>
-                                        <td>12/03/2026</td>
-                                        <td>Indicacao</td>
-                                        <td><span class="status-chip success">Matriculado</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Historico</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Pedro Henrique</td>
-                                        <td>(88) 99624-8890</td>
-                                        <td>Kids 2</td>
-                                        <td>11/03/2026</td>
-                                        <td>WhatsApp</td>
-                                        <td><span class="status-chip warn">Pendente</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="preinscricao-contato">Contatar</button></td>
+                                    <tr th:each="lead : ${preInscricoes}" th:attr="id=${'lead-' + lead.id}">
+                                        <td th:text="${lead.nomeInteressado}">Nome</td>
+                                        <td th:text="${lead.whatsapp}">WhatsApp</td>
+                                        <td th:text="${lead.dataLead != null ? #temporals.format(lead.dataLead, 'dd/MM/yyyy') : '-'}">-</td>
+                                        <td>
+                                            <span class="status-chip" th:classappend="${lead.respondido} ? ' success' : ' warn'" th:text="${lead.status}">Pendente</span>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="preinscricao-contato" th:attr="data-preinscricao-id=${lead.id}">Contatar</button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
 
                             <div class="pagination">
-                                <button type="button">Anterior</button>
-                                <span>Pagina 1 de 5</span>
-                                <button type="button">Proxima</button>
+                                <span th:text="'Total encontrado: ' + ${preInscricoesTotalQtd}">Total encontrado: 0</span>
                             </div>
                         </div>
                     </article>
@@ -1592,21 +1562,17 @@
                     <aside class="preinscricoes-side" aria-label="Resumo de pre-inscricoes">
                         <article class="admin-card preinscricoes-block">
                             <header class="admin-card-header">
-                                <h3>Proximos retornos</h3>
+                                <h3>Leads recentes</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="preinscricoes-list">
-                                    <li>
-                                        <strong>10:00 - Livia Monteiro</strong>
-                                        <span>Confirmar melhor horario para aula experimental.</span>
+                                    <li th:if="${#lists.isEmpty(preInscricoesRecentes)}">
+                                        <strong>Sem leads recentes</strong>
+                                        <span>Assim que chegar uma pré-inscrição ela aparecerá aqui.</span>
                                     </li>
-                                    <li>
-                                        <strong>14:30 - Pedro Henrique</strong>
-                                        <span>Enviar proposta para plano trimestral.</span>
-                                    </li>
-                                    <li>
-                                        <strong>16:00 - Daniel Ribeiro</strong>
-                                        <span>Retorno sobre disponibilidade da turma Adults 1.</span>
+                                    <li th:each="leadRecente : ${preInscricoesRecentes}">
+                                        <strong th:text="${leadRecente.nomeInteressado}">Nome</strong>
+                                        <span th:text="${(leadRecente.dataLead != null ? #temporals.format(leadRecente.dataLead, 'dd/MM/yyyy HH:mm') : '-') + ' - ' + leadRecente.status}">-</span>
                                     </li>
                                 </ul>
                             </div>
@@ -1614,21 +1580,21 @@
 
                         <article class="admin-card preinscricoes-block">
                             <header class="admin-card-header">
-                                <h3>Origem dos leads</h3>
+                                <h3>Resumo operacional</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="preinscricoes-list">
                                     <li>
-                                        <strong>Instagram</strong>
-                                        <span>43% dos leads do mes.</span>
+                                        <strong>Pendentes</strong>
+                                        <span th:text="${preInscricoesPendentesQtd} + ' aguardando retorno.'">0 aguardando retorno.</span>
                                     </li>
                                     <li>
-                                        <strong>Indicacao</strong>
-                                        <span>31% com maior taxa de conversao.</span>
+                                        <strong>Contatados</strong>
+                                        <span th:text="${preInscricoesContatadasQtd} + ' leads já abordados.'">0 leads já abordados.</span>
                                     </li>
                                     <li>
-                                        <strong>Site e WhatsApp</strong>
-                                        <span>26% com resposta em ate 24 horas.</span>
+                                        <strong>Últimos 7 dias</strong>
+                                        <span th:text="${preInscricoesNovasSemanaQtd} + ' novos registros.'">0 novos registros.</span>
                                     </li>
                                 </ul>
                             </div>
@@ -1646,7 +1612,7 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formNovaPreInscricao" th:action="@{/admin/pre-inscricoes}" action="/admin/pre-inscricoes" method="post" data-static-submit="true" data-feedback-target="preInscricaoFormFeedback">
+            <form id="formNovaPreInscricao" th:action="@{/admin/pre-inscricoes}" action="/admin/pre-inscricoes" method="post">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="modal-body">
@@ -1692,7 +1658,6 @@
                         <select id="preInscricaoStatus" name="status" required>
                             <option value="pendente">Pendente</option>
                             <option value="contatado">Contatado</option>
-                            <option value="matriculado">Matriculado</option>
                         </select>
                     </div>
 
@@ -1701,9 +1666,6 @@
                         <textarea id="preInscricaoMensagem" name="mensagem" rows="4" placeholder="Interesse, horario preferencial e observacoes da familia."></textarea>
                     </div>
 
-                    <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para persistir a pre-inscricao e alimentar o pipeline de conversao.</small>
-                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -1721,17 +1683,15 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formContatoPreInscricao" th:action="@{/admin/pre-inscricoes/contato}" action="/admin/pre-inscricoes/contato" method="post" data-static-submit="true" data-feedback-target="preInscricaoContatoFeedback">
+            <form id="formContatoPreInscricao" th:action="@{/admin/pre-inscricoes/contato}" action="/admin/pre-inscricoes/contato" method="post">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="modal-body">
                     <div class="modal-field modal-field-full">
                         <label for="preInscricaoLeadContato">Lead</label>
-                        <select id="preInscricaoLeadContato" name="lead" required>
+                        <select id="preInscricaoLeadContato" name="preInscricaoId" required>
                             <option value="">Selecione</option>
-                            <option value="livia-monteiro">Livia Monteiro</option>
-                            <option value="pedro-henrique">Pedro Henrique</option>
-                            <option value="daniel-ribeiro">Daniel Ribeiro</option>
+                            <option th:each="lead : ${preInscricoes}" th:value="${lead.id}" th:text="${lead.nomeInteressado + ' - ' + lead.whatsapp}">Lead</option>
                         </select>
                     </div>
 
@@ -1750,7 +1710,6 @@
                         <select id="preInscricaoStatusContato" name="status" required>
                             <option value="contatado">Contatado</option>
                             <option value="pendente">Pendente</option>
-                            <option value="matriculado">Matriculado</option>
                         </select>
                     </div>
 

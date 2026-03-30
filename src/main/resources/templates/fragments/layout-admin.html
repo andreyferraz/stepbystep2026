@@ -67,12 +67,34 @@
                 <div class="admin-topbar-right">
                     <p class="admin-teacher-name">Profª Elza</p>
                     <a class="admin-topbar-btn" th:href="@{/}" href="/" target="_blank" rel="noopener noreferrer">Ver Site</a>
-                    <button type="button" class="admin-bell-btn" aria-label="Notificações">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M12 3a5 5 0 0 0-5 5v2.34c0 .8-.24 1.58-.7 2.24L4.5 15.2A1 1 0 0 0 5.32 17h13.36a1 1 0 0 0 .82-1.8l-1.8-2.62a3.96 3.96 0 0 1-.7-2.24V8a5 5 0 0 0-5-5Zm0 18a3 3 0 0 0 2.82-2h-5.64A3 3 0 0 0 12 21Z" fill="currentColor"/>
-                        </svg>
-                        <span class="admin-bell-badge">3</span>
-                    </button>
+                    <div class="admin-notification-wrap">
+                        <button
+                            type="button"
+                            id="adminBellBtn"
+                            class="admin-bell-btn"
+                            aria-label="Notificações"
+                            aria-haspopup="dialog"
+                            aria-expanded="false"
+                        >
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 3a5 5 0 0 0-5 5v2.34c0 .8-.24 1.58-.7 2.24L4.5 15.2A1 1 0 0 0 5.32 17h13.36a1 1 0 0 0 .82-1.8l-1.8-2.62a3.96 3.96 0 0 1-.7-2.24V8a5 5 0 0 0-5-5Zm0 18a3 3 0 0 0 2.82-2h-5.64A3 3 0 0 0 12 21Z" fill="currentColor"/>
+                            </svg>
+                            <span id="adminBellBadge" class="admin-bell-badge" hidden>0</span>
+                        </button>
+
+                        <dialog id="adminNotificationsPanel" class="admin-notification-panel" aria-label="Notificações de pré-inscrição" hidden>
+                            <header class="admin-notification-header">
+                                <h3>Novas pré-inscrições</h3>
+                                <button id="adminNotificationsMarkRead" type="button" class="admin-notification-mark-btn">Marcar como lidas</button>
+                            </header>
+                            <ul id="adminNotificationsList" class="admin-notification-list">
+                                <li class="admin-notification-empty">Sem notificações no momento.</li>
+                            </ul>
+                            <footer class="admin-notification-footer">
+                                <a th:href="@{/admin/dashboard(panel='pre-inscricoes')}" href="/admin/dashboard?panel=pre-inscricoes">Ir para pré-inscrições</a>
+                            </footer>
+                        </dialog>
+                    </div>
                     <form class="admin-logout-form" th:action="@{/logout}" action="/logout" method="post">
                         <button type="submit" class="admin-logout-btn">Sair</button>
                     </form>

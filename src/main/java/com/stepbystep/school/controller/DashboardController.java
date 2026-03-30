@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -33,6 +34,7 @@ import com.stepbystep.school.model.Aluno;
 import com.stepbystep.school.model.MaterialEstudo;
 import com.stepbystep.school.model.Mensalidade;
 import com.stepbystep.school.model.Nota;
+import com.stepbystep.school.model.PreInscricao;
 import com.stepbystep.school.model.Turma;
 import com.stepbystep.school.model.Usuario;
 import com.stepbystep.school.repository.AlunoRepository;
@@ -41,6 +43,7 @@ import com.stepbystep.school.service.FileUploadService;
 import com.stepbystep.school.service.MaterialEstudoService;
 import com.stepbystep.school.service.MensalidadeService;
 import com.stepbystep.school.service.NotaService;
+import com.stepbystep.school.service.PreInscricaoService;
 import com.stepbystep.school.service.TurmaService;
 import com.stepbystep.school.service.UsuarioService;
 import com.stepbystep.school.util.ValidationUtils;
@@ -53,6 +56,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.time.ZoneId;
 
 @Controller
 @RequiredArgsConstructor
@@ -64,6 +68,7 @@ public class DashboardController {
     private static final String REDIRECT_NOTAS_PANEL = "redirect:/admin/dashboard?panel=notas";
     private static final String REDIRECT_MENSALIDADES_PANEL = "redirect:/admin/dashboard?panel=mensalidades";
     private static final String REDIRECT_INADIMPLENCIA_PANEL = "redirect:/admin/dashboard?panel=inadimplencia";
+    private static final String REDIRECT_PRE_INSCRICOES_PANEL = "redirect:/admin/dashboard?panel=pre-inscricoes";
     private static final String CAMPO_ID_ALUNO = "ID do Aluno";
     private static final String CAMPO_ID_TURMA = "ID da Turma";
     private static final String CAMPO_ID_MATERIAL = "ID do Material";
@@ -75,6 +80,8 @@ public class DashboardController {
     private static final String FEEDBACK_MENSALIDADE_COBRANCA = "mensalidadeCobrancaFeedback";
     private static final String FEEDBACK_INADIMPLENCIA_LEMBRETE = "inadimplenciaLembreteFeedback";
     private static final String FEEDBACK_INADIMPLENCIA_ACORDO = "inadimplenciaAcordoFeedback";
+    private static final String FEEDBACK_PRE_INSCRICAO_FORM = "preInscricaoFormFeedback";
+    private static final String FEEDBACK_PRE_INSCRICAO_CONTATO = "preInscricaoContatoFeedback";
     private static final String MSG_ALUNO_NAO_ENCONTRADO = "Aluno não encontrado com ID: ";
     private static final String MSG_USUARIO_ALUNO_NAO_ENCONTRADO = "Usuário do aluno não encontrado.";
 
@@ -86,6 +93,7 @@ public class DashboardController {
     private final NotaService notaService;
     private final MensalidadeService mensalidadeService;
     private final FileUploadService fileUploadService;
+    private final PreInscricaoService preInscricaoService;
 
     @GetMapping("/admin/dashboard")
     public String adminDashboard(
@@ -98,6 +106,8 @@ public class DashboardController {
         @RequestParam(name = "notaTurmaId", required = false) String notaTurmaId,
         @RequestParam(name = "inadBusca", required = false) String inadBusca,
         @RequestParam(name = "inadFaixa", required = false) String inadFaixa,
+        @RequestParam(name = "preBusca", required = false) String preBusca,
+        @RequestParam(name = "preStatus", required = false) String preStatus,
         @RequestParam(name = "notaBimestre", required = false) Integer notaBimestre,
         Model model
     ) {
@@ -144,6 +154,12 @@ public class DashboardController {
             .map(Turma::getId)
             .distinct()
             .count();
+        List<PreInscricao> preInscricoes = preInscricaoService.listarPreInscricoesFiltradas(preBusca, preStatus);
+        List<PreInscricaoPainelItem> preInscricoesPainel = montarPreInscricoesPainel(preInscricoes);
+        List<PreInscricaoPainelItem> preInscricoesRecentes = preInscricoesPainel.stream().limit(3).toList();
+        long preInscricoesPendentes = preInscricaoService.contarPendentes(preInscricoes);
+        long preInscricoesContatadas = preInscricaoService.contarContatadas(preInscricoes);
+        long preInscricoesNovasSemana = preInscricaoService.contarNovasUltimosDias(preInscricoes, 7);
 
         model.addAttribute("isDashboard", true);
         model.addAttribute("turmas", turmaService.listarTurmasFiltradas(turmaBusca));
@@ -176,6 +192,14 @@ public class DashboardController {
         model.addAttribute("mensalidadesAReceberMesFmt", formatarMoeda(mensalidadesAReceberMes));
         model.addAttribute("mensalidadesAtrasadas", mensalidadesAtrasadas);
         model.addAttribute("mensalidadesTaxaAdimplencia", mensalidadesTaxaAdimplencia);
+        model.addAttribute("preBusca", textoFiltro(preBusca));
+        model.addAttribute("preStatus", textoFiltro(preStatus));
+        model.addAttribute("preInscricoes", preInscricoesPainel);
+        model.addAttribute("preInscricoesRecentes", preInscricoesRecentes);
+        model.addAttribute("preInscricoesPendentesQtd", preInscricoesPendentes);
+        model.addAttribute("preInscricoesContatadasQtd", preInscricoesContatadas);
+        model.addAttribute("preInscricoesNovasSemanaQtd", preInscricoesNovasSemana);
+        model.addAttribute("preInscricoesTotalQtd", preInscricoesPainel.size());
         model.addAttribute("inadBusca", textoFiltro(inadBusca));
         model.addAttribute("inadFaixa", textoFiltro(inadFaixa));
         model.addAttribute("inadimplenciaCarteira", inadimplenciaResumo.carteira());
@@ -194,6 +218,114 @@ public class DashboardController {
         model.addAttribute("inadimplenciaFaixa60MaisValorFmt", formatarMoeda(inadimplenciaResumo.faixa60MaisValor()));
         model.addAttribute("adminPanelInicial", panel == null || panel.isBlank() ? "overview" : panel);
         return "admin/dashboard";
+    }
+
+    @GetMapping("/admin/notificacoes/pre-inscricoes")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> buscarNotificacoesPreInscricoes(
+        @RequestParam(name = "afterEpochMillis", required = false, defaultValue = "0") long afterEpochMillis,
+        @RequestParam(name = "limit", required = false, defaultValue = "8") int limit
+    ) {
+        long referenciaSegura = Math.max(0L, afterEpochMillis);
+        int limiteSeguro = Math.max(1, Math.min(limit, 20));
+
+        List<PreInscricao> todas = preInscricaoService.listarPreInscricoes();
+        List<NotificacaoPreInscricaoItem> recentes = todas.stream()
+            .filter(item -> item.getDataLead() != null)
+            .map(item -> new NotificacaoPreInscricaoItem(
+                item.getId(),
+                item.getNomeInteressado(),
+                item.getWhatsapp(),
+                montarCausaNotificacaoPreInscricao(item),
+                "/admin/dashboard?panel=pre-inscricoes#lead-" + item.getId(),
+                item.getDataLead().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+            ))
+            .sorted(Comparator.comparingLong(NotificacaoPreInscricaoItem::dataLeadEpochMillis).reversed())
+            .limit(limiteSeguro)
+            .toList();
+
+        long unreadCount = todas.stream()
+            .filter(item -> item.getDataLead() != null)
+            .mapToLong(item -> item.getDataLead().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
+            .filter(epoch -> epoch > referenciaSegura)
+            .count();
+
+        long latestEpoch = todas.stream()
+            .filter(item -> item.getDataLead() != null)
+            .mapToLong(item -> item.getDataLead().atZone(ZoneId.systemDefault()).toInstant().toEpochMilli())
+            .max()
+            .orElse(referenciaSegura);
+
+        return ResponseEntity.ok(Map.of(
+            "unreadCount", unreadCount,
+            "latestEpochMillis", latestEpoch,
+            "items", recentes
+        ));
+    }
+
+    @PostMapping("/admin/pre-inscricoes")
+    public String cadastrarPreInscricaoAdmin(
+        @RequestParam("nomeInteressado") String nomeInteressado,
+        @RequestParam("whatsapp") String whatsapp,
+        @RequestParam(name = "interesse", required = false) String interesse,
+        @RequestParam(name = "origem", required = false) String origem,
+        @RequestParam(name = "dataLead", required = false) LocalDate dataLead,
+        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "mensagem", required = false) String mensagem,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoStringObrigatorio(nomeInteressado, "Nome do interessado");
+            ValidationUtils.validarCampoStringObrigatorio(whatsapp, "WhatsApp");
+
+            LocalDateTime dataReferencia = dataLead == null ? LocalDateTime.now() : dataLead.atStartOfDay();
+            preInscricaoService.criarPreInscricaoAdmin(
+                nomeInteressado,
+                whatsapp,
+                interesse,
+                origem,
+                dataReferencia,
+                status,
+                mensagem
+            );
+
+            redirectAttributes.addFlashAttribute(FEEDBACK_PRE_INSCRICAO_FORM, "Pré-inscrição cadastrada com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_PRE_INSCRICAO_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_PRE_INSCRICOES_PANEL;
+    }
+
+    @PostMapping("/admin/pre-inscricoes/contato")
+    public String registrarContatoPreInscricao(
+        @RequestParam("preInscricaoId") UUID preInscricaoId,
+        @RequestParam(name = "canal", required = false) String canal,
+        @RequestParam(name = "status", required = false) String status,
+        @RequestParam(name = "responsavel", required = false) String responsavel,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(preInscricaoId, "ID da pré-inscrição");
+            preInscricaoService.registrarContatoLead(preInscricaoId, status);
+
+            String canalNormalizado = normalizarTextoOpcional(canal);
+            String responsavelNormalizado = normalizarTextoOpcional(responsavel);
+
+            StringBuilder feedback = new StringBuilder("Contato da pré-inscrição registrado com sucesso.");
+            if (!canalNormalizado.isBlank()) {
+                feedback.append(" Canal: ").append(canalNormalizado).append('.');
+            }
+            if (!responsavelNormalizado.isBlank()) {
+                feedback.append(" Responsável: ").append(responsavelNormalizado).append('.');
+            }
+
+            redirectAttributes.addFlashAttribute(FEEDBACK_PRE_INSCRICAO_CONTATO, feedback.toString());
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_PRE_INSCRICAO_CONTATO, ex.getMessage());
+        }
+
+        return REDIRECT_PRE_INSCRICOES_PANEL;
     }
 
     @PostMapping("/admin/inadimplencia/enviar-lembrete")
@@ -1043,6 +1175,71 @@ public class DashboardController {
             .toList();
     }
 
+    private List<PreInscricaoPainelItem> montarPreInscricoesPainel(List<PreInscricao> preInscricoes) {
+        return preInscricoes.stream()
+            .map(preInscricao -> {
+                String mensagem = normalizarTextoOpcional(preInscricao.getMensagem());
+                String interesse = extrairTrechoMensagem(mensagem, "Interesse:");
+                String origem = extrairTrechoMensagem(mensagem, "Origem:");
+
+                return new PreInscricaoPainelItem(
+                    preInscricao.getId(),
+                    preInscricao.getNomeInteressado(),
+                    preInscricao.getWhatsapp(),
+                    interesse,
+                    origem,
+                    mensagem,
+                    preInscricao.getDataLead(),
+                    preInscricao.isRespondido() ? "Contatado" : "Pendente",
+                    preInscricao.isRespondido()
+                );
+            })
+            .toList();
+    }
+
+    private String extrairTrechoMensagem(String mensagem, String marcador) {
+        if (mensagem == null || mensagem.isBlank() || marcador == null || marcador.isBlank()) {
+            return "-";
+        }
+
+        int inicioMarcador = mensagem.toLowerCase(Locale.ROOT).indexOf(marcador.toLowerCase(Locale.ROOT));
+        if (inicioMarcador < 0) {
+            return "-";
+        }
+
+        int inicioConteudo = inicioMarcador + marcador.length();
+        int proximoSeparador = mensagem.indexOf("|", inicioConteudo);
+        String trecho = proximoSeparador < 0
+            ? mensagem.substring(inicioConteudo)
+            : mensagem.substring(inicioConteudo, proximoSeparador);
+
+        String normalizado = trecho.trim();
+        return normalizado.isBlank() ? "-" : normalizado;
+    }
+
+    private String montarCausaNotificacaoPreInscricao(PreInscricao preInscricao) {
+        String mensagem = normalizarTextoOpcional(preInscricao.getMensagem());
+        String interesse = extrairTrechoMensagem(mensagem, "Interesse:");
+        String origem = extrairTrechoMensagem(mensagem, "Origem:");
+
+        boolean temInteresse = !"-".equals(interesse);
+        boolean temOrigem = !"-".equals(origem);
+
+        if (temInteresse && temOrigem) {
+            return "Novo lead via " + origem + " com interesse em " + interesse + ".";
+        }
+
+        if (temOrigem) {
+            return "Novo lead recebido via " + origem + ".";
+        }
+
+        if (temInteresse) {
+            return "Novo lead com interesse em " + interesse + ".";
+        }
+
+        return "Nova pré-inscrição recebida pelo formulário.";
+    }
+
     private String resolverStatusInadimplencia(long diasEmAtraso) {
         if (diasEmAtraso <= 15) {
             return "Lembrete";
@@ -1125,5 +1322,26 @@ public class DashboardController {
         BigDecimal faixa16a30Valor,
         BigDecimal faixa31a60Valor,
         BigDecimal faixa60MaisValor
+    ) {}
+
+    public record PreInscricaoPainelItem(
+        UUID id,
+        String nomeInteressado,
+        String whatsapp,
+        String interesse,
+        String origem,
+        String mensagem,
+        LocalDateTime dataLead,
+        String status,
+        boolean respondido
+    ) {}
+
+    public record NotificacaoPreInscricaoItem(
+        UUID id,
+        String nomeInteressado,
+        String whatsapp,
+        String causa,
+        String destinoUrl,
+        long dataLeadEpochMillis
     ) {}
 }
