@@ -245,20 +245,24 @@ body.admin-body {
 }
 
 .admin-notification-panel {
-    position: absolute;
-    top: calc(100% + 10px);
-    right: 0;
-    width: min(420px, 92vw);
-    max-height: 420px;
+    position: fixed;
+    top: 74px;
+    right: 22px;
+    left: auto;
+    width: min(420px, calc(100vw - 30px));
+    max-height: min(72vh, 420px);
     overflow: hidden;
     margin: 0;
     padding: 0;
-    inset: auto 0 auto auto;
     background: #fff;
     border: 1px solid var(--admin-line);
     border-radius: 14px;
     box-shadow: 0 18px 32px rgba(15, 58, 95, 0.18);
     z-index: 50;
+}
+
+.admin-notification-panel[open] {
+    display: block;
 }
 
 .admin-notification-panel::backdrop {
@@ -269,7 +273,7 @@ body.admin-body {
     content: "";
     position: absolute;
     top: -7px;
-    right: 14px;
+    right: 20px;
     width: 12px;
     height: 12px;
     background: #fff;
@@ -1957,6 +1961,12 @@ tr.admin-highlight-row {
     .admin-menu-toggle {
         display: inline-block;
     }
+
+    .admin-notification-panel {
+        top: 68px;
+        right: 14px;
+        width: min(400px, calc(100vw - 24px));
+    }
 }
 
 @media (max-width: 720px) {
@@ -1983,7 +1993,6 @@ tr.admin-highlight-row {
         right: 12px;
         width: auto;
         max-height: min(62vh, 420px);
-        inset: 64px 12px auto 12px;
     }
 
     .admin-notification-panel::before {

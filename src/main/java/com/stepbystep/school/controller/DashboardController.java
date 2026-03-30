@@ -82,6 +82,7 @@ public class DashboardController {
     private static final String FEEDBACK_INADIMPLENCIA_ACORDO = "inadimplenciaAcordoFeedback";
     private static final String FEEDBACK_PRE_INSCRICAO_FORM = "preInscricaoFormFeedback";
     private static final String FEEDBACK_PRE_INSCRICAO_CONTATO = "preInscricaoContatoFeedback";
+    private static final String FEEDBACK_PRE_INSCRICAO_DELETE = "preInscricaoDeleteFeedback";
     private static final String MSG_ALUNO_NAO_ENCONTRADO = "Aluno não encontrado com ID: ";
     private static final String MSG_USUARIO_ALUNO_NAO_ENCONTRADO = "Usuário do aluno não encontrado.";
 
@@ -323,6 +324,22 @@ public class DashboardController {
             redirectAttributes.addFlashAttribute(FEEDBACK_PRE_INSCRICAO_CONTATO, feedback.toString());
         } catch (IllegalArgumentException ex) {
             redirectAttributes.addFlashAttribute(FEEDBACK_PRE_INSCRICAO_CONTATO, ex.getMessage());
+        }
+
+        return REDIRECT_PRE_INSCRICOES_PANEL;
+    }
+
+    @PostMapping("/admin/pre-inscricoes/excluir")
+    public String excluirPreInscricao(
+        @RequestParam("preInscricaoId") UUID preInscricaoId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(preInscricaoId, "ID da pré-inscrição");
+            preInscricaoService.excluirPreInscricao(preInscricaoId);
+            redirectAttributes.addFlashAttribute(FEEDBACK_PRE_INSCRICAO_DELETE, "Pré-inscrição excluída com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_PRE_INSCRICAO_DELETE, ex.getMessage());
         }
 
         return REDIRECT_PRE_INSCRICOES_PANEL;

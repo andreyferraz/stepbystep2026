@@ -117,6 +117,16 @@ public class PreInscricaoService {
         preInscricaoRepository.save(lead);
     }
 
+    public void excluirPreInscricao(UUID id) {
+        ValidationUtils.validarCampoObrigatorio(id, "ID da pré-inscrição");
+
+        if (!preInscricaoRepository.existsById(id)) {
+            throw new IllegalArgumentException("Pré-inscrição não encontrada para o ID: " + id);
+        }
+
+        preInscricaoRepository.deleteById(id);
+    }
+
     private boolean correspondeStatus(PreInscricao item, String status) {
         if (STATUS_PENDENTE.equals(status)) {
             return !item.isRespondido();

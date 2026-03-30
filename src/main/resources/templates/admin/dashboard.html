@@ -1487,6 +1487,7 @@
 
                 <output class="admin-feedback" id="preInscricaoContatoFeedback" aria-live="polite" th:text="${preInscricaoContatoFeedback}"></output>
                 <output class="admin-feedback" id="preInscricaoFormFeedback" aria-live="polite" th:text="${preInscricaoFormFeedback}"></output>
+                <output class="admin-feedback" id="preInscricaoDeleteFeedback" aria-live="polite" th:text="${preInscricaoDeleteFeedback}"></output>
 
                 <form class="preinscricoes-toolbar" th:action="@{/admin/dashboard}" action="/admin/dashboard" method="get">
                     <input type="hidden" name="panel" value="pre-inscricoes">
@@ -1547,7 +1548,16 @@
                                             <span class="status-chip" th:classappend="${lead.respondido} ? ' success' : ' warn'" th:text="${lead.status}">Pendente</span>
                                         </td>
                                         <td>
-                                            <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="preinscricao-contato" th:attr="data-preinscricao-id=${lead.id}">Contatar</button>
+                                            <div class="action-icons">
+                                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="preinscricao-contato" th:attr="data-preinscricao-id=${lead.id}">Contatar</button>
+                                                <form th:action="@{/admin/pre-inscricoes/excluir}" action="/admin/pre-inscricoes/excluir" method="post" onsubmit="return confirm('Deseja realmente excluir esta pré-inscrição?');">
+                                                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                                    <input type="hidden" name="preInscricaoId" th:value="${lead.id}">
+                                                    <button type="submit" class="icon-btn danger" aria-label="Excluir inscrição">
+                                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2Zm1 6h2v8h-2V9Zm4 0h2v8h-2V9ZM7 9h2v8H7V9Z" fill="currentColor"/></svg>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
