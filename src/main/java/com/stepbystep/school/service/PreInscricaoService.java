@@ -15,6 +15,7 @@ import com.stepbystep.school.util.ValidationUtils;
 public class PreInscricaoService {
 
     private static final String STATUS_PENDENTE = "pendente";
+    private static final String PRE_INSCRICAO = "ID da pré-inscrição";
 
     private final PreInscricaoRepository preInscricaoRepository;
 
@@ -97,7 +98,7 @@ public class PreInscricaoService {
     }
 
     public void registrarContatoLead(UUID id, String status) {
-        ValidationUtils.validarCampoObrigatorio(id, "ID da pré-inscrição");
+        ValidationUtils.validarCampoObrigatorio(id, PRE_INSCRICAO);
 
         PreInscricao lead = preInscricaoRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Pré-inscrição não encontrada para o ID: " + id));
@@ -108,7 +109,7 @@ public class PreInscricaoService {
     }
 
     public void marcarComoRespondido(UUID id) {
-        ValidationUtils.validarCampoObrigatorio(id, "ID da pré-inscrição");
+        ValidationUtils.validarCampoObrigatorio(id, PRE_INSCRICAO);
 
         PreInscricao lead = preInscricaoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Pré-inscrição não encontrada para o ID: " + id));
@@ -118,7 +119,7 @@ public class PreInscricaoService {
     }
 
     public void excluirPreInscricao(UUID id) {
-        ValidationUtils.validarCampoObrigatorio(id, "ID da pré-inscrição");
+        ValidationUtils.validarCampoObrigatorio(id, PRE_INSCRICAO);
 
         if (!preInscricaoRepository.existsById(id)) {
             throw new IllegalArgumentException("Pré-inscrição não encontrada para o ID: " + id);
