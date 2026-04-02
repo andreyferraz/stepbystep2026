@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .requestMatchers(
                     "/",
                     "/escola",
-                    "/blog",
+                    "/blog/**",
                     "/galeria",
                     "/livros",
                     "/contato",
@@ -43,7 +43,8 @@ public class SecurityConfig {
                     "/api/webhooks/**",
                     "/css/**",
                     "/js/**",
-                    "/img/**"
+                    "/img/**",
+                    "/uploads/**"
                 ).permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/aluno/**").hasRole("ALUNO")

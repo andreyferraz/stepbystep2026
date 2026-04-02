@@ -318,6 +318,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     var openModalButtons = document.querySelectorAll("[data-open-modal]");
     var closeModalButtons = document.querySelectorAll("[data-close-modal]");
+    var editorSelectionRange = null;
     var notaAlunoSelect = document.getElementById("notaAluno");
     var notaTurmaSelect = document.getElementById("notaTurma");
     var notaDataInput = document.getElementById("notaData");
@@ -372,6 +373,191 @@ document.addEventListener("DOMContentLoaded", function () {
         var mes = String(hoje.getMonth() + 1).padStart(2, "0");
         var dia = String(hoje.getDate()).padStart(2, "0");
         dataInput.value = ano + "-" + mes + "-" + dia;
+    }
+
+    function salvarSelecaoEditor(editor) {
+        var selection = window.getSelection();
+        if (!selection || selection.rangeCount === 0) {
+            return;
+        }
+
+        var range = selection.getRangeAt(0);
+        if (editor.contains(range.commonAncestorContainer)) {
+            editorSelectionRange = range;
+        }
+    }
+
+    function restaurarSelecaoEditor(editor) {
+        if (!editorSelectionRange) {
+            editor.focus();
+            return;
+        }
+
+        var selection = window.getSelection();
+        if (!selection) {
+            return;
+        }
+
+        selection.removeAllRanges();
+        selection.addRange(editorSelectionRange);
+    }
+
+    function sincronizarEditorComTextarea(editor) {
+        if (!editor) {
+            return;
+        }
+
+        var textareaId = editor.getAttribute("data-editor-textarea");
+        if (!textareaId) {
+            return;
+        }
+
+        var textarea = document.getElementById(textareaId);
+        if (!textarea) {
+            return;
+        }
+
+        textarea.value = editor.innerHTML.trim();
+    }
+
+    function inicializarEditorRico(editorId) {
+        var editor = document.getElementById(editorId);
+        if (!editor) {
+            return;
+        }
+
+        editor.addEventListener("input", function () {
+            sincronizarEditorComTextarea(editor);
+        });
+
+        editor.addEventListener("keyup", function () {
+            salvarSelecaoEditor(editor);
+        });
+
+        editor.addEventListener("mouseup", function () {
+            salvarSelecaoEditor(editor);
+        });
+
+        sincronizarEditorComTextarea(editor);
+    }
+
+    function obterTokenCsrf(form) {
+        if (!form) {
+            return null;
+        }
+
+        var tokenInput = form.querySelector("input[type='hidden']");
+        if (!tokenInput || !tokenInput.name || !tokenInput.value) {
+            return null;
+        }
+
+        return {
+            name: tokenInput.name,
+            value: tokenInput.value
+        };
+    }
+
+    function inserirImagemNoEditor(editor, urlImagem) {
+        restaurarSelecaoEditor(editor);
+        var inseriu = document.execCommand("insertImage", false, urlImagem);
+        if (!inseriu) {
+            editor.innerHTML += "<p><img src=\"" + urlImagem + "\" alt=\"Imagem do conteúdo\"></p>";
+        }
+        sincronizarEditorComTextarea(editor);
+    }
+
+    function uploadImagemEditor(form, file, callbackSucesso) {
+        var formData = new FormData();
+        formData.append("imagem", file);
+
+        var tokenCsrf = obterTokenCsrf(form);
+        if (tokenCsrf) {
+            formData.append(tokenCsrf.name, tokenCsrf.value);
+        }
+
+        fetch("/admin/blog/postagens/imagens", {
+            method: "POST",
+            body: formData
+        })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("Falha ao enviar imagem.");
+                }
+                return response.json();
+            })
+            .then(function (payload) {
+                if (!payload || !payload.url) {
+                    throw new Error("Resposta de upload inválida.");
+                }
+                callbackSucesso(payload.url);
+            })
+            .catch(function () {
+                window.alert("Nao foi possivel enviar a imagem para o conteúdo.");
+            });
+    }
+
+    document.querySelectorAll("[data-editor-action]").forEach(function (button) {
+        button.addEventListener("click", function () {
+            var editorId = button.getAttribute("data-editor-target");
+            var action = button.getAttribute("data-editor-action");
+            var value = button.getAttribute("data-editor-value") || "";
+            var editor = document.getElementById(editorId);
+            if (!editor || !action) {
+                return;
+            }
+
+            var form = button.closest("form");
+            editor.focus();
+            restaurarSelecaoEditor(editor);
+
+            if (action === "createLink") {
+                var url = window.prompt("Informe a URL do link:", "https://");
+                if (!url) {
+                    return;
+                }
+                document.execCommand("createLink", false, url);
+                sincronizarEditorComTextarea(editor);
+                return;
+            }
+
+            if (action === "insertImage") {
+                var uploadInputId = button.getAttribute("data-editor-upload-input");
+                var uploadInput = uploadInputId ? document.getElementById(uploadInputId) : null;
+                if (!uploadInput) {
+                    return;
+                }
+
+                uploadInput.value = "";
+                uploadInput.onchange = function () {
+                    if (!uploadInput.files || uploadInput.files.length === 0) {
+                        return;
+                    }
+                    uploadImagemEditor(form, uploadInput.files[0], function (urlImagem) {
+                        inserirImagemNoEditor(editor, urlImagem);
+                    });
+                };
+                uploadInput.click();
+                return;
+            }
+
+            if (action === "formatBlock") {
+                document.execCommand(action, false, "<" + value + ">");
+            } else {
+                document.execCommand(action, false, value);
+            }
+
+            sincronizarEditorComTextarea(editor);
+        });
+    });
+
+    inicializarEditorRico("blogConteudoEditor");
+
+    var formNovaPostagem = document.getElementById("formNovaPostagem");
+    if (formNovaPostagem) {
+        formNovaPostagem.addEventListener("submit", function () {
+            var editor = document.getElementById("blogConteudoEditor");
+            sincronizarEditorComTextarea(editor);
+        });
     }
 
     function filtrarMensalidadesPorAluno() {
@@ -736,6 +922,26 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (preInscricaoLeadSelect && preInscricaoId) {
                         preInscricaoLeadSelect.value = preInscricaoId;
                     }
+                }
+
+                if (target === "blog-editar") {
+                    var blogEditMap = {
+                        "#blogEditarPostagemId": "data-blog-id",
+                        "#blogEditarTitulo": "data-blog-titulo",
+                        "#blogEditarCategoria": "data-blog-categoria",
+                        "#blogEditarStatus": "data-blog-status",
+                        "#blogEditarConteudo": "data-blog-conteudo",
+                        "#blogEditarAutor": "data-blog-autor",
+                        "#blogEditarDataPublicacao": "data-blog-data",
+                        "#blogEditarResumo": "data-blog-resumo"
+                    };
+
+                    Object.keys(blogEditMap).forEach(function (selector) {
+                        var field = modal.querySelector(selector);
+                        if (field) {
+                            field.value = button.getAttribute(blogEditMap[selector]) || "";
+                        }
+                    });
                 }
 
                 modal.classList.add("is-open");

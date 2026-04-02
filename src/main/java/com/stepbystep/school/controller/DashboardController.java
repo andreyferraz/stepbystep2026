@@ -30,10 +30,12 @@ import com.stepbystep.school.dto.AdminAlunoCadastroRequest;
 import com.stepbystep.school.enums.NivelAtual;
 import com.stepbystep.school.enums.Role;
 import com.stepbystep.school.enums.StatusMensalidade;
+import com.stepbystep.school.enums.StatusPostagem;
 import com.stepbystep.school.model.Aluno;
 import com.stepbystep.school.model.MaterialEstudo;
 import com.stepbystep.school.model.Mensalidade;
 import com.stepbystep.school.model.Nota;
+import com.stepbystep.school.model.Postagem;
 import com.stepbystep.school.model.PreInscricao;
 import com.stepbystep.school.model.Turma;
 import com.stepbystep.school.model.Usuario;
@@ -43,6 +45,7 @@ import com.stepbystep.school.service.FileUploadService;
 import com.stepbystep.school.service.MaterialEstudoService;
 import com.stepbystep.school.service.MensalidadeService;
 import com.stepbystep.school.service.NotaService;
+import com.stepbystep.school.service.PostagemService;
 import com.stepbystep.school.service.PreInscricaoService;
 import com.stepbystep.school.service.TurmaService;
 import com.stepbystep.school.service.UsuarioService;
@@ -95,6 +98,7 @@ public class DashboardController {
     private final MensalidadeService mensalidadeService;
     private final FileUploadService fileUploadService;
     private final PreInscricaoService preInscricaoService;
+    private final PostagemService postagemService;
 
     @GetMapping("/admin/dashboard")
     public String adminDashboard(
@@ -109,12 +113,18 @@ public class DashboardController {
         @RequestParam(name = "inadFaixa", required = false) String inadFaixa,
         @RequestParam(name = "preBusca", required = false) String preBusca,
         @RequestParam(name = "preStatus", required = false) String preStatus,
+        @RequestParam(name = "blogBusca", required = false) String blogBusca,
+        @RequestParam(name = "blogStatus", required = false) String blogStatus,
+        @RequestParam(name = "blogCategoria", required = false) String blogCategoria,
         @RequestParam(name = "notaBimestre", required = false) Integer notaBimestre,
         Model model
     ) {
         String alunoBuscaNormalizada = alunoBusca == null ? "" : alunoBusca.trim().toLowerCase(Locale.ROOT);
         String inadBuscaNormalizada = inadBusca == null ? "" : inadBusca.trim().toLowerCase(Locale.ROOT);
         String inadFaixaNormalizada = inadFaixa == null ? "" : inadFaixa.trim().toLowerCase(Locale.ROOT);
+        String blogBuscaNormalizada = blogBusca == null ? "" : blogBusca.trim().toLowerCase(Locale.ROOT);
+        String blogStatusNormalizado = blogStatus == null ? "" : blogStatus.trim().toLowerCase(Locale.ROOT);
+        String blogCategoriaNormalizada = blogCategoria == null ? "" : blogCategoria.trim().toLowerCase(Locale.ROOT);
         UUID materialTurmaIdFiltrada = parseUuidOpcional(materialTurmaId);
         UUID notaTurmaIdFiltrada = parseUuidOpcional(notaTurmaId);
 
@@ -161,6 +171,18 @@ public class DashboardController {
         long preInscricoesPendentes = preInscricaoService.contarPendentes(preInscricoes);
         long preInscricoesContatadas = preInscricaoService.contarContatadas(preInscricoes);
         long preInscricoesNovasSemana = preInscricaoService.contarNovasUltimosDias(preInscricoes, 7);
+        List<Postagem> postagensAdminTodas = postagemService.listarPostagensAdmin();
+        List<Postagem> postagensAdminFiltradas = filtrarPostagensBlogAdmin(
+            postagensAdminTodas,
+            blogBuscaNormalizada,
+            blogStatusNormalizado,
+            blogCategoriaNormalizada
+        );
+        long postagensPublicadasQtd = contarPostagensPorStatus(postagensAdminTodas, StatusPostagem.PUBLICADO);
+        long postagensRascunhoQtd = contarPostagensPorStatus(postagensAdminTodas, StatusPostagem.RASCUNHO);
+        long postagensAgendadasQtd = contarPostagensPorStatus(postagensAdminTodas, StatusPostagem.AGENDADO);
+        List<Postagem> postagensTop = listarTopPostagensPublicadas(postagensAdminTodas, 3);
+        List<Postagem> postagensAgendadas = listarPostagensAgendadas(postagensAdminTodas, 3);
 
         model.addAttribute("isDashboard", true);
         model.addAttribute("turmas", turmaService.listarTurmasFiltradas(turmaBusca));
@@ -201,6 +223,16 @@ public class DashboardController {
         model.addAttribute("preInscricoesContatadasQtd", preInscricoesContatadas);
         model.addAttribute("preInscricoesNovasSemanaQtd", preInscricoesNovasSemana);
         model.addAttribute("preInscricoesTotalQtd", preInscricoesPainel.size());
+        model.addAttribute("blogBusca", textoFiltro(blogBusca));
+        model.addAttribute("blogStatus", textoFiltro(blogStatus));
+        model.addAttribute("blogCategoria", textoFiltro(blogCategoria));
+        model.addAttribute("blogPostagens", postagensAdminFiltradas);
+        model.addAttribute("blogPostagensTotalQtd", postagensAdminTodas.size());
+        model.addAttribute("blogPostagensPublicadasQtd", postagensPublicadasQtd);
+        model.addAttribute("blogPostagensRascunhoQtd", postagensRascunhoQtd);
+        model.addAttribute("blogPostagensAgendadasQtd", postagensAgendadasQtd);
+        model.addAttribute("blogTopPostagens", postagensTop);
+        model.addAttribute("blogProximasPublicacoes", postagensAgendadas);
         model.addAttribute("inadBusca", textoFiltro(inadBusca));
         model.addAttribute("inadFaixa", textoFiltro(inadFaixa));
         model.addAttribute("inadimplenciaCarteira", inadimplenciaResumo.carteira());
@@ -1025,6 +1057,59 @@ public class DashboardController {
 
     private String normalizarTextoOpcional(String valor) {
         return valor == null ? "" : valor.trim();
+    }
+
+    private List<Postagem> filtrarPostagensBlogAdmin(
+        List<Postagem> origem,
+        String buscaNormalizada,
+        String statusNormalizado,
+        String categoriaNormalizada
+    ) {
+        return origem.stream()
+            .filter(postagem -> buscaNormalizada.isBlank() || correspondeBuscaPostagem(postagem, buscaNormalizada))
+            .filter(postagem -> statusNormalizado.isBlank() || statusPostagemNormalizado(postagem).equals(statusNormalizado))
+            .filter(postagem -> categoriaNormalizada.isBlank() || categoriaPostagemNormalizada(postagem).equals(categoriaNormalizada))
+            .toList();
+    }
+
+    private boolean correspondeBuscaPostagem(Postagem postagem, String buscaNormalizada) {
+        return contemTexto(postagem.getTitulo(), buscaNormalizada)
+            || contemTexto(postagem.getAutor(), buscaNormalizada)
+            || contemTexto(postagem.getResumo(), buscaNormalizada)
+            || contemTexto(postagem.getConteudo(), buscaNormalizada);
+    }
+
+    private String statusPostagemNormalizado(Postagem postagem) {
+        if (postagem.getStatus() == null) {
+            return "rascunho";
+        }
+        return postagem.getStatus().name().toLowerCase(Locale.ROOT);
+    }
+
+    private String categoriaPostagemNormalizada(Postagem postagem) {
+        return normalizarTextoOpcional(postagem.getCategoria()).toLowerCase(Locale.ROOT);
+    }
+
+    private long contarPostagensPorStatus(List<Postagem> postagens, StatusPostagem status) {
+        return postagens.stream()
+            .filter(postagem -> postagem.getStatus() == status)
+            .count();
+    }
+
+    private List<Postagem> listarTopPostagensPublicadas(List<Postagem> postagens, int limite) {
+        return postagens.stream()
+            .filter(postagem -> postagem.getStatus() == StatusPostagem.PUBLICADO)
+            .sorted(Comparator.comparing(Postagem::getDataPublicacao, Comparator.nullsLast(LocalDateTime::compareTo)).reversed())
+            .limit(limite)
+            .toList();
+    }
+
+    private List<Postagem> listarPostagensAgendadas(List<Postagem> postagens, int limite) {
+        return postagens.stream()
+            .filter(postagem -> postagem.getStatus() == StatusPostagem.AGENDADO)
+            .sorted(Comparator.comparing(Postagem::getDataPublicacao, Comparator.nullsLast(LocalDateTime::compareTo)))
+            .limit(limite)
+            .toList();
     }
 
     private List<CarteiraInadimplenciaItem> montarCarteiraInadimplencia(

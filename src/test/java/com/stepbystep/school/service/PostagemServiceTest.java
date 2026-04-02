@@ -31,6 +31,9 @@ class PostagemServiceTest {
     @Mock
     private PostagemRepository postagemRepository;
 
+        @Mock
+        private FileUploadService fileUploadService;
+
     @InjectMocks
     private PostagemService postagemService;
 
@@ -49,7 +52,7 @@ class PostagemServiceTest {
 
             when(postagemRepository.save(any(Postagem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            Postagem retorno = postagemService.criarPostagem(postagem);
+            Postagem retorno = postagemService.criarPostagem(postagem, null);
 
             assertNotNull(retorno);
             assertNotNull(retorno.getDataPublicacao());
@@ -69,7 +72,7 @@ class PostagemServiceTest {
 
             when(postagemRepository.save(any(Postagem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            Postagem retorno = postagemService.criarPostagem(postagem);
+            Postagem retorno = postagemService.criarPostagem(postagem, null);
 
             assertEquals(dataInformada, retorno.getDataPublicacao());
             verify(postagemRepository, times(1)).save(postagem);
@@ -79,7 +82,7 @@ class PostagemServiceTest {
         @DisplayName("Deve lançar exceção quando postagem é nula")
         void deveLancarExcecaoQuandoPostagemNula() {
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> postagemService.criarPostagem(null));
+                                        () -> postagemService.criarPostagem(null, null));
 
             assertTrue(ex.getMessage().contains("Postagem"));
             verify(postagemRepository, never()).save(any());
@@ -94,7 +97,7 @@ class PostagemServiceTest {
                     .build();
 
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> postagemService.criarPostagem(postagem));
+                    () -> postagemService.criarPostagem(postagem, null));
 
             assertTrue(ex.getMessage().contains("Título da postagem"));
             verify(postagemRepository, never()).save(any());
@@ -109,7 +112,7 @@ class PostagemServiceTest {
                     .build();
 
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> postagemService.criarPostagem(postagem));
+                    () -> postagemService.criarPostagem(postagem, null));
 
             assertTrue(ex.getMessage().contains("Conteúdo da postagem"));
             verify(postagemRepository, never()).save(any());
@@ -121,8 +124,8 @@ class PostagemServiceTest {
     class EditarPostagem {
 
         @Test
-        @DisplayName("Deve editar postagem mantendo data original e atualizando capa quando informada")
-        void deveEditarPostagemMantendoDataOriginalEAtualizandoCapa() {
+        @DisplayName("Deve editar postagem mantendo data original quando capa nao e informada")
+        void deveEditarPostagemMantendoDataOriginalQuandoCapaNaoInformada() {
             UUID id = UUID.randomUUID();
             LocalDateTime dataOriginal = LocalDateTime.now().minusDays(5);
             Postagem existente = Postagem.builder()
@@ -135,17 +138,16 @@ class PostagemServiceTest {
             Postagem entrada = Postagem.builder()
                     .titulo("Titulo novo")
                     .conteudo("Conteudo novo")
-                    .urlImagemCapa("capa-nova.webp")
                     .build();
 
             when(postagemRepository.findById(id)).thenReturn(Optional.of(existente));
             when(postagemRepository.save(any(Postagem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            Postagem retorno = postagemService.editarPostagem(id, entrada);
+            Postagem retorno = postagemService.editarPostagem(id, entrada, null);
 
             assertEquals("Titulo novo", retorno.getTitulo());
             assertEquals("Conteudo novo", retorno.getConteudo());
-            assertEquals("capa-nova.webp", retorno.getUrlImagemCapa());
+                        assertEquals("capa-antiga.webp", retorno.getUrlImagemCapa());
             assertEquals(dataOriginal, retorno.getDataPublicacao());
             verify(postagemRepository, times(1)).save(existente);
         }
@@ -171,7 +173,7 @@ class PostagemServiceTest {
             when(postagemRepository.findById(id)).thenReturn(Optional.of(existente));
             when(postagemRepository.save(any(Postagem.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-            Postagem retorno = postagemService.editarPostagem(id, entrada);
+            Postagem retorno = postagemService.editarPostagem(id, entrada, null);
 
             assertEquals("capa-antiga.webp", retorno.getUrlImagemCapa());
             assertEquals(dataOriginal, retorno.getDataPublicacao());
@@ -186,7 +188,7 @@ class PostagemServiceTest {
             when(postagemRepository.findById(id)).thenReturn(Optional.empty());
 
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> postagemService.editarPostagem(id, entrada));
+                    () -> postagemService.editarPostagem(id, entrada, null));
 
             assertTrue(ex.getMessage().contains("Postagem não encontrada com ID"));
             verify(postagemRepository, never()).save(any());

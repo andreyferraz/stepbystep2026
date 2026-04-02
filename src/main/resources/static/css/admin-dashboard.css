@@ -629,6 +629,11 @@ tr.admin-highlight-row {
     gap: 6px;
 }
 
+.admin-inline-form {
+    display: inline-flex;
+    margin: 0;
+}
+
 .icon-btn {
     width: 32px;
     height: 32px;
@@ -1843,6 +1848,34 @@ tr.admin-highlight-row {
     min-height: 84px;
 }
 
+.blog-editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.blog-editor-toolbar .admin-inline-btn {
+    min-width: 42px;
+    padding: 8px 10px;
+}
+
+.blog-rich-editor {
+    border: 1px solid var(--admin-line);
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 320px;
+    max-height: 56vh;
+    overflow-y: auto;
+    line-height: 1.45;
+    background: #fff;
+}
+
+.blog-rich-editor:focus {
+    outline: 2px solid rgba(43, 126, 191, 0.2);
+    border-color: var(--admin-brand-500);
+}
+
 .modal-field-full {
     grid-column: 1 / -1;
 }
@@ -2105,5 +2138,9 @@ tr.admin-highlight-row {
 
     .modal-body {
         grid-template-columns: 1fr;
+    }
+    .blog-rich-editor {
+        min-height: 240px;
+        max-height: 48vh;
     }
 }

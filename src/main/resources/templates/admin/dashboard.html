@@ -1757,7 +1757,7 @@
                 <div class="section-head">
                     <h2>Postagens do Blog</h2>
                     <div class="blog-actions">
-                        <button type="button" class="admin-secondary-btn" data-open-modal="blog-editar">Editar rascunho</button>
+                        <button type="button" class="admin-secondary-btn" data-open-modal="blog-editar" th:if="${blogPostagens != null and !#lists.isEmpty(blogPostagens)}" th:attr="data-blog-id=${blogPostagens.get(0).id},data-blog-titulo=${blogPostagens.get(0).titulo},data-blog-categoria=${blogPostagens.get(0).categoria},data-blog-status=${blogPostagens.get(0).status != null ? #strings.toLowerCase(blogPostagens.get(0).status.name()) : 'rascunho'},data-blog-conteudo=${blogPostagens.get(0).conteudo},data-blog-autor=${blogPostagens.get(0).autor},data-blog-data=${blogPostagens.get(0).dataPublicacao != null ? #temporals.format(blogPostagens.get(0).dataPublicacao, 'yyyy-MM-dd') : ''},data-blog-resumo=${blogPostagens.get(0).resumo}">Editar rascunho</button>
                         <button type="button" class="admin-primary-btn" data-open-modal="blog-nova">Nova postagem</button>
                     </div>
                 </div>
@@ -1765,38 +1765,40 @@
                 <output class="admin-feedback" id="blogFormFeedback" aria-live="polite"></output>
                 <output class="admin-feedback" id="blogEditFeedback" aria-live="polite"></output>
 
-                <div class="blog-toolbar">
-                    <input type="search" class="admin-search" placeholder="Pesquisar por titulo, autor ou palavra-chave">
-                    <select class="blog-filter" aria-label="Filtrar por status da postagem">
-                        <option value="">Todos os status</option>
-                        <option value="publicado">Publicado</option>
-                        <option value="rascunho">Rascunho</option>
-                        <option value="agendado">Agendado</option>
+                <form class="blog-toolbar" th:action="@{/admin/dashboard}" method="get">
+                    <input type="hidden" name="panel" value="blog">
+                    <input type="search" class="admin-search" name="blogBusca" th:value="${blogBusca}" placeholder="Pesquisar por titulo, autor ou palavra-chave">
+                    <select class="blog-filter" name="blogStatus" aria-label="Filtrar por status da postagem">
+                        <option value="" th:selected="${#strings.isEmpty(blogStatus)}">Todos os status</option>
+                        <option value="publicado" th:selected="${blogStatus == 'publicado'}">Publicado</option>
+                        <option value="rascunho" th:selected="${blogStatus == 'rascunho'}">Rascunho</option>
+                        <option value="agendado" th:selected="${blogStatus == 'agendado'}">Agendado</option>
                     </select>
-                    <select class="blog-filter" aria-label="Filtrar por categoria">
-                        <option value="">Todas as categorias</option>
-                        <option value="dicas">Dicas de ingles</option>
-                        <option value="eventos">Eventos</option>
-                        <option value="escola">Vida na escola</option>
+                    <select class="blog-filter" name="blogCategoria" aria-label="Filtrar por categoria">
+                        <option value="" th:selected="${#strings.isEmpty(blogCategoria)}">Todas as categorias</option>
+                        <option value="dicas" th:selected="${blogCategoria == 'dicas'}">Dicas de ingles</option>
+                        <option value="eventos" th:selected="${blogCategoria == 'eventos'}">Eventos</option>
+                        <option value="escola" th:selected="${blogCategoria == 'escola'}">Vida na escola</option>
                     </select>
-                </div>
+                    <button type="submit" class="admin-secondary-btn">Filtrar</button>
+                </form>
 
                 <div class="blog-metric-grid">
                     <article class="blog-metric-card">
                         <p>Postagens publicadas</p>
-                        <strong>64</strong>
+                        <strong th:text="${blogPostagensPublicadasQtd}">0</strong>
                     </article>
                     <article class="blog-metric-card">
                         <p>Rascunhos ativos</p>
-                        <strong>9</strong>
+                        <strong th:text="${blogPostagensRascunhoQtd}">0</strong>
                     </article>
                     <article class="blog-metric-card">
-                        <p>Visualizacoes no mes</p>
-                        <strong>12.4k</strong>
+                        <p>Total de postagens</p>
+                        <strong th:text="${blogPostagensTotalQtd}">0</strong>
                     </article>
                     <article class="blog-metric-card">
                         <p>Agendadas para semana</p>
-                        <strong>3</strong>
+                        <strong th:text="${blogPostagensAgendadasQtd}">0</strong>
                     </article>
                 </div>
 
@@ -1818,46 +1820,34 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>5 jogos para praticar vocabulario em casa</td>
-                                        <td>Dicas de ingles</td>
-                                        <td>Equipe Pedagogica</td>
-                                        <td>18/03/2026</td>
-                                        <td><span class="status-chip warn">Agendado</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="blog-editar">Editar</button></td>
+                                    <tr th:if="${blogPostagens == null or #lists.isEmpty(blogPostagens)}">
+                                        <td colspan="6">Nenhuma postagem encontrada com os filtros selecionados.</td>
                                     </tr>
-                                    <tr>
-                                        <td>Como funciona a aula experimental na Step By Step</td>
-                                        <td>Vida na escola</td>
-                                        <td>Coord. Amanda</td>
-                                        <td>12/03/2026</td>
-                                        <td><span class="status-chip success">Publicado</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Especial de Páscoa: atividades para o Kids</td>
-                                        <td>Eventos</td>
-                                        <td>Prof. Elza</td>
-                                        <td>10/03/2026</td>
-                                        <td><span class="status-chip warn">Rascunho</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="blog-editar">Continuar</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Checklist para evoluir no speaking em 30 dias</td>
-                                        <td>Dicas de ingles</td>
-                                        <td>Prof. Marcos</td>
-                                        <td>05/03/2026</td>
-                                        <td><span class="status-chip success">Publicado</span></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Metricas</button></td>
+                                    <tr th:each="postagem : ${blogPostagens}">
+                                        <td th:text="${postagem.titulo}">Titulo</td>
+                                        <td th:text="${#strings.isEmpty(postagem.categoria) ? '-' : postagem.categoria}">Categoria</td>
+                                        <td th:text="${#strings.isEmpty(postagem.autor) ? '-' : postagem.autor}">Autor</td>
+                                        <td th:text="${postagem.dataPublicacao != null ? #temporals.format(postagem.dataPublicacao, 'dd/MM/yyyy') : '-'}">Data</td>
+                                        <td>
+                                            <span class="status-chip success" th:if="${postagem.status != null and postagem.status.name() == 'PUBLICADO'}">Publicado</span>
+                                            <span class="status-chip warn" th:if="${postagem.status == null or postagem.status.name() == 'RASCUNHO'}">Rascunho</span>
+                                            <span class="status-chip warn" th:if="${postagem.status != null and postagem.status.name() == 'AGENDADO'}">Agendado</span>
+                                        </td>
+                                        <td>
+                                            <div class="action-icons">
+                                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="blog-editar"
+                                                    th:attr="data-blog-id=${postagem.id},data-blog-titulo=${postagem.titulo},data-blog-categoria=${postagem.categoria},data-blog-status=${postagem.status != null ? #strings.toLowerCase(postagem.status.name()) : 'rascunho'},data-blog-conteudo=${postagem.conteudo},data-blog-autor=${postagem.autor},data-blog-data=${postagem.dataPublicacao != null ? #temporals.format(postagem.dataPublicacao, 'yyyy-MM-dd') : ''},data-blog-resumo=${postagem.resumo}">Editar</button>
+
+                                                <form class="admin-inline-form" th:action="@{/admin/blog/postagens/excluir}" action="/admin/blog/postagens/excluir" method="post" onsubmit="return confirm('Tem certeza que deseja excluir esta postagem?');">
+                                                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                                    <input type="hidden" name="postagemId" th:value="${postagem.id}">
+                                                    <button type="submit" class="admin-secondary-btn admin-inline-btn admin-danger-btn">Excluir</button>
+                                                </form>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
-
-                            <div class="pagination">
-                                <button type="button">Anterior</button>
-                                <span>Pagina 1 de 4</span>
-                                <button type="button">Proxima</button>
-                            </div>
                         </div>
                     </article>
 
@@ -1868,17 +1858,13 @@
                             </header>
                             <div class="admin-card-content">
                                 <ul class="blog-list">
-                                    <li>
-                                        <strong>Como ajudar seu filho no listening</strong>
-                                        <span>2.3k visualizacoes e 84 compartilhamentos.</span>
+                                    <li th:if="${blogTopPostagens == null or #lists.isEmpty(blogTopPostagens)}">
+                                        <strong>Sem postagens publicadas</strong>
+                                        <span>Publique posts para acompanhar destaques.</span>
                                     </li>
-                                    <li>
-                                        <strong>Rotina de estudos para Teens</strong>
-                                        <span>1.8k visualizacoes e 61 compartilhamentos.</span>
-                                    </li>
-                                    <li>
-                                        <strong>Palavras mais usadas em sala (Kids)</strong>
-                                        <span>1.2k visualizacoes e 39 compartilhamentos.</span>
+                                    <li th:each="postagem : ${blogTopPostagens}">
+                                        <strong th:text="${postagem.titulo}">Titulo</strong>
+                                        <span th:text="${'Publicado em ' + (postagem.dataPublicacao != null ? #temporals.format(postagem.dataPublicacao, 'dd/MM/yyyy') : '-')}">Publicado em -</span>
                                     </li>
                                 </ul>
                             </div>
@@ -1890,17 +1876,13 @@
                             </header>
                             <div class="admin-card-content">
                                 <ul class="blog-list">
-                                    <li>
-                                        <strong>18/03 - Jogos de vocabulario</strong>
-                                        <span>Status: agendado para 09:00.</span>
+                                    <li th:if="${blogProximasPublicacoes == null or #lists.isEmpty(blogProximasPublicacoes)}">
+                                        <strong>Nenhuma postagem agendada</strong>
+                                        <span>Use o status agendado para organizar o calendário.</span>
                                     </li>
-                                    <li>
-                                        <strong>20/03 - Diario da turma Kids 2</strong>
-                                        <span>Status: revisao final de conteudo.</span>
-                                    </li>
-                                    <li>
-                                        <strong>22/03 - Preparacao para prova oral</strong>
-                                        <span>Status: aguardando imagem de capa.</span>
+                                    <li th:each="postagem : ${blogProximasPublicacoes}">
+                                        <strong th:text="${(postagem.dataPublicacao != null ? #temporals.format(postagem.dataPublicacao, 'dd/MM') : '--/--') + ' - ' + postagem.titulo}">Data - titulo</strong>
+                                        <span>Status: agendado.</span>
                                     </li>
                                 </ul>
                             </div>
@@ -1918,7 +1900,7 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formNovaPostagem" th:action="@{/admin/blog/postagens}" action="/admin/blog/postagens" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="blogFormFeedback">
+            <form id="formNovaPostagem" th:action="@{/admin/blog/postagens}" action="/admin/blog/postagens" method="post" enctype="multipart/form-data" data-feedback-target="blogFormFeedback">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="modal-body">
@@ -1963,11 +1945,23 @@
 
                     <div class="modal-field modal-field-full">
                         <label for="blogConteudo">Conteudo</label>
-                        <textarea id="blogConteudo" name="conteudo" rows="6" placeholder="Escreva aqui o conteudo da postagem..." required></textarea>
+                        <div class="blog-editor-toolbar" aria-label="Ferramentas de formatação">
+                            <button type="button" class="admin-secondary-btn admin-inline-btn" data-editor-action="bold" data-editor-target="blogConteudoEditor"><strong>N</strong></button>
+                            <button type="button" class="admin-secondary-btn admin-inline-btn" data-editor-action="italic" data-editor-target="blogConteudoEditor"><em>I</em></button>
+                            <button type="button" class="admin-secondary-btn admin-inline-btn" data-editor-action="underline" data-editor-target="blogConteudoEditor"><u>S</u></button>
+                            <button type="button" class="admin-secondary-btn admin-inline-btn" data-editor-action="formatBlock" data-editor-value="h2" data-editor-target="blogConteudoEditor">H2</button>
+                            <button type="button" class="admin-secondary-btn admin-inline-btn" data-editor-action="insertUnorderedList" data-editor-target="blogConteudoEditor">Lista</button>
+                            <button type="button" class="admin-secondary-btn admin-inline-btn" data-editor-action="createLink" data-editor-target="blogConteudoEditor">Link</button>
+                            <button type="button" class="admin-secondary-btn admin-inline-btn" data-editor-action="insertImage" data-editor-target="blogConteudoEditor" data-editor-upload-input="blogConteudoImageUpload">Imagem</button>
+                        </div>
+
+                        <div id="blogConteudoEditor" class="blog-rich-editor" contenteditable="true" aria-label="Editor de conteúdo da postagem" data-editor-textarea="blogConteudo"></div>
+                        <input id="blogConteudoImageUpload" type="file" accept="image/*" hidden>
+                        <textarea id="blogConteudo" name="conteudo" rows="6" placeholder="Escreva aqui o conteudo da postagem..." required hidden></textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para salvar a postagem e publicar no blog publico.</small>
+                        <small class="modal-help-text">A descrição aceita HTML e imagens. Para imagens dentro do conteúdo, faça upload e use a URL retornada por /admin/blog/postagens/imagens.</small>
                     </div>
                 </div>
 
@@ -1986,10 +1980,14 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formEditarPostagem" th:action="@{/admin/blog/postagens/editar}" action="/admin/blog/postagens/editar" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="blogEditFeedback">
+            <form id="formEditarPostagem" th:action="@{/admin/blog/postagens/editar}" action="/admin/blog/postagens/editar" method="post" enctype="multipart/form-data" data-feedback-target="blogEditFeedback">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
                 <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="blogEditarPostagemId">ID da postagem</label>
+                        <input id="blogEditarPostagemId" name="postagemId" type="text" placeholder="UUID da postagem" required>
+                    </div>
+
                     <div class="modal-field modal-field-full">
                         <label for="blogEditarTitulo">Titulo</label>
                         <input id="blogEditarTitulo" name="titulo" type="text" value="Especial de Pascoa: atividades para o Kids" required>
@@ -2005,12 +2003,27 @@
                     </div>
 
                     <div class="modal-field">
+                        <label for="blogEditarAutor">Autor</label>
+                        <input id="blogEditarAutor" name="autor" type="text" placeholder="Nome do autor">
+                    </div>
+
+                    <div class="modal-field">
+                        <label for="blogEditarDataPublicacao">Data de publicacao</label>
+                        <input id="blogEditarDataPublicacao" name="dataPublicacao" type="date">
+                    </div>
+
+                    <div class="modal-field">
                         <label for="blogEditarStatus">Status</label>
                         <select id="blogEditarStatus" name="status" required>
                             <option value="rascunho" selected>Rascunho</option>
                             <option value="publicado">Publicado</option>
                             <option value="agendado">Agendado</option>
                         </select>
+                    </div>
+
+                    <div class="modal-field modal-field-full">
+                        <label for="blogEditarResumo">Resumo</label>
+                        <textarea id="blogEditarResumo" name="resumo" rows="3" placeholder="Resumo curto da postagem para cards e compartilhamento."></textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
@@ -2024,7 +2037,7 @@
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Edicao estatica para demonstracao. Integre ao backend para versionamento, revisao e publicacao automatica.</small>
+                        <small class="modal-help-text">Informe o ID da postagem para edição e envie novamente para atualizar título, HTML, capa e metadados.</small>
                     </div>
                 </div>
 
