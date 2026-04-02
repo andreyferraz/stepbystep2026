@@ -152,30 +152,21 @@
         </div>
 
         <div class="blog-grid" aria-label="Tres ultimas noticias do blog">
-            <article class="blog-card">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Noticia sobre conversacao em ingles">
+            <article class="blog-card" th:if="${ultimasPostagensBlog != null}" th:each="postagem : ${ultimasPostagensBlog}">
+                <img th:src="${postagem.urlImagemCapa != null and !#strings.isEmpty(postagem.urlImagemCapa) ? postagem.urlImagemCapa : '/img/banner.png'}" alt="Capa da postagem">
                 <div class="blog-card-content">
-                    <h3>5 Habitos para destravar a conversacao em ingles</h3>
-                    <p>Tecnicas simples para praticar speaking todos os dias e ganhar confianca ao falar.</p>
-                    <a class="blog-btn" href="#">Leia mais</a>
+                    <h3 th:text="${postagem.titulo}">Titulo da postagem</h3>
+                    <p th:text="${postagem.resumo}">Resumo da postagem.</p>
+                    <a class="blog-btn" th:href="@{/blog/{slug}(slug=${postagem.slug})}">Leia mais</a>
                 </div>
             </article>
 
-            <article class="blog-card">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Noticia sobre rotina de estudos">
+            <article class="blog-card" th:if="${ultimasPostagensBlog == null or #lists.isEmpty(ultimasPostagensBlog)}">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Blog da Teacher">
                 <div class="blog-card-content">
-                    <h3>Como montar uma rotina de estudos eficiente em 30 minutos</h3>
-                    <p>Aprenda a organizar revisao, vocabulario e escuta ativa mesmo com pouco tempo.</p>
-                    <a class="blog-btn" href="#">Leia mais</a>
-                </div>
-            </article>
-
-            <article class="blog-card">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Noticia sobre erros comuns no ingles">
-                <div class="blog-card-content">
-                    <h3>Erros comuns de quem aprende ingles e como evitar</h3>
-                    <p>Veja os principais pontos de atencao que aceleram seu progresso e evitam bloqueios.</p>
-                    <a class="blog-btn" href="#">Leia mais</a>
+                    <h3>Em breve: novas publicacoes</h3>
+                    <p>As postagens mais recentes do Blog da Teacher aparecerao aqui automaticamente.</p>
+                    <a class="blog-btn" th:href="@{/blog}" href="/blog">Ir para o blog</a>
                 </div>
             </article>
         </div>

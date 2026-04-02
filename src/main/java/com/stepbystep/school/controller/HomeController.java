@@ -2,15 +2,20 @@ package com.stepbystep.school.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import java.util.List;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.stepbystep.school.model.Postagem;
+import com.stepbystep.school.service.PostagemService;
 import com.stepbystep.school.service.PreInscricaoService;
 import com.stepbystep.school.util.ValidationUtils;
 
@@ -18,13 +23,21 @@ import com.stepbystep.school.util.ValidationUtils;
 public class HomeController {
 
     private final PreInscricaoService preInscricaoService;
+    private final PostagemService postagemService;
 
-    public HomeController(PreInscricaoService preInscricaoService) {
+    public HomeController(PreInscricaoService preInscricaoService, PostagemService postagemService) {
         this.preInscricaoService = preInscricaoService;
+        this.postagemService = postagemService;
     }
 
     @GetMapping("/")
-    public String home() {
+    public String home(Model model) {
+        List<Postagem> postagensRecentes = postagemService.listarPostagensPublicadas(null, null)
+            .stream()
+            .limit(3)
+            .toList();
+
+        model.addAttribute("ultimasPostagensBlog", postagensRecentes);
         return "index";
     }
 
