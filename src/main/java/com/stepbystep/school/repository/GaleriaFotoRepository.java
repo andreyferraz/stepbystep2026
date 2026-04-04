@@ -8,4 +8,6 @@ import com.stepbystep.school.model.GaleriaFoto;
 
 public interface GaleriaFotoRepository extends JpaRepository<GaleriaFoto, UUID> {
 
+	long countByCategoriaId(UUID categoriaId);
+
 }

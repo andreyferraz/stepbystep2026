@@ -33,135 +33,48 @@
 
             <div class="gallery-filters" aria-label="Filtros da galeria">
                 <button type="button" class="gallery-filter-btn is-active" data-gallery-filter="all">Todos</button>
-                <button type="button" class="gallery-filter-btn" data-gallery-filter="aulas">Aulas</button>
-                <button type="button" class="gallery-filter-btn" data-gallery-filter="eventos">Eventos e Formaturas</button>
-                <button type="button" class="gallery-filter-btn" data-gallery-filter="livros">Lançamentos de Livros</button>
+                <button type="button"
+                    class="gallery-filter-btn"
+                    th:each="categoria : ${galeriaCategorias}"
+                    th:attr="data-gallery-filter=${categoria.chave}"
+                    th:text="${categoria.nome}">
+                    Categoria
+                </button>
             </div>
         </div>
 
         <div class="gallery-masonry" data-gallery-grid aria-label="Galeria de fotos">
-            <figure class="gallery-item is-tall" data-gallery-item data-category="aulas"
-                    data-title="Turma do Intermediário - 2025"
-                    data-image="/img/banner.png">
+            <figure class="gallery-item"
+                    th:each="foto, iter : ${galeriaFotos}"
+                    th:classappend="${iter.index % 4 == 0 ? ' is-tall' : (iter.index % 3 == 0 ? ' is-wide' : '')}"
+                    data-gallery-item
+                    th:attr="
+                        data-category=${foto.categoriaChave},
+                        data-title=${#strings.isEmpty(foto.legenda) ? 'Registro da escola' : foto.legenda},
+                        data-image=${!#strings.isEmpty(foto.urlImagem) ? foto.urlImagem : '/img/banner.png'}">
                 <button type="button" class="gallery-card" data-gallery-open>
-                    <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                         alt="Turma do Intermediário em atividade"
+                    <img th:src="${!#strings.isEmpty(foto.urlImagem) ? foto.urlImagem : '/img/banner.png'}" src="/img/banner.png"
+                         th:alt="${#strings.isEmpty(foto.legenda) ? 'Foto da galeria da escola' : foto.legenda}"
+                         alt="Foto da galeria"
                          loading="lazy">
                     <figcaption>
-                        <span class="gallery-item-category">Aulas</span>
-                        <strong>Turma do Intermediário - 2025</strong>
+                        <span class="gallery-item-category"
+                            th:text="${foto.categoriaNome}">
+                            Categoria
+                        </span>
+                        <strong th:text="${#strings.isEmpty(foto.legenda) ? 'Registro da escola' : foto.legenda}">Registro da escola</strong>
                     </figcaption>
                 </button>
             </figure>
 
-            <figure class="gallery-item" data-gallery-item data-category="eventos"
-                    data-title="Celebrando a formatura da turma avançada"
-                    data-image="/img/banner.png">
+            <figure class="gallery-item" data-gallery-item data-category="all" data-title="Galeria em atualização" data-image="/img/banner.png" th:if="${galeriaFotos == null or #lists.isEmpty(galeriaFotos)}">
                 <button type="button" class="gallery-card" data-gallery-open>
                     <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                         alt="Formatura da turma avançada"
+                         alt="Galeria em atualização"
                          loading="lazy">
                     <figcaption>
-                        <span class="gallery-item-category">Eventos e Formaturas</span>
-                        <strong>Celebrando a formatura da turma avançada</strong>
-                    </figcaption>
-                </button>
-            </figure>
-
-            <figure class="gallery-item is-wide" data-gallery-item data-category="livros"
-                    data-title="Lançamento de livro com sessão de autógrafos"
-                    data-image="/img/banner.png">
-                <button type="button" class="gallery-card" data-gallery-open>
-                    <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                         alt="Lançamento de livro com sessão de autógrafos"
-                         loading="lazy">
-                    <figcaption>
-                        <span class="gallery-item-category">Lançamentos de Livros</span>
-                        <strong>Lançamento de livro com sessão de autógrafos</strong>
-                    </figcaption>
-                </button>
-            </figure>
-
-            <figure class="gallery-item" data-gallery-item data-category="aulas"
-                    data-title="Momento de conversação em dupla"
-                    data-image="/img/banner.png">
-                <button type="button" class="gallery-card" data-gallery-open>
-                    <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                         alt="Alunos praticando conversação"
-                         loading="lazy">
-                    <figcaption>
-                        <span class="gallery-item-category">Aulas</span>
-                        <strong>Momento de conversação em dupla</strong>
-                    </figcaption>
-                </button>
-            </figure>
-
-            <figure class="gallery-item is-tall" data-gallery-item data-category="eventos"
-                    data-title="Encontro especial com alunos e familiares"
-                    data-image="/img/banner.png">
-                <button type="button" class="gallery-card" data-gallery-open>
-                    <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                         alt="Encontro especial com alunos e familiares"
-                         loading="lazy">
-                    <figcaption>
-                        <span class="gallery-item-category">Eventos e Formaturas</span>
-                        <strong>Encontro especial com alunos e familiares</strong>
-                    </figcaption>
-                </button>
-            </figure>
-
-            <figure class="gallery-item" data-gallery-item data-category="livros"
-                    data-title="Mesa de lançamento e leitura"
-                    data-image="/img/banner.png">
-                <button type="button" class="gallery-card" data-gallery-open>
-                    <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                         alt="Mesa com livros em exposição"
-                         loading="lazy">
-                    <figcaption>
-                        <span class="gallery-item-category">Lançamentos de Livros</span>
-                        <strong>Mesa de lançamento e leitura</strong>
-                    </figcaption>
-                </button>
-            </figure>
-
-            <figure class="gallery-item is-wide" data-gallery-item data-category="aulas"
-                    data-title="Atividade coletiva em sala"
-                    data-image="/img/banner.png">
-                <button type="button" class="gallery-card" data-gallery-open>
-                    <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                         alt="Atividade coletiva em sala de aula"
-                         loading="lazy">
-                    <figcaption>
-                        <span class="gallery-item-category">Aulas</span>
-                        <strong>Atividade coletiva em sala</strong>
-                    </figcaption>
-                </button>
-            </figure>
-
-            <figure class="gallery-item" data-gallery-item data-category="eventos"
-                    data-title="Encerramento com entrega de certificados"
-                    data-image="/img/banner.png">
-                <button type="button" class="gallery-card" data-gallery-open>
-                    <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                         alt="Entrega de certificados aos alunos"
-                         loading="lazy">
-                    <figcaption>
-                        <span class="gallery-item-category">Eventos e Formaturas</span>
-                        <strong>Encerramento com entrega de certificados</strong>
-                    </figcaption>
-                </button>
-            </figure>
-
-            <figure class="gallery-item" data-gallery-item data-category="livros"
-                    data-title="Leitura e conversa com os participantes"
-                    data-image="/img/banner.png">
-                <button type="button" class="gallery-card" data-gallery-open>
-                    <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                         alt="Momento de leitura e conversa"
-                         loading="lazy">
-                    <figcaption>
-                        <span class="gallery-item-category">Lançamentos de Livros</span>
-                        <strong>Leitura e conversa com os participantes</strong>
+                        <span class="gallery-item-category">Galeria</span>
+                        <strong>Em breve: novos registros da escola</strong>
                     </figcaption>
                 </button>
             </figure>
@@ -171,7 +84,7 @@
     <div class="gallery-lightbox" data-gallery-lightbox hidden aria-hidden="true">
         <div class="gallery-lightbox-backdrop" data-gallery-close></div>
 
-        <div class="gallery-lightbox-dialog" role="dialog" aria-modal="true" aria-label="Visualizador de imagem">
+        <dialog class="gallery-lightbox-dialog" aria-label="Visualizador de imagem" open>
             <button type="button" class="gallery-lightbox-close" data-gallery-close aria-label="Fechar visualizador">
                 &times;
             </button>
@@ -188,7 +101,7 @@
             <button type="button" class="gallery-lightbox-nav next" data-gallery-next aria-label="Próxima imagem">
                 &#10095;
             </button>
-        </div>
+        </dialog>
     </div>
 </main>
 </html>

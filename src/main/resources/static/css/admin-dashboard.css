@@ -1700,6 +1700,19 @@ tr.admin-highlight-row {
     font-size: 0.88rem;
 }
 
+.galeria-photo-thumb.has-image {
+    padding: 0;
+    overflow: hidden;
+    border-style: solid;
+}
+
+.galeria-photo-thumb.has-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 .galeria-photo-card h3 {
     margin: 10px 0 4px;
     color: var(--admin-brand-900);

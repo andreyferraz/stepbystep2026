@@ -223,20 +223,15 @@
         </div>
 
         <div class="gallery-grid" aria-label="Ultimas quatro fotos adicionadas">
-            <figure class="gallery-card">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Alunos em atividade de conversacao" class="photo-pos-1">
+            <figure class="gallery-card" th:each="foto, iter : ${galeriaHome}">
+                <img th:src="${!#strings.isEmpty(foto.urlImagem) ? foto.urlImagem : '/img/banner.png'}"
+                     src="/img/banner.png"
+                     th:alt="${#strings.isEmpty(foto.legenda) ? 'Foto da galeria Step By Step' : foto.legenda}"
+                     th:classappend="${' photo-pos-' + ((iter.index % 4) + 1)}">
             </figure>
 
-            <figure class="gallery-card">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Aula com material didatico" class="photo-pos-2">
-            </figure>
-
-            <figure class="gallery-card">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Ambiente da escola" class="photo-pos-3">
-            </figure>
-
-            <figure class="gallery-card">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Momento de leitura em ingles" class="photo-pos-4">
+            <figure class="gallery-card" th:if="${galeriaHome == null or #lists.isEmpty(galeriaHome)}">
+                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Momentos da escola" class="photo-pos-1">
             </figure>
         </div>
     </section>

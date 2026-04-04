@@ -32,6 +32,8 @@ import com.stepbystep.school.enums.Role;
 import com.stepbystep.school.enums.StatusMensalidade;
 import com.stepbystep.school.enums.StatusPostagem;
 import com.stepbystep.school.model.Aluno;
+import com.stepbystep.school.model.GaleriaCategoria;
+import com.stepbystep.school.model.GaleriaFoto;
 import com.stepbystep.school.model.Livro;
 import com.stepbystep.school.model.MaterialEstudo;
 import com.stepbystep.school.model.Mensalidade;
@@ -43,6 +45,8 @@ import com.stepbystep.school.model.Usuario;
 import com.stepbystep.school.repository.AlunoRepository;
 import com.stepbystep.school.repository.UsuarioRepository;
 import com.stepbystep.school.service.FileUploadService;
+import com.stepbystep.school.service.GaleriaCategoriaService;
+import com.stepbystep.school.service.GaleriaFotoService;
 import com.stepbystep.school.service.LivroService;
 import com.stepbystep.school.service.MaterialEstudoService;
 import com.stepbystep.school.service.MensalidadeService;
@@ -76,6 +80,7 @@ public class DashboardController {
     private static final String REDIRECT_INADIMPLENCIA_PANEL = "redirect:/admin/dashboard?panel=inadimplencia";
     private static final String REDIRECT_PRE_INSCRICOES_PANEL = "redirect:/admin/dashboard?panel=pre-inscricoes";
     private static final String REDIRECT_LIVROS_PANEL = "redirect:/admin/dashboard?panel=livros";
+    private static final String REDIRECT_GALERIA_PANEL = "redirect:/admin/dashboard?panel=galeria";
     private static final String CAMPO_ID_ALUNO = "ID do Aluno";
     private static final String CAMPO_ID_TURMA = "ID da Turma";
     private static final String CAMPO_ID_MATERIAL = "ID do Material";
@@ -93,6 +98,12 @@ public class DashboardController {
     private static final String FEEDBACK_LIVRO_FORM = "livroFormFeedback";
     private static final String FEEDBACK_LIVRO_EDIT = "livroEditFeedback";
     private static final String FEEDBACK_LIVRO_DELETE = "livroDeleteFeedback";
+    private static final String FEEDBACK_GALERIA_FORM = "galeriaFormFeedback";
+    private static final String FEEDBACK_GALERIA_EDIT = "galeriaEditFeedback";
+    private static final String FEEDBACK_GALERIA_DELETE = "galeriaDeleteFeedback";
+    private static final String FEEDBACK_GALERIA_CATEGORIA_FORM = "galeriaCategoriaFormFeedback";
+    private static final String FEEDBACK_GALERIA_CATEGORIA_EDIT = "galeriaCategoriaEditFeedback";
+    private static final String FEEDBACK_GALERIA_CATEGORIA_DELETE = "galeriaCategoriaDeleteFeedback";
     private static final String MSG_ALUNO_NAO_ENCONTRADO = "Aluno não encontrado com ID: ";
     private static final String MSG_USUARIO_ALUNO_NAO_ENCONTRADO = "Usuário do aluno não encontrado.";
 
@@ -107,6 +118,8 @@ public class DashboardController {
     private final PreInscricaoService preInscricaoService;
     private final PostagemService postagemService;
     private final LivroService livroService;
+    private final GaleriaFotoService galeriaFotoService;
+    private final GaleriaCategoriaService galeriaCategoriaService;
 
     @GetMapping("/admin/dashboard")
     public String adminDashboard(
@@ -125,6 +138,8 @@ public class DashboardController {
         @RequestParam(name = "blogStatus", required = false) String blogStatus,
         @RequestParam(name = "blogCategoria", required = false) String blogCategoria,
         @RequestParam(name = "livroBusca", required = false) String livroBusca,
+        @RequestParam(name = "galeriaBusca", required = false) String galeriaBusca,
+        @RequestParam(name = "galeriaCategoriaId", required = false) String galeriaCategoriaId,
         @RequestParam(name = "notaBimestre", required = false) Integer notaBimestre,
         Model model
     ) {
@@ -136,6 +151,7 @@ public class DashboardController {
         String blogCategoriaNormalizada = blogCategoria == null ? "" : blogCategoria.trim().toLowerCase(Locale.ROOT);
         UUID materialTurmaIdFiltrada = parseUuidOpcional(materialTurmaId);
         UUID notaTurmaIdFiltrada = parseUuidOpcional(notaTurmaId);
+        UUID galeriaCategoriaIdFiltrada = parseUuidOpcional(galeriaCategoriaId);
 
         List<Usuario> usuariosAlunos = listarUsuariosAlunosFiltrados(alunoBuscaNormalizada);
 
@@ -201,6 +217,17 @@ public class DashboardController {
             .mapToInt(Livro::getAnoLancamento)
             .max()
             .orElse(0);
+        List<GaleriaCategoria> galeriaCategorias = galeriaCategoriaService.listarCategorias();
+        List<GaleriaFoto> galeriaFotos = listarGaleriaFiltrada(galeriaBusca, galeriaCategoriaIdFiltrada);
+        long galeriaUploadsSemana = galeriaFotos.stream()
+            .filter(foto -> foto.getDataUpload() != null)
+            .filter(foto -> !foto.getDataUpload().isBefore(LocalDate.now().minusDays(7)))
+            .count();
+        String galeriaFotoMaisRecente = galeriaFotos.stream()
+            .filter(foto -> foto.getDataUpload() != null)
+            .max(Comparator.comparing(GaleriaFoto::getDataUpload))
+            .map(GaleriaFoto::getLegenda)
+            .orElse("-");
 
         model.addAttribute("isDashboard", true);
         model.addAttribute("turmas", turmaService.listarTurmasFiltradas(turmaBusca));
@@ -257,6 +284,13 @@ public class DashboardController {
         model.addAttribute("livrosComLinkCompra", livrosComLinkCompra);
         model.addAttribute("livrosSemLinkCompra", livrosSemLinkCompra);
         model.addAttribute("livroAnoMaisRecente", livroAnoMaisRecente > 0 ? livroAnoMaisRecente : "-");
+        model.addAttribute("galeriaBusca", textoFiltro(galeriaBusca));
+        model.addAttribute("galeriaCategoriaId", textoFiltro(galeriaCategoriaId));
+        model.addAttribute("galeriaFotos", galeriaFotos);
+        model.addAttribute("galeriaCategorias", galeriaCategorias);
+        model.addAttribute("galeriaTotalFotos", galeriaFotos.size());
+        model.addAttribute("galeriaUploadsSemana", galeriaUploadsSemana);
+        model.addAttribute("galeriaFotoMaisRecente", galeriaFotoMaisRecente);
         model.addAttribute("inadBusca", textoFiltro(inadBusca));
         model.addAttribute("inadFaixa", textoFiltro(inadFaixa));
         model.addAttribute("inadimplenciaCarteira", inadimplenciaResumo.carteira());
@@ -1129,6 +1163,127 @@ public class DashboardController {
         return REDIRECT_LIVROS_PANEL;
     }
 
+    @PostMapping("/admin/galeria/fotos")
+    public String cadastrarFotoGaleria(
+        @RequestParam("legenda") String legenda,
+        @RequestParam("dataUpload") LocalDate dataUpload,
+        @RequestParam("categoriaId") UUID categoriaId,
+        @RequestParam("imagem") MultipartFile imagem,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoStringObrigatorio(legenda, "Legenda da foto");
+            ValidationUtils.validarCampoObrigatorio(dataUpload, "Data do upload");
+            ValidationUtils.validarCampoObrigatorio(categoriaId, "Categoria da foto");
+
+            GaleriaFoto galeriaFoto = GaleriaFoto.builder()
+                .legenda(legenda.trim())
+                .dataUpload(dataUpload)
+                .categoria(galeriaCategoriaService.obterPorId(categoriaId))
+                .build();
+
+            galeriaFotoService.salvarImagem(galeriaFoto, imagem);
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_FORM, "Foto cadastrada na galeria com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_GALERIA_PANEL;
+    }
+
+    @PostMapping("/admin/galeria/fotos/editar")
+    public String editarFotoGaleria(
+        @RequestParam("fotoId") UUID fotoId,
+        @RequestParam("legenda") String legenda,
+        @RequestParam("dataUpload") LocalDate dataUpload,
+        @RequestParam("categoriaId") UUID categoriaId,
+        @RequestParam(name = "imagem", required = false) MultipartFile imagem,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(fotoId, "ID da foto");
+            ValidationUtils.validarCampoStringObrigatorio(legenda, "Legenda da foto");
+            ValidationUtils.validarCampoObrigatorio(dataUpload, "Data do upload");
+            ValidationUtils.validarCampoObrigatorio(categoriaId, "Categoria da foto");
+
+            GaleriaFoto galeriaFoto = GaleriaFoto.builder()
+                .id(fotoId)
+                .legenda(legenda.trim())
+                .dataUpload(dataUpload)
+                .categoria(galeriaCategoriaService.obterPorId(categoriaId))
+                .build();
+
+            galeriaFotoService.editarImagem(galeriaFoto, imagem);
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_EDIT, "Foto da galeria atualizada com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_EDIT, ex.getMessage());
+        }
+
+        return REDIRECT_GALERIA_PANEL;
+    }
+
+    @PostMapping("/admin/galeria/categorias")
+    public String cadastrarCategoriaGaleria(
+        @RequestParam("nome") String nome,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            galeriaCategoriaService.criarCategoria(nome);
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_CATEGORIA_FORM, "Categoria cadastrada com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_CATEGORIA_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_GALERIA_PANEL;
+    }
+
+    @PostMapping("/admin/galeria/categorias/editar")
+    public String editarCategoriaGaleria(
+        @RequestParam("categoriaId") UUID categoriaId,
+        @RequestParam("nome") String nome,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            galeriaCategoriaService.editarCategoria(categoriaId, nome);
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_CATEGORIA_EDIT, "Categoria atualizada com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_CATEGORIA_EDIT, ex.getMessage());
+        }
+
+        return REDIRECT_GALERIA_PANEL;
+    }
+
+    @PostMapping("/admin/galeria/categorias/excluir")
+    public String excluirCategoriaGaleria(
+        @RequestParam("categoriaId") UUID categoriaId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            galeriaCategoriaService.excluirCategoria(categoriaId);
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_CATEGORIA_DELETE, "Categoria excluída com sucesso.");
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_CATEGORIA_DELETE, ex.getMessage());
+        }
+
+        return REDIRECT_GALERIA_PANEL;
+    }
+
+    @PostMapping("/admin/galeria/fotos/excluir")
+    public String excluirFotoGaleria(
+        @RequestParam("fotoId") UUID fotoId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(fotoId, "ID da foto");
+            galeriaFotoService.excluirImagem(fotoId);
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_DELETE, "Foto removida da galeria com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_GALERIA_DELETE, ex.getMessage());
+        }
+
+        return REDIRECT_GALERIA_PANEL;
+    }
+
     @GetMapping("/aluno/dashboard")
     public String alunoDashboard(Model model) {
         model.addAttribute("isDashboard", true);
@@ -1390,6 +1545,16 @@ public class DashboardController {
                 || contemTexto(livro.getLinkCompra(), buscaNormalizada)
                 || String.valueOf(livro.getAnoLancamento()).contains(buscaNormalizada))
             .sorted(Comparator.comparing(Livro::getTitulo, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
+            .toList();
+    }
+
+    private List<GaleriaFoto> listarGaleriaFiltrada(String galeriaBusca, UUID categoriaId) {
+        String buscaNormalizada = galeriaBusca == null ? "" : galeriaBusca.trim().toLowerCase(Locale.ROOT);
+
+        return galeriaFotoService.listarTodas().stream()
+            .filter(foto -> buscaNormalizada.isBlank() || contemTexto(foto.getLegenda(), buscaNormalizada))
+            .filter(foto -> categoriaId == null || (foto.getCategoria() != null && categoriaId.equals(foto.getCategoria().getId())))
+            .sorted(Comparator.comparing(GaleriaFoto::getDataUpload, Comparator.nullsLast(LocalDate::compareTo)).reversed())
             .toList();
     }
 

@@ -2283,88 +2283,81 @@
                 <div class="section-head">
                     <h2>Galeria de Fotos</h2>
                     <div class="galeria-actions">
-                        <button type="button" class="admin-secondary-btn" data-open-modal="galeria-editar">Editar foto</button>
+                        <button type="button" class="admin-secondary-btn" data-open-modal="galeria-categoria-nova">Nova categoria</button>
                         <button type="button" class="admin-primary-btn" data-open-modal="galeria-nova">Nova foto</button>
                     </div>
                 </div>
 
-                <output class="admin-feedback" id="galeriaFormFeedback" aria-live="polite"></output>
-                <output class="admin-feedback" id="galeriaEditFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="galeriaFormFeedback" aria-live="polite" th:text="${galeriaFormFeedback}"></output>
+                <output class="admin-feedback" id="galeriaEditFeedback" aria-live="polite" th:text="${galeriaEditFeedback}"></output>
+                <output class="admin-feedback" id="galeriaDeleteFeedback" aria-live="polite" th:text="${galeriaDeleteFeedback}"></output>
+                <output class="admin-feedback" id="galeriaCategoriaFormFeedback" aria-live="polite" th:text="${galeriaCategoriaFormFeedback}"></output>
+                <output class="admin-feedback" id="galeriaCategoriaEditFeedback" aria-live="polite" th:text="${galeriaCategoriaEditFeedback}"></output>
+                <output class="admin-feedback" id="galeriaCategoriaDeleteFeedback" aria-live="polite" th:text="${galeriaCategoriaDeleteFeedback}"></output>
 
-                <div class="galeria-toolbar">
-                    <input type="search" class="admin-search" placeholder="Pesquisar por legenda, album ou data">
-                    <select class="galeria-filter" aria-label="Filtrar por album">
-                        <option value="">Todos os albuns</option>
-                        <option value="eventos">Eventos</option>
-                        <option value="aulas">Aulas</option>
-                        <option value="projetos">Projetos especiais</option>
+                <form class="galeria-toolbar" th:action="@{/admin/dashboard}" action="/admin/dashboard" method="get">
+                    <input type="hidden" name="panel" value="galeria">
+                    <input type="search" class="admin-search" name="galeriaBusca" th:value="${galeriaBusca}" placeholder="Pesquisar por legenda da foto">
+                    <select class="galeria-filter" name="galeriaCategoriaId" aria-label="Filtrar por categoria da galeria">
+                        <option value="">Todas as categorias</option>
+                        <option th:each="categoria : ${galeriaCategorias}" th:value="${categoria.id}" th:text="${categoria.nome}" th:selected="${galeriaCategoriaId == categoria.id.toString()}">Categoria</option>
                     </select>
-                    <select class="galeria-filter" aria-label="Filtrar por visibilidade">
-                        <option value="">Todas as visibilidades</option>
-                        <option value="publica">Publica</option>
-                        <option value="restrita">Restrita</option>
-                        <option value="rascunho">Rascunho</option>
-                    </select>
-                </div>
+                    <button type="submit" class="admin-primary-btn">Pesquisar</button>
+                    <a th:if="${!#strings.isEmpty(galeriaBusca) || !#strings.isEmpty(galeriaCategoriaId)}" th:href="@{/admin/dashboard(panel='galeria')}" href="/admin/dashboard?panel=galeria" class="admin-secondary-btn">Limpar</a>
+                </form>
 
                 <div class="galeria-metric-grid">
                     <article class="galeria-metric-card">
                         <p>Fotos publicadas</p>
-                        <strong>326</strong>
+                        <strong th:text="${galeriaTotalFotos}">0</strong>
                     </article>
                     <article class="galeria-metric-card">
-                        <p>Albuns ativos</p>
-                        <strong>24</strong>
+                        <p>Uploads na semana</p>
+                        <strong th:text="${galeriaUploadsSemana}">0</strong>
                     </article>
                     <article class="galeria-metric-card">
-                        <p>Uploads no mes</p>
-                        <strong>41</strong>
+                        <p>Fotos com legenda</p>
+                        <strong th:text="${galeriaTotalFotos}">0</strong>
                     </article>
                     <article class="galeria-metric-card">
-                        <p>Mais curtida</p>
-                        <strong>Festa Junina 2025</strong>
+                        <p>Mais recente</p>
+                        <strong th:text="${galeriaFotoMaisRecente}">-</strong>
                     </article>
                 </div>
 
                 <div class="galeria-grid">
                     <section class="galeria-gallery" aria-label="Mosaico de fotos">
-                        <article class="galeria-photo-card">
-                            <div class="galeria-photo-thumb"><span>Foto 1</span></div>
-                            <h3>Apresentacao de Halloween</h3>
-                            <p>Album: Eventos | 14/10/2025</p>
-                            <div class="material-actions">
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="galeria-editar">Editar</button>
-                            </div>
+                        <article class="galeria-photo-card" th:if="${#lists.isEmpty(galeriaFotos)}">
+                            <div class="galeria-photo-thumb"><span>Sem fotos</span></div>
+                            <h3>Nenhuma foto cadastrada</h3>
+                            <p>Adicione fotos para começar a preencher a galeria.</p>
                         </article>
 
-                        <article class="galeria-photo-card">
-                            <div class="galeria-photo-thumb"><span>Foto 2</span></div>
-                            <h3>Aula tematica - Colors</h3>
-                            <p>Album: Aulas | 07/03/2026</p>
-                            <div class="material-actions">
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="galeria-editar">Editar</button>
+                        <article class="galeria-photo-card" th:each="foto : ${galeriaFotos}">
+                            <div class="galeria-photo-thumb has-image">
+                                <img th:src="${foto.urlImagem}" src="/img/banner.png" th:alt="${foto.legenda}" alt="Foto da galeria">
                             </div>
-                        </article>
-
-                        <article class="galeria-photo-card">
-                            <div class="galeria-photo-thumb"><span>Foto 3</span></div>
-                            <h3>Projeto de leitura - Teens</h3>
-                            <p>Album: Projetos especiais | 01/03/2026</p>
+                            <h3 th:text="${foto.legenda}">Legenda da foto</h3>
+                            <p>
+                                <span th:text="${foto.categoria != null ? foto.categoria.nome : 'Sem categoria'}">Categoria</span>
+                                <span> | </span>
+                                <span th:text="${foto.dataUpload != null ? #temporals.format(foto.dataUpload, 'dd/MM/yyyy') : '-'}">01/01/2026</span>
+                            </p>
                             <div class="material-actions">
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="galeria-editar">Editar</button>
-                            </div>
-                        </article>
-
-                        <article class="galeria-photo-card">
-                            <div class="galeria-photo-thumb"><span>Foto 4</span></div>
-                            <h3>Momento de speaking</h3>
-                            <p>Album: Aulas | 25/02/2026</p>
-                            <div class="material-actions">
-                                <button type="button" class="admin-secondary-btn admin-inline-btn">Visualizar</button>
-                                <button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="galeria-editar">Editar</button>
+                                <a th:href="${foto.urlImagem}" target="_blank" rel="noopener noreferrer" class="admin-secondary-btn admin-inline-btn">Visualizar</a>
+                                <button type="button" class="admin-secondary-btn admin-inline-btn"
+                                    data-open-modal="galeria-editar"
+                                    th:attr="
+                                        data-galeria-id=${foto.id},
+                                        data-galeria-legenda=${foto.legenda},
+                                        data-galeria-data=${foto.dataUpload},
+                                        data-galeria-categoria-id=${foto.categoria != null ? foto.categoria.id : ''}
+                                    ">Editar</button>
+                                <form th:action="@{/admin/galeria/fotos/excluir}" action="/admin/galeria/fotos/excluir" method="post" class="admin-inline-form" onsubmit="return confirm('Deseja realmente excluir esta foto?');">
+                                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                    <input type="hidden" name="fotoId" th:value="${foto.id}">
+                                    <button type="submit" class="admin-secondary-btn admin-inline-btn">Excluir</button>
+                                </form>
                             </div>
                         </article>
                     </section>
@@ -2376,17 +2369,13 @@
                             </header>
                             <div class="admin-card-content">
                                 <ul class="galeria-list">
-                                    <li>
-                                        <strong>Projeto de leitura - Teens</strong>
-                                        <span>Enviado por Coord. Amanda em 01/03.</span>
+                                    <li th:each="foto, iter : ${galeriaFotos}" th:if="${iter.index < 3}">
+                                        <strong th:text="${foto.legenda}">Legenda</strong>
+                                        <span th:text="${foto.dataUpload != null ? 'Upload em ' + #temporals.format(foto.dataUpload, 'dd/MM/yyyy') : 'Data nao informada'}">Upload em 01/01/2026</span>
                                     </li>
-                                    <li>
-                                        <strong>Aula tematica - Colors</strong>
-                                        <span>Enviado por Prof. Elza em 07/03.</span>
-                                    </li>
-                                    <li>
-                                        <strong>Treino de listening - Adults</strong>
-                                        <span>Enviado por Prof. Marcos em 09/03.</span>
+                                    <li th:if="${#lists.isEmpty(galeriaFotos)}">
+                                        <strong>Sem uploads recentes</strong>
+                                        <span>Cadastre fotos para visualizar o histórico.</span>
                                     </li>
                                 </ul>
                             </div>
@@ -2399,11 +2388,40 @@
                             <div class="admin-card-content">
                                 <div class="materiais-storage">
                                     <div class="materiais-storage-bar">
-                                        <span style="width: 68%"></span>
+                                        <span th:style="${'width:' + (galeriaTotalFotos > 0 ? 100 : 0) + '%'}"></span>
                                     </div>
-                                    <p>68% de 20 GB utilizados</p>
-                                    <small>6.4 GB disponiveis para novos uploads.</small>
+                                    <p th:text="${galeriaTotalFotos + ' foto(s) cadastrada(s)'}">0 foto(s) cadastrada(s)</p>
+                                    <small>Indicador visual provisório baseado na quantidade de fotos.</small>
                                 </div>
+                            </div>
+                        </article>
+
+                        <article class="admin-card galeria-side-card">
+                            <header class="admin-card-header">
+                                <h3>Categorias da galeria</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <ul class="galeria-list">
+                                    <li th:if="${#lists.isEmpty(galeriaCategorias)}">
+                                        <strong>Nenhuma categoria cadastrada</strong>
+                                        <span>Cadastre categorias para classificar as fotos.</span>
+                                    </li>
+                                    <li th:each="categoria : ${galeriaCategorias}">
+                                        <strong th:text="${categoria.nome}">Categoria</strong>
+                                        <div class="material-actions">
+                                            <button type="button" class="admin-secondary-btn admin-inline-btn"
+                                                data-open-modal="galeria-categoria-editar"
+                                                th:attr="data-galeria-categoria-id=${categoria.id},data-galeria-categoria-nome=${categoria.nome}">
+                                                Editar
+                                            </button>
+                                            <form th:action="@{/admin/galeria/categorias/excluir}" action="/admin/galeria/categorias/excluir" method="post" class="admin-inline-form" onsubmit="return confirm('Deseja realmente excluir esta categoria?');">
+                                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                                <input type="hidden" name="categoriaId" th:value="${categoria.id}">
+                                                <button type="submit" class="admin-secondary-btn admin-inline-btn">Excluir</button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
                         </article>
                     </aside>
@@ -2419,7 +2437,7 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formNovaFotoGaleria" th:action="@{/admin/galeria/fotos}" action="/admin/galeria/fotos" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="galeriaFormFeedback">
+            <form id="formNovaFotoGaleria" th:action="@{/admin/galeria/fotos}" action="/admin/galeria/fotos" method="post" enctype="multipart/form-data">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="modal-body">
@@ -2429,12 +2447,10 @@
                     </div>
 
                     <div class="modal-field">
-                        <label for="galeriaAlbum">Album</label>
-                        <select id="galeriaAlbum" name="album" required>
+                        <label for="galeriaCategoria">Categoria</label>
+                        <select id="galeriaCategoria" name="categoriaId" required>
                             <option value="">Selecione</option>
-                            <option value="eventos">Eventos</option>
-                            <option value="aulas">Aulas</option>
-                            <option value="projetos">Projetos especiais</option>
+                            <option th:each="categoria : ${galeriaCategorias}" th:value="${categoria.id}" th:text="${categoria.nome}">Categoria</option>
                         </select>
                     </div>
 
@@ -2443,28 +2459,11 @@
                         <input id="galeriaDataUpload" name="dataUpload" type="date" required>
                     </div>
 
-                    <div class="modal-field">
-                        <label for="galeriaVisibilidade">Visibilidade</label>
-                        <select id="galeriaVisibilidade" name="visibilidade" required>
-                            <option value="publica">Publica</option>
-                            <option value="restrita">Restrita</option>
-                            <option value="rascunho">Rascunho</option>
-                        </select>
-                    </div>
-
-                    <div class="modal-field">
-                        <label for="galeriaResponsavel">Responsavel</label>
-                        <input id="galeriaResponsavel" name="responsavel" type="text" placeholder="Nome de quem realizou o upload" required>
-                    </div>
-
                     <div class="modal-field modal-field-full">
                         <label for="galeriaImagemArquivo">Arquivo da foto</label>
                         <input id="galeriaImagemArquivo" name="imagem" type="file" accept="image/*" required>
                     </div>
 
-                    <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para armazenar a imagem enviada e preencher a URL automaticamente.</small>
-                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -2482,31 +2481,27 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formEditarFotoGaleria" th:action="@{/admin/galeria/fotos/editar}" action="/admin/galeria/fotos/editar" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="galeriaEditFeedback">
+            <form id="formEditarFotoGaleria" th:action="@{/admin/galeria/fotos/editar}" action="/admin/galeria/fotos/editar" method="post" enctype="multipart/form-data">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" id="galeriaEditarId" name="fotoId">
 
                 <div class="modal-body">
                     <div class="modal-field modal-field-full">
                         <label for="galeriaEditarLegenda">Legenda</label>
-                        <input id="galeriaEditarLegenda" name="legenda" type="text" value="Projeto de leitura - Teens" required>
+                        <input id="galeriaEditarLegenda" name="legenda" type="text" required>
                     </div>
 
                     <div class="modal-field">
-                        <label for="galeriaEditarAlbum">Album</label>
-                        <select id="galeriaEditarAlbum" name="album" required>
-                            <option value="projetos" selected>Projetos especiais</option>
-                            <option value="eventos">Eventos</option>
-                            <option value="aulas">Aulas</option>
+                        <label for="galeriaEditarCategoria">Categoria</label>
+                        <select id="galeriaEditarCategoria" name="categoriaId" required>
+                            <option value="">Selecione</option>
+                            <option th:each="categoria : ${galeriaCategorias}" th:value="${categoria.id}" th:text="${categoria.nome}">Categoria</option>
                         </select>
                     </div>
 
                     <div class="modal-field">
-                        <label for="galeriaEditarVisibilidade">Visibilidade</label>
-                        <select id="galeriaEditarVisibilidade" name="visibilidade" required>
-                            <option value="publica" selected>Publica</option>
-                            <option value="restrita">Restrita</option>
-                            <option value="rascunho">Rascunho</option>
-                        </select>
+                        <label for="galeriaEditarDataUpload">Data do upload</label>
+                        <input id="galeriaEditarDataUpload" name="dataUpload" type="date" required>
                     </div>
 
                     <div class="modal-field modal-field-full">
@@ -2514,14 +2509,62 @@
                         <input id="galeriaEditarImagemArquivo" name="imagem" type="file" accept="image/*">
                     </div>
 
-                    <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Edicao estatica para demonstracao. Integre ao backend para atualizar metadados e substituir a imagem quando necessario.</small>
-                    </div>
                 </div>
 
                 <div class="modal-footer">
                     <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
                     <button type="submit" class="admin-primary-btn">Salvar alteracoes</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="galeria-categoria-nova" aria-labelledby="modalNovaCategoriaGaleriaTitulo">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h3 id="modalNovaCategoriaGaleriaTitulo">Nova categoria da galeria</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formNovaCategoriaGaleria" th:action="@{/admin/galeria/categorias}" action="/admin/galeria/categorias" method="post">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="galeriaCategoriaNome">Nome da categoria</label>
+                        <input id="galeriaCategoriaNome" name="nome" type="text" placeholder="Ex.: Eventos" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar categoria</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    <dialog class="modal-overlay" data-modal="galeria-categoria-editar" aria-labelledby="modalEditarCategoriaGaleriaTitulo">
+        <div class="modal-card">
+            <div class="modal-head">
+                <h3 id="modalEditarCategoriaGaleriaTitulo">Editar categoria da galeria</h3>
+                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
+            </div>
+
+            <form id="formEditarCategoriaGaleria" th:action="@{/admin/galeria/categorias/editar}" action="/admin/galeria/categorias/editar" method="post">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" id="galeriaCategoriaEditarId" name="categoriaId">
+
+                <div class="modal-body">
+                    <div class="modal-field modal-field-full">
+                        <label for="galeriaCategoriaEditarNome">Nome da categoria</label>
+                        <input id="galeriaCategoriaEditarNome" name="nome" type="text" required>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
+                    <button type="submit" class="admin-primary-btn">Salvar alterações</button>
                 </div>
             </form>
         </div>

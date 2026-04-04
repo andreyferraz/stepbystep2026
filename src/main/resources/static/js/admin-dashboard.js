@@ -279,6 +279,11 @@ document.addEventListener("DOMContentLoaded", function () {
             url.searchParams.delete("notaBimestre");
         }
 
+        if (target !== "galeria") {
+            url.searchParams.delete("galeriaBusca");
+            url.searchParams.delete("galeriaCategoriaId");
+        }
+
         window.history.replaceState({}, "", url.toString());
     }
 
@@ -957,6 +962,36 @@ document.addEventListener("DOMContentLoaded", function () {
                         var field = modal.querySelector(selector);
                         if (field) {
                             field.value = button.getAttribute(livroEditMap[selector]) || "";
+                        }
+                    });
+                }
+
+                if (target === "galeria-editar") {
+                    var galeriaEditMap = {
+                        "#galeriaEditarId": "data-galeria-id",
+                        "#galeriaEditarLegenda": "data-galeria-legenda",
+                        "#galeriaEditarDataUpload": "data-galeria-data",
+                        "#galeriaEditarCategoria": "data-galeria-categoria-id"
+                    };
+
+                    Object.keys(galeriaEditMap).forEach(function (selector) {
+                        var field = modal.querySelector(selector);
+                        if (field) {
+                            field.value = button.getAttribute(galeriaEditMap[selector]) || "";
+                        }
+                    });
+                }
+
+                if (target === "galeria-categoria-editar") {
+                    var categoriaEditMap = {
+                        "#galeriaCategoriaEditarId": "data-galeria-categoria-id",
+                        "#galeriaCategoriaEditarNome": "data-galeria-categoria-nome"
+                    };
+
+                    Object.keys(categoriaEditMap).forEach(function (selector) {
+                        var field = modal.querySelector(selector);
+                        if (field) {
+                            field.value = button.getAttribute(categoriaEditMap[selector]) || "";
                         }
                     });
                 }

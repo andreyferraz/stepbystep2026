@@ -34,11 +34,7 @@ public class UploadController {
             }
 
             Resource recurso = new UrlResource(caminhoArquivo.toUri());
-            String contentType = Files.probeContentType(caminhoArquivo);
-
-            MediaType mediaType = contentType == null
-                ? MediaType.APPLICATION_OCTET_STREAM
-                : MediaType.parseMediaType(contentType);
+            MediaType mediaType = resolverMediaType(caminhoArquivo);
 
             return ResponseEntity.ok().contentType(mediaType).body(recurso);
         } catch (MalformedURLException ex) {
@@ -46,5 +42,32 @@ public class UploadController {
         } catch (Exception ex) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Não foi possível carregar o arquivo.");
         }
+    }
+
+    private MediaType resolverMediaType(Path caminhoArquivo) {
+        try {
+            String contentType = Files.probeContentType(caminhoArquivo);
+            if (contentType != null && !contentType.isBlank()) {
+                return MediaType.parseMediaType(contentType);
+            }
+        } catch (Exception ex) {
+            // Fallback por extensão para ambientes onde probeContentType não reconhece webp.
+        }
+
+        String nome = caminhoArquivo.getFileName() == null ? "" : caminhoArquivo.getFileName().toString().toLowerCase();
+        if (nome.endsWith(".webp")) {
+            return MediaType.parseMediaType("image/webp");
+        }
+        if (nome.endsWith(".png")) {
+            return MediaType.IMAGE_PNG;
+        }
+        if (nome.endsWith(".jpg") || nome.endsWith(".jpeg")) {
+            return MediaType.IMAGE_JPEG;
+        }
+        if (nome.endsWith(".gif")) {
+            return MediaType.IMAGE_GIF;
+        }
+
+        return MediaType.APPLICATION_OCTET_STREAM;
     }
 }

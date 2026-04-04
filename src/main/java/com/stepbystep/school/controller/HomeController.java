@@ -16,6 +16,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.stepbystep.school.model.Postagem;
 import com.stepbystep.school.model.Livro;
+import com.stepbystep.school.model.GaleriaFoto;
+import com.stepbystep.school.service.GaleriaFotoService;
 import com.stepbystep.school.service.LivroService;
 import com.stepbystep.school.service.PostagemService;
 import com.stepbystep.school.service.PreInscricaoService;
@@ -29,11 +31,13 @@ public class HomeController {
     private final PreInscricaoService preInscricaoService;
     private final PostagemService postagemService;
     private final LivroService livroService;
+    private final GaleriaFotoService galeriaFotoService;
 
-    public HomeController(PreInscricaoService preInscricaoService, PostagemService postagemService, LivroService livroService) {
+    public HomeController(PreInscricaoService preInscricaoService, PostagemService postagemService, LivroService livroService, GaleriaFotoService galeriaFotoService) {
         this.preInscricaoService = preInscricaoService;
         this.postagemService = postagemService;
         this.livroService = livroService;
+        this.galeriaFotoService = galeriaFotoService;
     }
 
     @GetMapping("/")
@@ -48,8 +52,14 @@ public class HomeController {
             .limit(4)
             .toList();
 
+        List<GaleriaFoto> galeriaHome = galeriaFotoService.listarTodas().stream()
+            .sorted(Comparator.comparing(GaleriaFoto::getDataUpload, Comparator.nullsLast(java.time.LocalDate::compareTo)).reversed())
+            .limit(4)
+            .toList();
+
         model.addAttribute("ultimasPostagensBlog", postagensRecentes);
         model.addAttribute("livrosHome", livrosDestaqueHome);
+        model.addAttribute("galeriaHome", galeriaHome);
         return "index";
     }
 
