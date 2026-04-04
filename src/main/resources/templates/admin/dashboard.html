@@ -2055,46 +2055,37 @@
                 <div class="section-head">
                     <h2>Obras Literarias</h2>
                     <div class="livros-actions">
-                        <button type="button" class="admin-secondary-btn" data-open-modal="livro-editar">Editar obra</button>
                         <button type="button" class="admin-primary-btn" data-open-modal="livro-novo">Nova obra</button>
                     </div>
                 </div>
 
-                <output class="admin-feedback" id="livroFormFeedback" aria-live="polite"></output>
-                <output class="admin-feedback" id="livroEditFeedback" aria-live="polite"></output>
+                <output class="admin-feedback" id="livroFormFeedback" aria-live="polite" th:text="${livroFormFeedback}"></output>
+                <output class="admin-feedback" id="livroEditFeedback" aria-live="polite" th:text="${livroEditFeedback}"></output>
+                <output class="admin-feedback" id="livroDeleteFeedback" aria-live="polite" th:text="${livroDeleteFeedback}"></output>
 
-                <div class="livros-toolbar">
-                    <input type="search" class="admin-search" placeholder="Pesquisar por titulo, autor ou ano">
-                    <select class="livros-filter" aria-label="Filtrar por status da obra">
-                        <option value="">Todos os status</option>
-                        <option value="destaque">Em destaque</option>
-                        <option value="catalogo">No catalogo</option>
-                        <option value="rascunho">Rascunho</option>
-                    </select>
-                    <select class="livros-filter" aria-label="Filtrar por genero literario">
-                        <option value="">Todos os generos</option>
-                        <option value="infantil">Infantil</option>
-                        <option value="classico">Classico</option>
-                        <option value="contemporaneo">Contemporaneo</option>
-                    </select>
-                </div>
+                <form class="livros-toolbar" th:action="@{/admin/dashboard}" action="/admin/dashboard" method="get">
+                    <input type="hidden" name="panel" value="livros">
+                    <input type="search" class="admin-search" name="livroBusca" th:value="${livroBusca}" placeholder="Pesquisar por titulo, sinopse, link ou ano">
+                    <button type="submit" class="admin-primary-btn">Pesquisar</button>
+                    <a th:if="${!#strings.isEmpty(livroBusca)}" th:href="@{/admin/dashboard(panel='livros')}" href="/admin/dashboard?panel=livros" class="admin-secondary-btn">Limpar</a>
+                </form>
 
                 <div class="livros-metric-grid">
                     <article class="livros-metric-card">
                         <p>Obras no catalogo</p>
-                        <strong>48</strong>
+                        <strong th:text="${livrosTotal}">0</strong>
                     </article>
                     <article class="livros-metric-card">
-                        <p>Novas obras no mes</p>
-                        <strong>5</strong>
+                        <p>Com link de compra</p>
+                        <strong th:text="${livrosComLinkCompra}">0</strong>
                     </article>
                     <article class="livros-metric-card">
-                        <p>Mais visualizada</p>
-                        <strong>O Pequeno Principe</strong>
+                        <p>Sem link de compra</p>
+                        <strong th:text="${livrosSemLinkCompra}">0</strong>
                     </article>
                     <article class="livros-metric-card">
-                        <p>Em destaque</p>
-                        <strong>12</strong>
+                        <p>Ano mais recente</p>
+                        <strong th:text="${livroAnoMaisRecente}">-</strong>
                     </article>
                 </div>
 
@@ -2108,75 +2099,64 @@
                                 <thead>
                                     <tr>
                                         <th>Titulo</th>
-                                        <th>Genero</th>
                                         <th>Ano</th>
-                                        <th>Status</th>
+                                        <th>Sinopse</th>
                                         <th>Link de compra</th>
                                         <th>Acoes</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>O Pequeno Principe</td>
-                                        <td>Classico</td>
-                                        <td>1943</td>
-                                        <td><span class="status-chip success">Em destaque</span></td>
-                                        <td><a href="#">Abrir</a></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="livro-editar">Editar</button></td>
+                                    <tr th:if="${#lists.isEmpty(livros)}">
+                                        <td colspan="5">Nenhuma obra literaria cadastrada.</td>
                                     </tr>
-                                    <tr>
-                                        <td>Matilda</td>
-                                        <td>Infantil</td>
-                                        <td>1988</td>
-                                        <td><span class="status-chip success">No catalogo</span></td>
-                                        <td><a href="#">Abrir</a></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Detalhes</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Extraordinario</td>
-                                        <td>Contemporaneo</td>
-                                        <td>2012</td>
-                                        <td><span class="status-chip warn">Rascunho</span></td>
-                                        <td><a href="#">Abrir</a></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn" data-open-modal="livro-editar">Continuar</button></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Dom Casmurro</td>
-                                        <td>Classico</td>
-                                        <td>1899</td>
-                                        <td><span class="status-chip success">No catalogo</span></td>
-                                        <td><a href="#">Abrir</a></td>
-                                        <td><button type="button" class="admin-secondary-btn admin-inline-btn">Metricas</button></td>
+                                    <tr th:each="livro : ${livros}">
+                                        <td th:text="${livro.titulo}">Titulo</td>
+                                        <td th:text="${livro.anoLancamento}">0</td>
+                                        <td th:text="${#strings.abbreviate(livro.sinopse, 90)}">Sinopse</td>
+                                        <td>
+                                            <a th:if="${!#strings.isEmpty(livro.linkCompra)}" th:href="${livro.linkCompra}" target="_blank" rel="noopener noreferrer">Abrir</a>
+                                            <span th:if="${#strings.isEmpty(livro.linkCompra)}">-</span>
+                                        </td>
+                                        <td>
+                                            <div class="action-icons">
+                                                <button type="button" class="admin-secondary-btn admin-inline-btn"
+                                                    data-open-modal="livro-editar"
+                                                    th:attr="
+                                                        data-livro-id=${livro.id},
+                                                        data-livro-titulo=${livro.titulo},
+                                                        data-livro-ano=${livro.anoLancamento},
+                                                        data-livro-sinopse=${livro.sinopse},
+                                                        data-livro-link=${livro.linkCompra}
+                                                    ">
+                                                    Editar
+                                                </button>
+                                                <form th:action="@{/admin/livros/excluir}" action="/admin/livros/excluir" method="post" class="admin-inline-form" onsubmit="return confirm('Deseja realmente excluir esta obra?');">
+                                                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                                    <input type="hidden" name="livroId" th:value="${livro.id}">
+                                                    <button type="submit" class="admin-secondary-btn admin-inline-btn">Excluir</button>
+                                                </form>
+                                            </div>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
-
-                            <div class="pagination">
-                                <button type="button">Anterior</button>
-                                <span>Pagina 1 de 3</span>
-                                <button type="button">Proxima</button>
-                            </div>
                         </div>
                     </article>
 
                     <aside class="livros-side" aria-label="Resumo de obras literarias">
                         <article class="admin-card livros-block">
                             <header class="admin-card-header">
-                                <h3>Mais procuradas</h3>
+                                <h3>Ultimas obras do catalogo</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="livros-list">
-                                    <li>
-                                        <strong>O Pequeno Principe</strong>
-                                        <span>412 acessos no ultimo mes.</span>
+                                    <li th:each="livro, iter : ${livros}" th:if="${iter.index < 3}">
+                                        <strong th:text="${livro.titulo}">Titulo</strong>
+                                        <span th:text="${'Ano de lancamento: ' + livro.anoLancamento}">Ano de lancamento: -</span>
                                     </li>
-                                    <li>
-                                        <strong>Matilda</strong>
-                                        <span>289 acessos no ultimo mes.</span>
-                                    </li>
-                                    <li>
-                                        <strong>A Bolsa Amarela</strong>
-                                        <span>241 acessos no ultimo mes.</span>
+                                    <li th:if="${#lists.isEmpty(livros)}">
+                                        <strong>Sem obras cadastradas</strong>
+                                        <span>Cadastre livros para visualizar o resumo.</span>
                                     </li>
                                 </ul>
                             </div>
@@ -2184,21 +2164,17 @@
 
                         <article class="admin-card livros-block">
                             <header class="admin-card-header">
-                                <h3>Atualizacoes pendentes</h3>
+                                <h3>Obras sem link de compra</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="livros-list">
-                                    <li>
-                                        <strong>Extraordinario</strong>
-                                        <span>Adicionar capa e revisar sinopse.</span>
+                                    <li th:each="livro : ${livros}" th:if="${#strings.isEmpty(livro.linkCompra)}">
+                                        <strong th:text="${livro.titulo}">Titulo</strong>
+                                        <span>Adicionar link de compra para facilitar conversao.</span>
                                     </li>
-                                    <li>
-                                        <strong>Percy Jackson</strong>
-                                        <span>Atualizar link de compra.</span>
-                                    </li>
-                                    <li>
-                                        <strong>Sherlock Holmes</strong>
-                                        <span>Definir se entra em destaque.</span>
+                                    <li th:if="${livrosSemLinkCompra == 0}">
+                                        <strong>Todas as obras com link</strong>
+                                        <span>Nenhuma atualizacao pendente nesta etapa.</span>
                                     </li>
                                 </ul>
                             </div>
@@ -2216,23 +2192,13 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formNovoLivro" th:action="@{/admin/livros}" action="/admin/livros" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="livroFormFeedback">
+            <form id="formNovoLivro" th:action="@{/admin/livros}" action="/admin/livros" method="post" enctype="multipart/form-data">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="modal-body">
                     <div class="modal-field modal-field-full">
                         <label for="livroTitulo">Titulo</label>
                         <input id="livroTitulo" name="titulo" type="text" placeholder="Ex.: O Pequeno Principe" required>
-                    </div>
-
-                    <div class="modal-field">
-                        <label for="livroGenero">Genero</label>
-                        <select id="livroGenero" name="genero" required>
-                            <option value="">Selecione</option>
-                            <option value="infantil">Infantil</option>
-                            <option value="classico">Classico</option>
-                            <option value="contemporaneo">Contemporaneo</option>
-                        </select>
                     </div>
 
                     <div class="modal-field">
@@ -2255,9 +2221,6 @@
                         <input id="livroLinkCompra" name="linkCompra" type="url" placeholder="https://loja.com/livro">
                     </div>
 
-                    <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Formulario estatico para demonstracao. Integre ao backend para salvar dados da obra e upload da capa.</small>
-                    </div>
                 </div>
 
                 <div class="modal-footer">
@@ -2275,32 +2238,24 @@
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
-            <form id="formEditarLivro" th:action="@{/admin/livros/editar}" action="/admin/livros/editar" method="post" enctype="multipart/form-data" data-static-submit="true" data-feedback-target="livroEditFeedback">
+            <form id="formEditarLivro" th:action="@{/admin/livros/editar}" action="/admin/livros/editar" method="post" enctype="multipart/form-data">
                 <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <input type="hidden" id="livroEditarId" name="livroId">
 
                 <div class="modal-body">
                     <div class="modal-field modal-field-full">
                         <label for="livroEditarTitulo">Titulo</label>
-                        <input id="livroEditarTitulo" name="titulo" type="text" value="Extraordinario" required>
-                    </div>
-
-                    <div class="modal-field">
-                        <label for="livroEditarGenero">Genero</label>
-                        <select id="livroEditarGenero" name="genero" required>
-                            <option value="contemporaneo" selected>Contemporaneo</option>
-                            <option value="classico">Classico</option>
-                            <option value="infantil">Infantil</option>
-                        </select>
+                        <input id="livroEditarTitulo" name="titulo" type="text" required>
                     </div>
 
                     <div class="modal-field">
                         <label for="livroEditarAno">Ano de lancamento</label>
-                        <input id="livroEditarAno" name="anoLancamento" type="number" min="1500" max="2100" value="2012" required>
+                        <input id="livroEditarAno" name="anoLancamento" type="number" min="1500" max="2100" required>
                     </div>
 
                     <div class="modal-field modal-field-full">
                         <label for="livroEditarSinopse">Sinopse</label>
-                        <textarea id="livroEditarSinopse" name="sinopse" rows="4" required>A historia de Auggie, um menino que enfrenta desafios de inclusao e empatia, inspirando alunos e familias.</textarea>
+                        <textarea id="livroEditarSinopse" name="sinopse" rows="4" required></textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
@@ -2310,11 +2265,7 @@
 
                     <div class="modal-field modal-field-full">
                         <label for="livroEditarLinkCompra">Link de compra</label>
-                        <input id="livroEditarLinkCompra" name="linkCompra" type="url" value="https://loja.com/extraordinario">
-                    </div>
-
-                    <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Edicao estatica para demonstracao. Integre ao backend para atualizar cadastro, capa e disponibilidade da obra.</small>
+                        <input id="livroEditarLinkCompra" name="linkCompra" type="url">
                     </div>
                 </div>
 

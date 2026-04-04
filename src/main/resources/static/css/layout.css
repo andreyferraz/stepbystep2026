@@ -825,6 +825,19 @@ body {
     text-transform: uppercase;
 }
 
+.book-cover.has-image {
+    padding: 0;
+    overflow: hidden;
+    display: block;
+}
+
+.book-cover.has-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
 .book-cover-1 {
     background: linear-gradient(140deg, #1d5f92, #2b7ebf 60%, #6cb0e5);
 }

@@ -32,6 +32,7 @@ import com.stepbystep.school.enums.Role;
 import com.stepbystep.school.enums.StatusMensalidade;
 import com.stepbystep.school.enums.StatusPostagem;
 import com.stepbystep.school.model.Aluno;
+import com.stepbystep.school.model.Livro;
 import com.stepbystep.school.model.MaterialEstudo;
 import com.stepbystep.school.model.Mensalidade;
 import com.stepbystep.school.model.Nota;
@@ -42,6 +43,7 @@ import com.stepbystep.school.model.Usuario;
 import com.stepbystep.school.repository.AlunoRepository;
 import com.stepbystep.school.repository.UsuarioRepository;
 import com.stepbystep.school.service.FileUploadService;
+import com.stepbystep.school.service.LivroService;
 import com.stepbystep.school.service.MaterialEstudoService;
 import com.stepbystep.school.service.MensalidadeService;
 import com.stepbystep.school.service.NotaService;
@@ -59,6 +61,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import java.time.ZoneId;
 
 @Controller
@@ -72,6 +75,7 @@ public class DashboardController {
     private static final String REDIRECT_MENSALIDADES_PANEL = "redirect:/admin/dashboard?panel=mensalidades";
     private static final String REDIRECT_INADIMPLENCIA_PANEL = "redirect:/admin/dashboard?panel=inadimplencia";
     private static final String REDIRECT_PRE_INSCRICOES_PANEL = "redirect:/admin/dashboard?panel=pre-inscricoes";
+    private static final String REDIRECT_LIVROS_PANEL = "redirect:/admin/dashboard?panel=livros";
     private static final String CAMPO_ID_ALUNO = "ID do Aluno";
     private static final String CAMPO_ID_TURMA = "ID da Turma";
     private static final String CAMPO_ID_MATERIAL = "ID do Material";
@@ -86,6 +90,9 @@ public class DashboardController {
     private static final String FEEDBACK_PRE_INSCRICAO_FORM = "preInscricaoFormFeedback";
     private static final String FEEDBACK_PRE_INSCRICAO_CONTATO = "preInscricaoContatoFeedback";
     private static final String FEEDBACK_PRE_INSCRICAO_DELETE = "preInscricaoDeleteFeedback";
+    private static final String FEEDBACK_LIVRO_FORM = "livroFormFeedback";
+    private static final String FEEDBACK_LIVRO_EDIT = "livroEditFeedback";
+    private static final String FEEDBACK_LIVRO_DELETE = "livroDeleteFeedback";
     private static final String MSG_ALUNO_NAO_ENCONTRADO = "Aluno não encontrado com ID: ";
     private static final String MSG_USUARIO_ALUNO_NAO_ENCONTRADO = "Usuário do aluno não encontrado.";
 
@@ -99,6 +106,7 @@ public class DashboardController {
     private final FileUploadService fileUploadService;
     private final PreInscricaoService preInscricaoService;
     private final PostagemService postagemService;
+    private final LivroService livroService;
 
     @GetMapping("/admin/dashboard")
     public String adminDashboard(
@@ -116,6 +124,7 @@ public class DashboardController {
         @RequestParam(name = "blogBusca", required = false) String blogBusca,
         @RequestParam(name = "blogStatus", required = false) String blogStatus,
         @RequestParam(name = "blogCategoria", required = false) String blogCategoria,
+        @RequestParam(name = "livroBusca", required = false) String livroBusca,
         @RequestParam(name = "notaBimestre", required = false) Integer notaBimestre,
         Model model
     ) {
@@ -183,6 +192,15 @@ public class DashboardController {
         long postagensAgendadasQtd = contarPostagensPorStatus(postagensAdminTodas, StatusPostagem.AGENDADO);
         List<Postagem> postagensTop = listarTopPostagensPublicadas(postagensAdminTodas, 3);
         List<Postagem> postagensAgendadas = listarPostagensAgendadas(postagensAdminTodas, 3);
+        List<Livro> livros = listarLivrosFiltrados(livroBusca);
+        long livrosComLinkCompra = livros.stream()
+            .filter(livro -> !normalizarTextoOpcional(livro.getLinkCompra()).isBlank())
+            .count();
+        long livrosSemLinkCompra = livros.size() - livrosComLinkCompra;
+        int livroAnoMaisRecente = livros.stream()
+            .mapToInt(Livro::getAnoLancamento)
+            .max()
+            .orElse(0);
 
         model.addAttribute("isDashboard", true);
         model.addAttribute("turmas", turmaService.listarTurmasFiltradas(turmaBusca));
@@ -233,6 +251,12 @@ public class DashboardController {
         model.addAttribute("blogPostagensAgendadasQtd", postagensAgendadasQtd);
         model.addAttribute("blogTopPostagens", postagensTop);
         model.addAttribute("blogProximasPublicacoes", postagensAgendadas);
+        model.addAttribute("livroBusca", textoFiltro(livroBusca));
+        model.addAttribute("livros", livros);
+        model.addAttribute("livrosTotal", livros.size());
+        model.addAttribute("livrosComLinkCompra", livrosComLinkCompra);
+        model.addAttribute("livrosSemLinkCompra", livrosSemLinkCompra);
+        model.addAttribute("livroAnoMaisRecente", livroAnoMaisRecente > 0 ? livroAnoMaisRecente : "-");
         model.addAttribute("inadBusca", textoFiltro(inadBusca));
         model.addAttribute("inadFaixa", textoFiltro(inadFaixa));
         model.addAttribute("inadimplenciaCarteira", inadimplenciaResumo.carteira());
@@ -1026,6 +1050,85 @@ public class DashboardController {
         return REDIRECT_TURMAS_PANEL;
     }
 
+    @PostMapping("/admin/livros")
+    public String cadastrarLivro(
+        @RequestParam("titulo") String titulo,
+        @RequestParam("sinopse") String sinopse,
+        @RequestParam("anoLancamento") Integer anoLancamento,
+        @RequestParam(name = "linkCompra", required = false) String linkCompra,
+        @RequestParam("imagemCapa") MultipartFile imagemCapa,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoStringObrigatorio(titulo, "Título da obra");
+            ValidationUtils.validarCampoStringObrigatorio(sinopse, "Sinopse da obra");
+            ValidationUtils.validarCampoObrigatorio(anoLancamento, "Ano de lançamento");
+
+            Livro livro = Livro.builder()
+                .titulo(titulo.trim())
+                .sinopse(sinopse.trim())
+                .anoLancamento(anoLancamento)
+                .linkCompra(normalizarTextoOpcional(linkCompra))
+                .build();
+
+            livroService.salvarLivro(livro, imagemCapa);
+            redirectAttributes.addFlashAttribute(FEEDBACK_LIVRO_FORM, "Obra literária cadastrada com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_LIVRO_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_LIVROS_PANEL;
+    }
+
+    @PostMapping("/admin/livros/editar")
+    public String editarLivro(
+        @RequestParam("livroId") UUID livroId,
+        @RequestParam("titulo") String titulo,
+        @RequestParam("sinopse") String sinopse,
+        @RequestParam("anoLancamento") Integer anoLancamento,
+        @RequestParam(name = "linkCompra", required = false) String linkCompra,
+        @RequestParam(name = "imagemCapa", required = false) MultipartFile imagemCapa,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(livroId, "ID do livro");
+            ValidationUtils.validarCampoStringObrigatorio(titulo, "Título da obra");
+            ValidationUtils.validarCampoStringObrigatorio(sinopse, "Sinopse da obra");
+            ValidationUtils.validarCampoObrigatorio(anoLancamento, "Ano de lançamento");
+
+            Livro livro = Livro.builder()
+                .id(livroId)
+                .titulo(titulo.trim())
+                .sinopse(sinopse.trim())
+                .anoLancamento(anoLancamento)
+                .linkCompra(normalizarTextoOpcional(linkCompra))
+                .build();
+
+            livroService.editarLivro(livro, imagemCapa);
+            redirectAttributes.addFlashAttribute(FEEDBACK_LIVRO_EDIT, "Obra literária atualizada com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_LIVRO_EDIT, ex.getMessage());
+        }
+
+        return REDIRECT_LIVROS_PANEL;
+    }
+
+    @PostMapping("/admin/livros/excluir")
+    public String excluirLivro(
+        @RequestParam("livroId") UUID livroId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(livroId, "ID do livro");
+            livroService.excluirLivro(livroId);
+            redirectAttributes.addFlashAttribute(FEEDBACK_LIVRO_DELETE, "Obra literária excluída com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_LIVRO_DELETE, ex.getMessage());
+        }
+
+        return REDIRECT_LIVROS_PANEL;
+    }
+
     @GetMapping("/aluno/dashboard")
     public String alunoDashboard(Model model) {
         model.addAttribute("isDashboard", true);
@@ -1274,6 +1377,19 @@ public class DashboardController {
             .filter(mensalidade -> !mensalidade.getDataVencimento().isBefore(referencia))
             .sorted(Comparator.comparing(Mensalidade::getDataVencimento))
             .limit(3)
+            .toList();
+    }
+
+    private List<Livro> listarLivrosFiltrados(String livroBusca) {
+        String buscaNormalizada = livroBusca == null ? "" : livroBusca.trim().toLowerCase(Locale.ROOT);
+
+        return StreamSupport.stream(livroService.listarTodosLivros().spliterator(), false)
+            .filter(livro -> buscaNormalizada.isBlank()
+                || contemTexto(livro.getTitulo(), buscaNormalizada)
+                || contemTexto(livro.getSinopse(), buscaNormalizada)
+                || contemTexto(livro.getLinkCompra(), buscaNormalizada)
+                || String.valueOf(livro.getAnoLancamento()).contains(buscaNormalizada))
+            .sorted(Comparator.comparing(Livro::getTitulo, Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)))
             .toList();
     }
 

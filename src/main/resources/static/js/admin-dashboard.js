@@ -944,6 +944,23 @@ document.addEventListener("DOMContentLoaded", function () {
                     });
                 }
 
+                if (target === "livro-editar") {
+                    var livroEditMap = {
+                        "#livroEditarId": "data-livro-id",
+                        "#livroEditarTitulo": "data-livro-titulo",
+                        "#livroEditarAno": "data-livro-ano",
+                        "#livroEditarSinopse": "data-livro-sinopse",
+                        "#livroEditarLinkCompra": "data-livro-link"
+                    };
+
+                    Object.keys(livroEditMap).forEach(function (selector) {
+                        var field = modal.querySelector(selector);
+                        if (field) {
+                            field.value = button.getAttribute(livroEditMap[selector]) || "";
+                        }
+                    });
+                }
+
                 modal.classList.add("is-open");
                 if (typeof modal.showModal === "function" && !modal.open) {
                     modal.showModal();

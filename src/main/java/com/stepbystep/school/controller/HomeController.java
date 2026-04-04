@@ -15,19 +15,25 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.stepbystep.school.model.Postagem;
+import com.stepbystep.school.model.Livro;
+import com.stepbystep.school.service.LivroService;
 import com.stepbystep.school.service.PostagemService;
 import com.stepbystep.school.service.PreInscricaoService;
 import com.stepbystep.school.util.ValidationUtils;
+import java.util.Comparator;
+import java.util.stream.StreamSupport;
 
 @Controller
 public class HomeController {
 
     private final PreInscricaoService preInscricaoService;
     private final PostagemService postagemService;
+    private final LivroService livroService;
 
-    public HomeController(PreInscricaoService preInscricaoService, PostagemService postagemService) {
+    public HomeController(PreInscricaoService preInscricaoService, PostagemService postagemService, LivroService livroService) {
         this.preInscricaoService = preInscricaoService;
         this.postagemService = postagemService;
+        this.livroService = livroService;
     }
 
     @GetMapping("/")
@@ -37,7 +43,13 @@ public class HomeController {
             .limit(3)
             .toList();
 
+        List<Livro> livrosDestaqueHome = StreamSupport.stream(livroService.listarTodosLivros().spliterator(), false)
+            .sorted(Comparator.comparing(Livro::getAnoLancamento).reversed())
+            .limit(4)
+            .toList();
+
         model.addAttribute("ultimasPostagensBlog", postagensRecentes);
+        model.addAttribute("livrosHome", livrosDestaqueHome);
         return "index";
     }
 

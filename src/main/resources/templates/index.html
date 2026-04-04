@@ -89,53 +89,40 @@
             <p class="section-kicker">O Espaco da Escritora</p>
             <h2>Vitrine de Livros</h2>
             <p>
-                Obras que unem ensino e inspiracao. Esta secao esta estatica por enquanto,
-                mas ja preparada para receber os dados vindos do backend.
+                Obras que unem ensino e inspiracao, carregadas automaticamente a partir do catalogo.
             </p>
         </div>
 
         <div class="books-grid" aria-label="Catalogo de livros da teacher">
-            <article class="book-card">
+            <article class="book-card" th:each="livro, iter : ${livrosHome}">
+                <div class="book-cover" th:classappend="${' book-cover-' + ((iter.index % 4) + 1) + (!#strings.isEmpty(livro.urlCapa) ? ' has-image' : '')}" aria-hidden="true">
+                    <img th:if="${!#strings.isEmpty(livro.urlCapa)}"
+                         th:src="${livro.urlCapa}"
+                         src="/img/banner.png"
+                         th:alt="${'Capa do livro ' + livro.titulo}"
+                         alt="Capa do livro">
+                    <span th:if="${#strings.isEmpty(livro.urlCapa)}" th:text="${'Book ' + #numbers.formatInteger(iter.index + 1, 2)}">Book 01</span>
+                </div>
+                <h3 th:text="${livro.titulo}">Titulo do livro</h3>
+                <p th:text="${#strings.abbreviate(livro.sinopse, 120)}">Sinopse do livro.</p>
+                <div class="book-actions">
+                    <a class="book-btn"
+                       th:if="${!#strings.isEmpty(livro.linkCompra)}"
+                       th:href="${livro.linkCompra}"
+                       target="_blank"
+                       rel="noopener noreferrer">Comprar</a>
+                    <a class="book-btn" th:if="${#strings.isEmpty(livro.linkCompra)}" th:href="@{/livros}">Ver detalhes</a>
+                </div>
+            </article>
+
+            <article class="book-card" th:if="${livrosHome == null or #lists.isEmpty(livrosHome)}">
                 <div class="book-cover book-cover-1" aria-hidden="true">
-                    <span>Book 01</span>
+                    <span>Books</span>
                 </div>
-                <h3>Palavras que Libertam</h3>
-                <p>Uma jornada leve sobre como o ingles pode abrir portas na vida pessoal e profissional.</p>
+                <h3>Catalogo em atualizacao</h3>
+                <p>As obras literarias publicadas aparecerao aqui automaticamente em breve.</p>
                 <div class="book-actions">
-                    <a class="book-btn" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">Comprar</a>
-                </div>
-            </article>
-
-            <article class="book-card">
-                <div class="book-cover book-cover-2" aria-hidden="true">
-                    <span>Book 02</span>
-                </div>
-                <h3>Conversas Sem Medo</h3>
-                <p>Estrategias praticas para ganhar fluencia e se comunicar com seguranca em situacoes reais.</p>
-                <div class="book-actions">
-                    <a class="book-btn" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">Saiba mais</a>
-                </div>
-            </article>
-
-            <article class="book-card">
-                <div class="book-cover book-cover-3" aria-hidden="true">
-                    <span>Book 03</span>
-                </div>
-                <h3>Metodo Step by Step</h3>
-                <p>Do basico ao avancado: um guia objetivo com rotina de estudos e pratica de speaking.</p>
-                <div class="book-actions">
-                    <a class="book-btn" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">Comprar</a>
-                </div>
-            </article>
-
-            <article class="book-card">
-                <div class="book-cover book-cover-4" aria-hidden="true">
-                    <span>Book 04</span>
-                </div>
-                <h3>Historias que Ensinam</h3>
-                <p>Contos curtos bilinguais para leitura prazerosa e ampliacao de vocabulario contextualizado.</p>
-                <div class="book-actions">
-                    <a class="book-btn" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">Saiba mais</a>
+                    <a class="book-btn" th:href="@{/livros}" href="/livros">Visitar pagina de livros</a>
                 </div>
             </article>
         </div>

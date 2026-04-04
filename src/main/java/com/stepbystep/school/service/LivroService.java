@@ -1,6 +1,7 @@
 package com.stepbystep.school.service;
 
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,9 +35,10 @@ public class LivroService {
 
         if (file != null && !file.isEmpty()) {
             String filePath = fileUploadService.salvarImagem(file);
-            livro.setUrlCapa(filePath);
+            livro.setUrlCapa(montarUrlPublicaUpload(filePath));
         }
 
+        livro.setUrlCapa(normalizarUrlCapa(livro.getUrlCapa()));
         ValidationUtils.validarCampoObrigatorio(livro.getUrlCapa(), "A imagem é obrigatória");
         livroRepository.save(livro);
 
@@ -57,13 +59,14 @@ public class LivroService {
 
         if (file != null && !file.isEmpty()) {
             String filePath = fileUploadService.salvarImagem(file);
-            livroExistente.setUrlCapa(filePath);
+            livroExistente.setUrlCapa(montarUrlPublicaUpload(filePath));
         }
 
         livroExistente.setTitulo(livro.getTitulo());
         livroExistente.setSinopse(livro.getSinopse());
         livroExistente.setAnoLancamento(livro.getAnoLancamento());
         livroExistente.setLinkCompra(livro.getLinkCompra());
+        livroExistente.setUrlCapa(normalizarUrlCapa(livroExistente.getUrlCapa()));
 
         ValidationUtils.validarCampoObrigatorio(livroExistente.getUrlCapa(), "A imagem é obrigatória");
 
@@ -80,12 +83,57 @@ public class LivroService {
 
     public Livro listarLivroPorId(UUID id) {
         ValidationUtils.validarCampoObrigatorio(id, CAMPO_ID_LIVRO);
-        return livroRepository.findById(id)
+        Livro livro = livroRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(MSG_LIVRO_NAO_ENCONTRADO + id));
+
+        return copiarLivroComUrlNormalizada(livro);
     }
 
     public Iterable<Livro> listarTodosLivros() {
-        return livroRepository.findAll();   
+        return StreamSupport.stream(livroRepository.findAll().spliterator(), false)
+                .map(this::copiarLivroComUrlNormalizada)
+                .toList();
+    }
+
+    private String montarUrlPublicaUpload(String nomeArquivo) {
+        if (nomeArquivo == null || nomeArquivo.isBlank()) {
+            return "";
+        }
+
+        return "/uploads/" + nomeArquivo;
+    }
+
+    private String normalizarUrlCapa(String urlCapa) {
+        if (urlCapa == null || urlCapa.isBlank()) {
+            return "";
+        }
+
+        String valorNormalizado = urlCapa.trim();
+
+        if (valorNormalizado.startsWith("http://") || valorNormalizado.startsWith("https://")) {
+            return valorNormalizado;
+        }
+
+        if (valorNormalizado.startsWith("/uploads/")) {
+            return valorNormalizado;
+        }
+
+        if (valorNormalizado.startsWith("uploads/")) {
+            return "/" + valorNormalizado;
+        }
+
+        return montarUrlPublicaUpload(valorNormalizado);
+    }
+
+    private Livro copiarLivroComUrlNormalizada(Livro livro) {
+        return Livro.builder()
+                .id(livro.getId())
+                .titulo(livro.getTitulo())
+                .sinopse(livro.getSinopse())
+                .urlCapa(normalizarUrlCapa(livro.getUrlCapa()))
+                .anoLancamento(livro.getAnoLancamento())
+                .linkCompra(livro.getLinkCompra())
+                .build();
     }
 
 }

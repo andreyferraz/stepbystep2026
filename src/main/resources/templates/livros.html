@@ -22,121 +22,62 @@
     </section>
 
     <section class="books-showcase">
-        <article class="book-feature">
+        <article class="book-feature" th:each="livro, iter : ${livros}" th:classappend="${iter.index % 2 == 1 ? ' is-reverse' : ''}">
             <figure class="book-feature-cover">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                     alt="Capa do livro Entre Palavras e Horizontes">
+                <img th:src="${!#strings.isEmpty(livro.urlCapa) ? livro.urlCapa : '/img/banner.png'}"
+                     src="/img/banner.png"
+                     th:alt="${'Capa do livro ' + livro.titulo}"
+                     alt="Capa do livro">
             </figure>
 
             <div class="book-feature-content">
                 <div class="book-feature-heading">
-                    <h2>Entre Palavras e Horizontes</h2>
-                    <span class="book-year">2024</span>
+                    <h2 th:text="${livro.titulo}">Titulo do livro</h2>
+                    <span class="book-year" th:text="${livro.anoLancamento}">2024</span>
                 </div>
 
-                <p class="book-feature-lead">
-                    Um romance delicado sobre descobertas, linguagem e as pontes
-                    que a leitura constrói entre pessoas, memórias e mundos possíveis.
+                <p class="book-feature-lead" th:text="${#strings.abbreviate(livro.sinopse, 180)}">
+                    Sinopse principal da obra.
                 </p>
 
-                <p>
-                    Em uma narrativa sensível e envolvente, a obra acompanha personagens
-                    que encontram na linguagem uma forma de reconstruir afetos, compreender
-                    a si mesmos e enxergar novas possibilidades. O texto convida o leitor a
-                    mergulhar em temas como identidade, imaginação e crescimento pessoal.
-                </p>
-
-                <p>
-                    É um livro que dialoga com quem ama literatura e também com quem entende
-                    que aprender novas palavras é, muitas vezes, aprender novas formas de ver a vida.
+                <p th:text="${livro.sinopse}">
+                    Detalhes da obra.
                 </p>
 
                 <div class="book-feature-actions">
-                    <a class="book-btn book-btn-primary" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">
-                        Comprar na Amazon
+                    <a class="book-btn book-btn-primary"
+                       th:if="${!#strings.isEmpty(livro.linkCompra)}"
+                       th:href="${livro.linkCompra}"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        Comprar
                     </a>
-                    <a class="book-btn book-btn-secondary" href="/pdf/capitulo-1-entre-palavras-e-horizontes.pdf" target="_blank" rel="noopener noreferrer">
-                        Ler 1º Capítulo
+                    <a class="book-btn book-btn-secondary" th:href="@{/contato}" href="/contato">
+                        Solicitar informacoes
                     </a>
                 </div>
             </div>
         </article>
 
-        <article class="book-feature is-reverse">
+        <article class="book-feature" th:if="${livros == null or #lists.isEmpty(livros)}">
             <figure class="book-feature-cover">
                 <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                     alt="Capa do livro O Jardim das Leituras">
+                     alt="Catalogo de livros em atualizacao">
             </figure>
 
             <div class="book-feature-content">
                 <div class="book-feature-heading">
-                    <h2>O Jardim das Leituras</h2>
-                    <span class="book-year">2022</span>
+                    <h2>Catalogo em atualizacao</h2>
+                    <span class="book-year">-</span>
                 </div>
 
                 <p class="book-feature-lead">
-                    Uma obra que celebra o encontro entre leitura, formação humana
-                    e o prazer de descobrir significados em cada página.
-                </p>
-
-                <p>
-                    Com uma escrita acolhedora, o livro apresenta personagens, situações
-                    e reflexões que despertam empatia e curiosidade. A narrativa foi pensada
-                    para tocar leitores de diferentes idades, valorizando o poder transformador
-                    das histórias no desenvolvimento do pensamento e da imaginação.
-                </p>
-
-                <p>
-                    Ao mesmo tempo, a obra reforça como a leitura pode ampliar repertório,
-                    enriquecer vocabulário e fortalecer a capacidade de interpretação.
+                    Novas obras serao exibidas aqui automaticamente assim que forem cadastradas no painel administrativo.
                 </p>
 
                 <div class="book-feature-actions">
-                    <a class="book-btn book-btn-primary" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">
-                        Comprar na Amazon
-                    </a>
-                    <a class="book-btn book-btn-secondary" href="/pdf/capitulo-1-o-jardim-das-leituras.pdf" target="_blank" rel="noopener noreferrer">
-                        Ler 1º Capítulo
-                    </a>
-                </div>
-            </div>
-        </article>
-
-        <article class="book-feature">
-            <figure class="book-feature-cover">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                     alt="Capa do livro Cartas para Aprender e Sentir">
-            </figure>
-
-            <div class="book-feature-content">
-                <div class="book-feature-heading">
-                    <h2>Cartas para Aprender e Sentir</h2>
-                    <span class="book-year">2020</span>
-                </div>
-
-                <p class="book-feature-lead">
-                    Uma coletânea literária que une emoção, linguagem e formação leitora
-                    em textos que convidam à pausa e à reflexão.
-                </p>
-
-                <p>
-                    A obra reúne escritos que transitam entre memória, afeto e descoberta,
-                    propondo uma leitura que toca tanto o coração quanto a mente. Cada texto
-                    foi construído para provocar identificação e ampliar o olhar sobre o mundo.
-                </p>
-
-                <p>
-                    É uma leitura ideal para quem acredita que a literatura tem papel essencial
-                    no amadurecimento da linguagem, na construção de repertório e no fortalecimento
-                    da expressão pessoal.
-                </p>
-
-                <div class="book-feature-actions">
-                    <a class="book-btn book-btn-primary" href="https://www.amazon.com.br/" target="_blank" rel="noopener noreferrer">
-                        Comprar na Amazon
-                    </a>
-                    <a class="book-btn book-btn-secondary" href="/pdf/capitulo-1-cartas-para-aprender-e-sentir.pdf" target="_blank" rel="noopener noreferrer">
-                        Ler 1º Capítulo
+                    <a class="book-btn book-btn-secondary" th:href="@{/contato}" href="/contato">
+                        Falar com a equipe
                     </a>
                 </div>
             </div>
