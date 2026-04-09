@@ -187,6 +187,11 @@ public class NotaService {
             .toList();
     }
 
+    public List<Nota> listarNotasPorAluno(UUID alunoId) {
+        ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+        return notaRepository.findByAlunoIdOrderByDataReferenciaDescIdDesc(alunoId);
+    }
+
     public double calcularMediaNotas(List<Nota> notas) {
         return notas.stream()
             .map(Nota::getValor)

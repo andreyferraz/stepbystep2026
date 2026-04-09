@@ -103,6 +103,36 @@
     gap: 14px;
 }
 
+.student-filter-nav {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.student-filter-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #f9fcff;
+    color: var(--ink);
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 8px 12px;
+    text-decoration: none;
+    transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.student-filter-chip:hover,
+.student-filter-chip:focus-visible,
+.student-filter-chip.is-active {
+    border-color: rgba(43, 126, 191, 0.35);
+    background: rgba(43, 126, 191, 0.12);
+    outline: none;
+}
+
 .student-card {
     border: 1px solid var(--line);
     background: #fbfdff;

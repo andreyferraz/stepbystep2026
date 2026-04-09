@@ -10,7 +10,9 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
+import java.time.LocalDate;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -48,7 +50,13 @@ class NotaServiceTest {
         alunoId = UUID.randomUUID();
         notaId = UUID.randomUUID();
         aluno = Aluno.builder().id(alunoId).nome("Aluno Teste").build();
-        notaValida = Nota.builder().valor(8.5).bimestre(2).descricao("Prova 1").build();
+        notaValida = Nota.builder()
+            .valor(8.5)
+            .bimestre(2)
+            .atividade("Prova 1")
+            .dataReferencia(LocalDate.now())
+            .descricao("Prova 1")
+            .build();
     }
 
     @Nested
@@ -90,14 +98,14 @@ class NotaServiceTest {
         }
 
         @Test
-        @DisplayName("Deve lançar exceção quando valor da nota é nulo")
-        void deveLancarExcecaoQuandoValorNulo() {
+        @DisplayName("Deve lançar exceção quando nota e presença não forem informadas")
+        void deveLancarExcecaoQuandoNotaEPresencaNaoForemInformadas() {
             notaValida.setValor(null);
 
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                     () -> notaService.cadastrarNota(alunoId, notaValida));
 
-            assertTrue(ex.getMessage().contains("Valor da nota"));
+            assertTrue(ex.getMessage().contains("Informe ao menos a nota ou a presença"));
             verify(notaRepository, never()).save(any());
         }
 
@@ -125,12 +133,16 @@ class NotaServiceTest {
                     .id(notaId)
                     .valor(6.0)
                     .bimestre(1)
+                    .atividade("Atividade antiga")
+                    .dataReferencia(LocalDate.now().minusDays(2))
                     .descricao("Antiga")
                     .aluno(aluno)
                     .build();
             Nota notaAtualizada = Nota.builder()
                     .valor(9.0)
                     .bimestre(3)
+                    .atividade("Atividade atualizada")
+                    .dataReferencia(LocalDate.now())
                     .descricao("Atualizada")
                     .aluno(Aluno.builder().id(UUID.randomUUID()).build())
                     .build();
@@ -168,14 +180,14 @@ class NotaServiceTest {
         }
 
         @Test
-        @DisplayName("Deve lançar exceção quando valor da nota é nulo")
-        void deveLancarExcecaoQuandoValorNotaNulo() {
+        @DisplayName("Deve lançar exceção quando nota e presença não forem informadas")
+        void deveLancarExcecaoQuandoNotaEPresencaNaoForemInformadas() {
             notaValida.setValor(null);
 
             IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
                     () -> notaService.editarNota(notaId, notaValida));
 
-            assertTrue(ex.getMessage().contains("Valor da nota"));
+            assertTrue(ex.getMessage().contains("Informe ao menos a nota ou a presença"));
             verify(notaRepository, never()).findById(any());
         }
 
@@ -241,6 +253,34 @@ class NotaServiceTest {
             assertTrue(ex.getMessage().contains("Nota não encontrada com ID"));
             verify(notaRepository, times(1)).existsById(notaId);
             verify(notaRepository, never()).deleteById(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("listarNotasPorAluno")
+    class ListarNotasPorAluno {
+
+        @Test
+        @DisplayName("Deve listar notas de um aluno específico")
+        void deveListarNotasDeUmAlunoEspecifico() {
+            Nota nota = Nota.builder().id(notaId).aluno(aluno).build();
+            when(notaRepository.findByAlunoIdOrderByDataReferenciaDescIdDesc(alunoId)).thenReturn(List.of(nota));
+
+            List<Nota> retorno = notaService.listarNotasPorAluno(alunoId);
+
+            assertEquals(1, retorno.size());
+            assertEquals(notaId, retorno.get(0).getId());
+            verify(notaRepository, times(1)).findByAlunoIdOrderByDataReferenciaDescIdDesc(alunoId);
+        }
+
+        @Test
+        @DisplayName("Deve lançar exceção quando ID do aluno for nulo")
+        void deveLancarExcecaoQuandoIdDoAlunoForNulo() {
+            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> notaService.listarNotasPorAluno(null));
+
+            assertTrue(ex.getMessage().contains("ID do aluno"));
+            verify(notaRepository, never()).findByAlunoIdOrderByDataReferenciaDescIdDesc(any());
         }
     }
 }

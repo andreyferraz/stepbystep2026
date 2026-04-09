@@ -671,9 +671,9 @@ public class DashboardController {
         @RequestParam("alunoId") UUID alunoId,
         @RequestParam(name = "turmaId", required = false) UUID turmaId,
         @RequestParam("atividade") String atividade,
-        @RequestParam("valor") Double valor,
+        @RequestParam("valor") String valor,
         @RequestParam(name = "presenca", required = false) String presenca,
-        @RequestParam("bimestre") Integer bimestre,
+        @RequestParam(name = "bimestre", required = false) Integer bimestre,
         @RequestParam(name = "data", required = false) LocalDate data,
         @RequestParam(name = "observacoes", required = false) String observacoes,
         RedirectAttributes redirectAttributes
@@ -681,8 +681,7 @@ public class DashboardController {
         try {
             ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
             ValidationUtils.validarCampoStringObrigatorio(atividade, "Atividade");
-            ValidationUtils.validarCampoObrigatorio(valor, "Valor da nota");
-            ValidationUtils.validarCampoObrigatorio(bimestre, "Bimestre");
+            Double valorNota = parseValorNota(valor);
 
             Aluno aluno = alunoRepository.findById(alunoId)
                 .orElseThrow(() -> new IllegalArgumentException(MSG_ALUNO_NAO_ENCONTRADO + alunoId));
@@ -697,10 +696,11 @@ public class DashboardController {
             }
 
             LocalDate dataReferencia = data == null ? LocalDate.now() : data;
+            Integer bimestreReferencia = bimestre == null ? calcularBimestrePorData(dataReferencia) : bimestre;
 
             Nota nota = Nota.builder()
-                .valor(valor)
-                .bimestre(bimestre)
+                .valor(valorNota)
+                .bimestre(bimestreReferencia)
                 .atividade(atividade)
                 .presenca(presenca)
                 .dataReferencia(dataReferencia)
@@ -714,6 +714,22 @@ public class DashboardController {
         }
 
         return REDIRECT_NOTAS_PANEL;
+    }
+
+    private Double parseValorNota(String valor) {
+        ValidationUtils.validarCampoStringObrigatorio(valor, "Valor da nota");
+
+        String valorNormalizado = valor.trim().replace(',', '.');
+        try {
+            return Double.parseDouble(valorNormalizado);
+        } catch (NumberFormatException ex) {
+            throw new IllegalArgumentException("Informe uma nota válida. Exemplo: 8.5");
+        }
+    }
+
+    private int calcularBimestrePorData(LocalDate data) {
+        int mes = data == null ? LocalDate.now().getMonthValue() : data.getMonthValue();
+        return ((mes - 1) / 3) + 1;
     }
 
     @PostMapping("/admin/presencas")

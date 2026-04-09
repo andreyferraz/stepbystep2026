@@ -29,12 +29,15 @@
             </nav>
         </aside>
 
-        <div class="student-content" data-student-content>
+        <div class="student-content" data-student-content th:attr="data-student-initial-panel=${alunoPainelInicial}">
             <article class="student-panel is-active" data-student-panel="painel">
                 <header class="student-panel-header">
                     <p class="student-panel-kicker">Início</p>
                     <h2 th:text="'Bem-vindo(a), ' + ${alunoNome} + '!'">Bem-vindo(a), Aluno!</h2>
                     <p>Resumo da sua jornada</p>
+                    <p th:if="${alunoContaSemVinculo}">
+                        Sua conta de aluno ainda não está vinculada ao cadastro acadêmico. Procure a secretaria para concluir o vínculo e visualizar notas e faltas.
+                    </p>
                 </header>
                 <div class="student-overview-grid">
                     <section class="student-card">
@@ -87,19 +90,70 @@
                     <p class="student-panel-kicker">Boletim</p>
                     <h2>Notas e faltas</h2>
                 </header>
+                <nav class="student-filter-nav" aria-label="Filtrar boletim por bimestre">
+                    <a class="student-filter-chip"
+                       th:href="@{/aluno/dashboard(painel='boletim')}"
+                       th:classappend="${alunoBoletimBimestreSelecionado == null} ? ' is-active'">
+                        Todos
+                    </a>
+                    <a class="student-filter-chip"
+                       th:href="@{/aluno/dashboard(painel='boletim',boletimBimestre=1)}"
+                       th:classappend="${alunoBoletimBimestreSelecionado == 1} ? ' is-active'">
+                        B1
+                    </a>
+                    <a class="student-filter-chip"
+                       th:href="@{/aluno/dashboard(painel='boletim',boletimBimestre=2)}"
+                       th:classappend="${alunoBoletimBimestreSelecionado == 2} ? ' is-active'">
+                        B2
+                    </a>
+                    <a class="student-filter-chip"
+                       th:href="@{/aluno/dashboard(painel='boletim',boletimBimestre=3)}"
+                       th:classappend="${alunoBoletimBimestreSelecionado == 3} ? ' is-active'">
+                        B3
+                    </a>
+                    <a class="student-filter-chip"
+                       th:href="@{/aluno/dashboard(painel='boletim',boletimBimestre=4)}"
+                       th:classappend="${alunoBoletimBimestreSelecionado == 4} ? ' is-active'">
+                        B4
+                    </a>
+                </nav>
                 <div class="student-overview-grid">
                     <section class="student-card">
                         <h3>Média B1</h3>
-                        <p>8,7</p>
+                        <p th:text="${alunoBoletimMediaB1}">--</p>
                     </section>
                     <section class="student-card">
                         <h3>Média B2</h3>
-                        <p>9,1</p>
+                        <p th:text="${alunoBoletimMediaB2}">--</p>
                     </section>
                     <section class="student-card">
                         <h3>Faltas</h3>
-                        <p>2 no semestre.</p>
+                        <p th:text="${alunoBoletimFaltasResumo}">Sem faltas registradas.</p>
                     </section>
+                    <section class="student-card">
+                        <h3>Média B3</h3>
+                        <p th:text="${alunoBoletimMediaB3}">--</p>
+                    </section>
+                    <section class="student-card">
+                        <h3>Média B4</h3>
+                        <p th:text="${alunoBoletimMediaB4}">--</p>
+                    </section>
+                </div>
+                <div class="student-list">
+                    <div class="student-list-item" th:each="lancamento : ${alunoBoletimLancamentos}">
+                        <div>
+                            <h3 th:text="${lancamento.atividade}">Registro de aula</h3>
+                            <p th:text="${lancamento.notaResumo}">Sem nota lançada.</p>
+                            <small th:text="${lancamento.presencaResumo + ' • ' + lancamento.dataResumo}">Presença não informada. • 01/01/2026</small>
+                            <p th:if="${!#strings.isEmpty(lancamento.descricao)}" th:text="${lancamento.descricao}">Observações do lançamento.</p>
+                        </div>
+                    </div>
+                    <div class="student-list-item" th:if="${#lists.isEmpty(alunoBoletimLancamentos)}">
+                        <div>
+                            <h3>Sem lançamentos no boletim</h3>
+                            <p>Suas notas e presença aparecerão aqui assim que forem registradas.</p>
+                        </div>
+                    </div>
                 </div>
             </article>
 

@@ -10,4 +10,6 @@ public interface NotaRepository extends JpaRepository<Nota, UUID> {
 
 	java.util.List<Nota> findAllByOrderByDataReferenciaDescIdDesc();
 
+	java.util.List<Nota> findByAlunoIdOrderByDataReferenciaDescIdDesc(UUID alunoId);
+
 }
