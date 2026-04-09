@@ -544,6 +544,7 @@
                                         <th>Nota</th>
                                         <th>Presença</th>
                                         <th>Status</th>
+                                        <th>Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -554,9 +555,16 @@
                                         <td th:text="${nota.valor != null ? #numbers.formatDecimal(nota.valor, 1, 1) : '-'}">0.0</td>
                                         <td th:text="${#strings.isEmpty(nota.presenca) ? '-' : #strings.capitalize(#strings.toLowerCase(nota.presenca))}">Presença</td>
                                         <td><span class="status-chip success">Lançado</span></td>
+                                        <td>
+                                            <form th:action="@{/admin/notas/excluir}" action="/admin/notas/excluir" method="post" class="admin-inline-form" onsubmit="return confirm('Deseja realmente excluir este lançamento?');">
+                                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                                <input type="hidden" name="notaId" th:value="${nota.id}">
+                                                <button type="submit" class="admin-secondary-btn admin-inline-btn admin-danger-btn">Excluir</button>
+                                            </form>
+                                        </td>
                                     </tr>
                                     <tr th:if="${#lists.isEmpty(notasLancadas)}">
-                                        <td colspan="6">Nenhum lançamento encontrado para os filtros informados.</td>
+                                        <td colspan="7">Nenhum lançamento encontrado para os filtros informados.</td>
                                     </tr>
                                 </tbody>
                             </table>

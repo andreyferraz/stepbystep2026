@@ -83,6 +83,7 @@ public class DashboardController {
     private static final String REDIRECT_GALERIA_PANEL = "redirect:/admin/dashboard?panel=galeria";
     private static final String CAMPO_ID_ALUNO = "ID do Aluno";
     private static final String CAMPO_ID_TURMA = "ID da Turma";
+    private static final String CAMPO_ID_NOTA = "ID da Nota";
     private static final String CAMPO_ID_MATERIAL = "ID do Material";
     private static final String CAMPO_ID_MENSALIDADE = "ID da Mensalidade";
     private static final String FEEDBACK_MATERIAL_FORM = "materialFormFeedback";
@@ -770,6 +771,22 @@ public class DashboardController {
 
             notaService.cadastrarNota(alunoId, presencaDiaria);
             redirectAttributes.addFlashAttribute(FEEDBACK_NOTAS_FORM, "Presença lançada com sucesso.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_NOTAS_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_NOTAS_PANEL;
+    }
+
+    @PostMapping("/admin/notas/excluir")
+    public String excluirLancamentoNota(
+        @RequestParam("notaId") UUID notaId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(notaId, CAMPO_ID_NOTA);
+            notaService.excluirNota(notaId);
+            redirectAttributes.addFlashAttribute(FEEDBACK_NOTAS_FORM, "Lançamento excluído com sucesso.");
         } catch (IllegalArgumentException ex) {
             redirectAttributes.addFlashAttribute(FEEDBACK_NOTAS_FORM, ex.getMessage());
         }
