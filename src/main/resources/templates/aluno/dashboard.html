@@ -185,7 +185,9 @@
                         </form>
 
                         <div th:if="${!mensalidade.permiteEnvioComprovante}">
-                            <span class="student-status-pill">Aguardando análise</span>
+                                <span class="student-status-pill"
+                                    th:classappend="${mensalidade.statusPagamento == 'PAGO'} ? ' is-success'"
+                                    th:text="${mensalidade.statusPagamento == 'PAGO' ? 'Pagamento confirmado' : 'Aguardando análise'}">Aguardando análise</span>
                         </div>
                     </div>
 

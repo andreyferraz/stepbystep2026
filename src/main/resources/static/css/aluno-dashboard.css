@@ -225,6 +225,12 @@
     font-weight: 700;
 }
 
+.student-status-pill.is-success {
+    border-color: rgba(24, 138, 84, 0.35);
+    background: #e5f3eb;
+    color: #0f4f30;
+}
+
 .student-bottom-nav {
     display: none;
 }
