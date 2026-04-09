@@ -51,6 +51,85 @@ body.admin-body {
     border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 }
 
+.admin-brand img {
+    width: 44px;
+    height: 44px;
+    object-fit: contain;
+}
+
+.admin-brand span {
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.admin-nav {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-right: 4px;
+}
+
+.admin-nav-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-nav-label {
+    margin: 0;
+    padding: 0 10px;
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    color: rgba(214, 232, 248, 0.9);
+}
+
+.admin-nav-label-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.admin-nav-label-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.admin-nav-label-icon svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
+.admin-nav-link {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    color: rgba(240, 248, 255, 0.95);
+    text-align: left;
+    font: inherit;
+    padding: 10px 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.admin-nav-link:hover,
+.admin-nav-link:focus-visible {
+    background: rgba(255, 255, 255, 0.11);
+    border-color: rgba(255, 255, 255, 0.2);
+    outline: none;
+}
+
+.admin-nav-link.is-active {
+    background: linear-gradient(130deg, rgba(244, 163, 64, 0.92), rgba(229, 134, 19, 0.9));
+    border-color: rgba(255, 255, 255, 0.24);
     color: #3b2100;
 }
 
