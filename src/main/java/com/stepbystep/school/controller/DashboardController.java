@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeParseException;
+import java.security.Principal;
 import org.springframework.stereotype.Controller;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -1285,8 +1286,28 @@ public class DashboardController {
     }
 
     @GetMapping("/aluno/dashboard")
-    public String alunoDashboard(Model model) {
+    public String alunoDashboard(Model model, Principal principal) {
+        String nomeAlunoLogado = "Aluno";
+
+        if (principal != null && principal.getName() != null) {
+            String email = principal.getName().trim().toLowerCase(Locale.ROOT);
+            nomeAlunoLogado = usuarioRepository.findByEmail(email)
+                .map(usuario -> {
+                    if (usuario.getAluno() != null && usuario.getAluno().getNome() != null) {
+                        return usuario.getAluno().getNome();
+                    }
+
+                    return usuario.getNome();
+                })
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(nome -> !nome.isBlank())
+                .map(nome -> nome.split("\\s+")[0])
+                .orElse(nomeAlunoLogado);
+        }
+
         model.addAttribute("isDashboard", true);
+        model.addAttribute("alunoNome", nomeAlunoLogado);
         return "aluno/dashboard";
     }
 
