@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
@@ -94,6 +95,42 @@ public class FileUploadService {
             return nomeArquivo;
         } catch (IOException e) {
             throw new FileUploadException("Não foi possível salvar o documento. Erro: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Salva comprovante de pagamento (imagem ou PDF) e retorna o nome do arquivo.
+     */
+    public String salvarComprovante(MultipartFile arquivo) {
+        try {
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String nomeOriginal = arquivo.getOriginalFilename();
+            if (nomeOriginal == null || nomeOriginal.isBlank()) {
+                throw new FileUploadException("Nome do arquivo não pode ser nulo ou vazio");
+            }
+
+            String extensao = extrairExtensao(nomeOriginal);
+            if (!"pdf".equals(extensao)
+                && !"png".equals(extensao)
+                && !"jpg".equals(extensao)
+                && !"jpeg".equals(extensao)
+                && !"webp".equals(extensao)) {
+                throw new FileUploadException("Formato de comprovante inválido. Envie PDF, PNG, JPG, JPEG ou WEBP");
+            }
+
+            String nomeArquivo = "comprovante-" + UUID.randomUUID() + "." + extensao;
+            Path caminhoArquivo = uploadPath.resolve(nomeArquivo);
+            try (InputStream inputStream = arquivo.getInputStream()) {
+                Files.copy(inputStream, caminhoArquivo, StandardCopyOption.REPLACE_EXISTING);
+            }
+
+            return nomeArquivo;
+        } catch (IOException e) {
+            throw new FileUploadException("Não foi possível salvar o comprovante. Erro: " + e.getMessage(), e);
         }
     }
 

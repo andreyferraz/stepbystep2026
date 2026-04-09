@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.stepbystep.school.enums.StatusComprovantePagamento;
 import com.stepbystep.school.enums.StatusMensalidade;
 
 import jakarta.persistence.Column;
@@ -41,11 +42,16 @@ public class Mensalidade {
 
     private LocalDateTime dataPagamento;
 
-    @Column(columnDefinition = "TEXT")
-    private String pixCopiaECola;
+    @Enumerated(EnumType.STRING)
+    private StatusComprovantePagamento comprovanteStatus;
 
-    @Column(length = 25)
-    private String pixTxid;
+    private LocalDateTime comprovanteDataEnvio;
+
+    @Column(length = 255)
+    private String comprovanteArquivo;
+
+    @Column(length = 500)
+    private String comprovanteObservacaoAluno;
 
     @ManyToOne
     private Aluno aluno;

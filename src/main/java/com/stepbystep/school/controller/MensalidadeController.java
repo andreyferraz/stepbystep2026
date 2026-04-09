@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.stepbystep.school.dto.MensalidadeFinanceiroDTO;
-import com.stepbystep.school.dto.PixGeradoDTO;
 import com.stepbystep.school.enums.StatusMensalidade;
 import com.stepbystep.school.model.Mensalidade;
 import com.stepbystep.school.service.MensalidadeService;
@@ -31,17 +30,6 @@ public class MensalidadeController {
                 .stream()
                 .map(this::toFinanceiroDto)
                 .toList();
-    }
-
-    @PostMapping("/{mensalidadeId}/gerar-pix")
-    public PixGeradoDTO gerarPix(@PathVariable UUID alunoId, @PathVariable UUID mensalidadeId) {
-        Mensalidade mensalidade = mensalidadeService.gerarPix(alunoId, mensalidadeId);
-        return PixGeradoDTO.builder()
-                .mensalidadeId(mensalidade.getId())
-                .status(mensalidade.getStatus())
-                .pixCopiaECola(mensalidade.getPixCopiaECola())
-                .qrCodeBase64(mensalidadeService.gerarQrCodeBase64(mensalidade.getPixCopiaECola()))
-                .build();
     }
 
     @PostMapping("/{mensalidadeId}/confirmar-pagamento")

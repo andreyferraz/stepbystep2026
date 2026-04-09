@@ -794,47 +794,12 @@
                     <h2>Gestão de Mensalidades</h2>
                     <div class="mensalidades-actions">
                         <button type="button" class="admin-primary-btn" data-open-modal="mensalidade-nova">Nova mensalidade</button>
-                        <button type="button" class="admin-secondary-btn" data-open-modal="mensalidade-cobranca">Gerar cobrança</button>
                         <button type="button" class="admin-primary-btn" data-open-modal="mensalidade-registrar">Registrar pagamento</button>
                     </div>
                 </div>
 
                 <output class="admin-feedback" id="mensalidadeFormFeedback" aria-live="polite" th:text="${mensalidadeFormFeedback}"></output>
                 <output class="admin-feedback" id="mensalidadeCriacaoFeedback" aria-live="polite" th:text="${mensalidadeCriacaoFeedback}"></output>
-                <output class="admin-feedback" id="mensalidadeCobrancaFeedback" aria-live="polite" th:text="${mensalidadeCobrancaFeedback}"></output>
-
-                <div class="mensalidade-next-step" th:if="${mensalidadeCriadaId != null and mensalidadeCriadaAlunoId != null}">
-                    <p>Mensalidade criada. Deseja gerar o QR Code agora?</p>
-                    <button type="button"
-                        class="admin-secondary-btn"
-                        data-open-modal="mensalidade-cobranca"
-                        th:attr="data-aluno-id=${mensalidadeCriadaAlunoId},data-mensalidade-id=${mensalidadeCriadaId}">
-                        Gerar QR Code desta mensalidade
-                    </button>
-                </div>
-
-                <article class="admin-card mensalidade-pix-card" th:if="${mensalidadePixCopiaCola != null}">
-                    <header class="admin-card-header">
-                        <h3>Cobrança PIX gerada</h3>
-                    </header>
-                    <div class="admin-card-content mensalidade-pix-content">
-                        <img class="mensalidade-pix-qrcode" th:if="${mensalidadePixQrBase64 != null}" th:src="${'data:image/png;base64,' + mensalidadePixQrBase64}" alt="QR Code PIX para pagamento">
-                        <div class="mensalidade-pix-copy">
-                            <label for="pixCopiaECola">Chave PIX copia e cola</label>
-                            <div class="mensalidade-pix-copy-row">
-                                <input id="pixCopiaECola" type="text" readonly th:value="${mensalidadePixCopiaCola}">
-                                <button type="button" class="admin-secondary-btn" id="copiarPixBtn" th:attr="data-pix=${mensalidadePixCopiaCola}">Copiar</button>
-                            </div>
-                            <small>Status da cobrança: <strong th:text="${mensalidadePixStatus}">PENDENTE</strong></small>
-                            <form th:if="${mensalidadePixId != null and mensalidadePixAlunoId != null}" th:action="@{/admin/mensalidades/confirmar-pagamento}" action="/admin/mensalidades/confirmar-pagamento" method="post" class="admin-inline-form">
-                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-                                <input type="hidden" name="alunoId" th:value="${mensalidadePixAlunoId}">
-                                <input type="hidden" name="mensalidadeId" th:value="${mensalidadePixId}">
-                                <button type="submit" class="admin-primary-btn admin-inline-btn">Confirmar pagamento PIX</button>
-                            </form>
-                        </div>
-                    </div>
-                </article>
 
                 <div class="mensalidades-toolbar">
                     <input type="search" class="admin-search" placeholder="Pesquisar por aluno, turma ou competencia">
@@ -907,12 +872,6 @@
                                             <div class="action-icons" th:if="${mensalidade.status != T(com.stepbystep.school.enums.StatusMensalidade).PAGO}">
                                                 <button type="button"
                                                     class="admin-secondary-btn admin-inline-btn"
-                                                    data-open-modal="mensalidade-cobranca"
-                                                    th:attr="data-aluno-id=${mensalidade.aluno != null ? mensalidade.aluno.id : ''},data-mensalidade-id=${mensalidade.id}">
-                                                    Cobrar
-                                                </button>
-                                                <button type="button"
-                                                    class="admin-secondary-btn admin-inline-btn"
                                                     data-open-modal="mensalidade-registrar"
                                                     th:attr="data-aluno-id=${mensalidade.aluno != null ? mensalidade.aluno.id : ''},data-mensalidade-id=${mensalidade.id}">
                                                     Baixa manual
@@ -974,16 +933,63 @@
                             <div class="admin-card-content">
                                 <ul class="mensalidades-list">
                                     <li>
-                                        <strong>PIX gerado</strong>
-                                        <span th:text="${mensalidadesPixGeradasQtd + ' cobranca(s) com chave PIX criada.'}">0 cobranca(s) com chave PIX criada.</span>
-                                    </li>
-                                    <li>
                                         <strong>Pagamentos confirmados no mes</strong>
                                         <span th:text="${mensalidadesPagasMesQtd + ' pagamento(s) baixados neste mes.'}">0 pagamento(s) baixados neste mes.</span>
                                     </li>
                                     <li>
                                         <strong>Cobrancas pendentes</strong>
                                         <span th:text="${mensalidadesPendentesQtd + ' mensalidade(s) aguardando confirmacao.'}">0 mensalidade(s) aguardando confirmacao.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </article>
+
+                        <article class="admin-card mensalidades-block">
+                            <header class="admin-card-header">
+                                <h3>Comprovantes pendentes</h3>
+                            </header>
+                            <div class="admin-card-content">
+                                <p class="mensalidades-pending-count"
+                                   th:text="${mensalidadesComprovantesPendentesQtd + ' comprovante(s) aguardando aprovação.'}">
+                                    0 comprovante(s) aguardando aprovação.
+                                </p>
+
+                                <ul class="mensalidades-list">
+                                    <li th:each="mensalidade : ${mensalidadesComprovantesPendentes}">
+                                        <strong th:text="${mensalidade.aluno != null ? mensalidade.aluno.nome : 'Aluno'}">Aluno</strong>
+                                        <span th:text="${'Competência: ' + (mensalidade.dataVencimento != null ? #temporals.format(mensalidade.dataVencimento, 'MM/yyyy') : '-') + ' • Valor: R$ ' + (mensalidade.valor != null ? #numbers.formatDecimal(mensalidade.valor, 1, 2) : '0,00')}">
+                                            Competência: 03/2026 • Valor: R$ 0,00
+                                        </span>
+
+                                        <div class="action-icons">
+                                            <a class="admin-secondary-btn admin-inline-btn"
+                                               th:if="${mensalidade.comprovanteArquivo != null}"
+                                               th:href="@{/admin/mensalidades/comprovantes/{mensalidadeId}(mensalidadeId=${mensalidade.id})}">
+                                                Ver comprovante
+                                            </a>
+
+                                            <form th:action="@{/admin/mensalidades/aprovar-comprovante}"
+                                                  action="/admin/mensalidades/aprovar-comprovante"
+                                                  method="post"
+                                                  class="admin-inline-form">
+                                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                                <input type="hidden" name="mensalidadeId" th:value="${mensalidade.id}">
+                                                <button type="submit" class="admin-primary-btn admin-inline-btn">Aprovar</button>
+                                            </form>
+
+                                            <form th:action="@{/admin/mensalidades/rejeitar-comprovante}"
+                                                  action="/admin/mensalidades/rejeitar-comprovante"
+                                                  method="post"
+                                                  class="admin-inline-form">
+                                                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                                                <input type="hidden" name="mensalidadeId" th:value="${mensalidade.id}">
+                                                <button type="submit" class="admin-secondary-btn admin-inline-btn">Rejeitar</button>
+                                            </form>
+                                        </div>
+                                    </li>
+                                    <li th:if="${#lists.isEmpty(mensalidadesComprovantesPendentes)}">
+                                        <strong>Sem comprovantes pendentes</strong>
+                                        <span>Nenhum envio aguardando aprovação no momento.</span>
                                     </li>
                                 </ul>
                             </div>
@@ -1029,7 +1035,7 @@
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Após criar, você poderá gerar o QR Code PIX imediatamente no próximo passo.</small>
+                        <small class="modal-help-text">Após criar, registre o pagamento manualmente quando receber a confirmação.</small>
                     </div>
                 </div>
 
@@ -1107,56 +1113,6 @@
                 <div class="modal-footer">
                     <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
                     <button type="submit" class="admin-primary-btn">Salvar pagamento</button>
-                </div>
-            </form>
-        </div>
-    </dialog>
-
-    <dialog class="modal-overlay" data-modal="mensalidade-cobranca" aria-labelledby="modalCobrancaMensalidadeTitulo">
-        <div class="modal-card">
-            <div class="modal-head">
-                <h3 id="modalCobrancaMensalidadeTitulo">Gerar cobranca</h3>
-                <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
-            </div>
-
-            <form id="formGerarCobrancaMensalidade" th:action="@{/admin/mensalidades/gerar-cobranca}" action="/admin/mensalidades/gerar-cobranca" method="post">
-                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-
-                <div class="modal-body">
-                    <div class="modal-field modal-field-full">
-                        <label for="cobrancaAluno">Aluno</label>
-                        <select id="cobrancaAluno" name="alunoId" required>
-                            <option value="">Selecione</option>
-                            <option th:each="usuario : ${usuariosAlunos}"
-                                th:if="${usuario.aluno != null}"
-                                th:value="${usuario.aluno.id}"
-                                th:text="${usuario.nome}">
-                                Aluno
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="modal-field modal-field-full">
-                        <label for="cobrancaMensalidade">Mensalidade</label>
-                        <select id="cobrancaMensalidade" name="mensalidadeId" required>
-                            <option value="" th:text="${#lists.isEmpty(mensalidadesCobraveis) ? 'Nenhuma mensalidade pendente' : 'Selecione'}">Selecione</option>
-                            <option th:each="mensalidade : ${mensalidadesCobraveis}"
-                                th:value="${mensalidade.id}"
-                                th:attr="data-aluno-id=${mensalidade.aluno != null ? mensalidade.aluno.id : ''}"
-                                th:text="${(mensalidade.aluno != null ? mensalidade.aluno.nome : 'Aluno') + ' | Venc: ' + (mensalidade.dataVencimento != null ? #temporals.format(mensalidade.dataVencimento, 'dd/MM/yyyy') : '-') + ' | Valor: R$ ' + (mensalidade.valor != null ? #numbers.formatDecimal(mensalidade.valor, 1, 2) : '0,00')}">
-                                Mensalidade
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Ao gerar a cobrança, o sistema cria o QR Code PIX e a chave copia e cola para envio imediato.</small>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
-                    <button type="submit" class="admin-primary-btn">Gerar cobranca</button>
                 </div>
             </form>
         </div>

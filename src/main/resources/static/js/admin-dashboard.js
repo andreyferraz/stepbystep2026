@@ -330,17 +330,12 @@ document.addEventListener("DOMContentLoaded", function () {
     var presencaAlunoSelect = document.getElementById("presencaAluno");
     var presencaTurmaSelect = document.getElementById("presencaTurma");
     var presencaDataInput = document.getElementById("presencaData");
-    var cobrancaAlunoSelect = document.getElementById("cobrancaAluno");
-    var cobrancaMensalidadeSelect = document.getElementById("cobrancaMensalidade");
     var mensalidadeAlunoSelect = document.getElementById("mensalidadeAluno");
     var mensalidadeFinanceiraSelect = document.getElementById("mensalidadeFinanceira");
     var inadimplenciaAlunoLembreteSelect = document.getElementById("inadimplenciaAlunoLembrete");
     var inadimplenciaMensalidadeLembreteSelect = document.getElementById("inadimplenciaMensalidadeLembrete");
     var inadimplenciaAlunoAcordoSelect = document.getElementById("inadimplenciaAlunoAcordo");
     var inadimplenciaMensalidadeAcordoSelect = document.getElementById("inadimplenciaMensalidadeAcordo");
-    var copiarPixBtn = document.getElementById("copiarPixBtn");
-    var copiarPixBtnLabelPadrao = copiarPixBtn ? copiarPixBtn.textContent.trim() : "Copiar";
-    var copiarPixBtnResetTimer = null;
 
     // Defensive reset: prevents stale dialog/backdrop state after form submit + navigation.
     document.querySelectorAll(".modal-overlay").forEach(function (modal) {
@@ -565,29 +560,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function filtrarMensalidadesPorAluno() {
-        if (!cobrancaAlunoSelect || !cobrancaMensalidadeSelect) {
-            return;
-        }
-
-        var alunoIdSelecionado = cobrancaAlunoSelect.value || "";
-
-        Array.from(cobrancaMensalidadeSelect.options).forEach(function (option, index) {
-            if (index === 0) {
-                option.hidden = false;
-                return;
-            }
-
-            var alunoIdOption = option.getAttribute("data-aluno-id") || "";
-            var deveExibir = !alunoIdSelecionado || alunoIdOption === alunoIdSelecionado;
-            option.hidden = !deveExibir;
-
-            if (!deveExibir && option.selected) {
-                cobrancaMensalidadeSelect.value = "";
-            }
-        });
-    }
-
     function filtrarMensalidadesPagamentoManual() {
         if (!mensalidadeAlunoSelect || !mensalidadeFinanceiraSelect) {
             return;
@@ -646,11 +618,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    if (cobrancaAlunoSelect) {
-        cobrancaAlunoSelect.addEventListener("change", filtrarMensalidadesPorAluno);
-        filtrarMensalidadesPorAluno();
-    }
-
     if (mensalidadeAlunoSelect) {
         mensalidadeAlunoSelect.addEventListener("change", filtrarMensalidadesPagamentoManual);
         filtrarMensalidadesPagamentoManual();
@@ -668,68 +635,6 @@ document.addEventListener("DOMContentLoaded", function () {
             filtrarMensalidadesInadimplencia(inadimplenciaAlunoAcordoSelect, inadimplenciaMensalidadeAcordoSelect);
         });
         filtrarMensalidadesInadimplencia(inadimplenciaAlunoAcordoSelect, inadimplenciaMensalidadeAcordoSelect);
-    }
-
-    if (copiarPixBtn) {
-        function atualizarEstadoBotaoCopiarPix(copiado) {
-            copiarPixBtn.classList.toggle("is-copied", copiado);
-            copiarPixBtn.innerHTML = copiado
-                ? "<span class=\"copiar-pix-icon\" aria-hidden=\"true\">✓</span>Copiado"
-                : copiarPixBtnLabelPadrao;
-        }
-
-        function copiarFallback(texto) {
-            var areaTemporaria = document.createElement("textarea");
-            areaTemporaria.value = texto;
-            areaTemporaria.setAttribute("readonly", "");
-            areaTemporaria.style.position = "absolute";
-            areaTemporaria.style.left = "-9999px";
-            document.body.appendChild(areaTemporaria);
-            areaTemporaria.select();
-
-            var sucesso = false;
-            try {
-                sucesso = document.execCommand("copy");
-            } catch (error) {
-                sucesso = false;
-            }
-
-            document.body.removeChild(areaTemporaria);
-            return sucesso;
-        }
-
-        function onCopySuccess() {
-            atualizarEstadoBotaoCopiarPix(true);
-            if (copiarPixBtnResetTimer) {
-                clearTimeout(copiarPixBtnResetTimer);
-            }
-
-            copiarPixBtnResetTimer = window.setTimeout(function () {
-                atualizarEstadoBotaoCopiarPix(false);
-            }, 1800);
-        }
-
-        copiarPixBtn.addEventListener("click", function () {
-            var chavePix = copiarPixBtn.getAttribute("data-pix") || "";
-            if (!chavePix) {
-                return;
-            }
-
-            if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-                navigator.clipboard.writeText(chavePix)
-                    .then(onCopySuccess)
-                    .catch(function () {
-                        if (copiarFallback(chavePix)) {
-                            onCopySuccess();
-                        }
-                    });
-                return;
-            }
-
-            if (copiarFallback(chavePix)) {
-                onCopySuccess();
-            }
-        });
     }
 
     openModalButtons.forEach(function (button) {
@@ -878,16 +783,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (target === "presenca-lancar") {
                     sincronizarTurmaPorAlunoSelecionado(presencaAlunoSelect, presencaTurmaSelect);
                     preencherDataAtualNoLancamento(presencaDataInput);
-                }
-
-                if (target === "mensalidade-cobranca") {
-                    if (cobrancaAlunoSelect) {
-                        cobrancaAlunoSelect.value = button.getAttribute("data-aluno-id") || cobrancaAlunoSelect.value;
-                    }
-                    filtrarMensalidadesPorAluno();
-                    if (cobrancaMensalidadeSelect) {
-                        cobrancaMensalidadeSelect.value = button.getAttribute("data-mensalidade-id") || cobrancaMensalidadeSelect.value;
-                    }
                 }
 
                 if (target === "mensalidade-registrar") {
@@ -1070,8 +965,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     feedback.textContent = "Lancamento de nota e presenca preparado. Integre este formulario ao backend para atualizar diario e boletim.";
                 } else if (feedbackTarget === "mensalidadeFormFeedback") {
                     feedback.textContent = "Pagamento registrado em modo estatico. Integre este formulario ao backend para atualizar status da mensalidade e salvar a baixa.";
-                } else if (feedbackTarget === "mensalidadeCobrancaFeedback") {
-                    feedback.textContent = "Cobranca gerada em modo estatico. Integre este formulario ao backend para emitir PIX/boleto e notificar os responsaveis.";
                 } else if (feedbackTarget === "inadimplenciaLembreteFeedback") {
                     feedback.textContent = "Lembrete preparado em modo estatico. Integre ao backend para enviar a mensagem e registrar o historico de contato.";
                 } else if (feedbackTarget === "inadimplenciaAcordoFeedback") {

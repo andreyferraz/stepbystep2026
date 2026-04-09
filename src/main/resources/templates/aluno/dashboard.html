@@ -162,20 +162,38 @@
                     <p class="student-panel-kicker">Financeiro</p>
                     <h2>Pagamentos</h2>
                 </header>
+                <output class="student-feedback" aria-live="polite" th:text="${alunoFinanceiroFeedback}"></output>
                 <div class="student-list">
-                    <div class="student-list-item">
+                    <div class="student-list-item" th:each="mensalidade : ${alunoMensalidadesFinanceiro}">
                         <div>
-                            <h3>Mensalidade Março/2026</h3>
-                            <p>R$ 320,00 - Vencimento: 25/03/2026</p>
+                            <h3 th:text="${'Mensalidade ' + mensalidade.competencia}">Mensalidade 03/2026</h3>
+                            <p th:text="${mensalidade.valor + ' - Vencimento: ' + mensalidade.vencimento}">R$ 0,00 - Vencimento: 25/03/2026</p>
+                            <small th:text="${'Status: ' + mensalidade.statusPagamento + ' • ' + mensalidade.statusComprovante}">Status: PENDENTE</small>
                         </div>
-                        <a href="#" class="student-action-link">Pagar</a>
+
+                        <form th:if="${mensalidade.permiteEnvioComprovante}"
+                              th:action="@{/aluno/mensalidades/enviar-comprovante}"
+                              action="/aluno/mensalidades/enviar-comprovante"
+                              method="post"
+                              enctype="multipart/form-data"
+                              class="student-comprovante-form">
+                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <input type="hidden" name="mensalidadeId" th:value="${mensalidade.id}">
+                            <input type="file" name="comprovante" accept=".pdf,.png,.jpg,.jpeg,.webp" required>
+                            <input type="text" name="observacao" placeholder="Observação (opcional)">
+                            <button type="submit" class="student-action-link">Enviar comprovante</button>
+                        </form>
+
+                        <div th:if="${!mensalidade.permiteEnvioComprovante}">
+                            <span class="student-status-pill">Aguardando análise</span>
+                        </div>
                     </div>
-                    <div class="student-list-item">
+
+                    <div class="student-list-item" th:if="${#lists.isEmpty(alunoMensalidadesFinanceiro)}">
                         <div>
-                            <h3>Comprovante Fevereiro/2026</h3>
-                            <p>Pagamento confirmado em 23/02/2026.</p>
+                            <h3>Nenhuma mensalidade encontrada</h3>
+                            <p>Assim que houver cobrança ativa, ela aparecerá aqui para envio do comprovante.</p>
                         </div>
-                        <a href="#" class="student-action-link">Ver recibo</a>
                     </div>
                 </div>
             </article>

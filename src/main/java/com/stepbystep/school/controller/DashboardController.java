@@ -90,7 +90,6 @@ public class DashboardController {
     private static final String FEEDBACK_NOTAS_FORM = "notasFormFeedback";
     private static final String FEEDBACK_MENSALIDADE_FORM = "mensalidadeFormFeedback";
     private static final String FEEDBACK_MENSALIDADE_CRIACAO = "mensalidadeCriacaoFeedback";
-    private static final String FEEDBACK_MENSALIDADE_COBRANCA = "mensalidadeCobrancaFeedback";
     private static final String FEEDBACK_INADIMPLENCIA_LEMBRETE = "inadimplenciaLembreteFeedback";
     private static final String FEEDBACK_INADIMPLENCIA_ACORDO = "inadimplenciaAcordoFeedback";
     private static final String FEEDBACK_PRE_INSCRICAO_FORM = "preInscricaoFormFeedback";
@@ -165,10 +164,8 @@ public class DashboardController {
             .listarResumoTurmasEmAtencao(notasLancadas, 7.0, 75.0);
         List<Mensalidade> mensalidadesFinanceiro = mensalidadeService.listarMensalidadesFinanceiro();
         List<Mensalidade> mensalidadesCobraveis = mensalidadeService.listarMensalidadesCobraveis(mensalidadesFinanceiro);
+        List<Mensalidade> comprovantesPendentes = mensalidadeService.listarComprovantesPendentes();
         List<Mensalidade> mensalidadesProximosVencimentos = listarProximosVencimentos(mensalidadesCobraveis, LocalDate.now());
-        long mensalidadesPixGeradas = mensalidadesFinanceiro.stream()
-            .filter(mensalidade -> mensalidade.getPixCopiaECola() != null && !mensalidade.getPixCopiaECola().isBlank())
-            .count();
         long mensalidadesPagasMesQtd = mensalidadesFinanceiro.stream()
             .filter(mensalidade -> mensalidade.getStatus() == StatusMensalidade.PAGO)
             .filter(mensalidade -> mensalidade.getDataPagamento() != null)
@@ -253,8 +250,9 @@ public class DashboardController {
         model.addAttribute("notasLancamentosTotal", notasLancadas.size());
         model.addAttribute("mensalidadesLista", mensalidadesFinanceiro);
         model.addAttribute("mensalidadesCobraveis", mensalidadesCobraveis);
+        model.addAttribute("mensalidadesComprovantesPendentes", comprovantesPendentes);
+        model.addAttribute("mensalidadesComprovantesPendentesQtd", comprovantesPendentes.size());
         model.addAttribute("mensalidadesProximosVencimentos", mensalidadesProximosVencimentos);
-        model.addAttribute("mensalidadesPixGeradasQtd", mensalidadesPixGeradas);
         model.addAttribute("mensalidadesPagasMesQtd", mensalidadesPagasMesQtd);
         model.addAttribute("mensalidadesPendentesQtd", mensalidadesPendentesQtd);
         model.addAttribute("mensalidadesRecebidoMesFmt", formatarMoeda(mensalidadesRecebidoMes));
@@ -535,32 +533,6 @@ public class DashboardController {
         return REDIRECT_INADIMPLENCIA_PANEL;
     }
 
-    @PostMapping("/admin/mensalidades/gerar-cobranca")
-    public String gerarCobrancaMensalidade(
-        @RequestParam("alunoId") UUID alunoId,
-        @RequestParam("mensalidadeId") UUID mensalidadeId,
-        RedirectAttributes redirectAttributes
-    ) {
-        try {
-            ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
-            ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
-
-            Mensalidade mensalidade = mensalidadeService.gerarPix(alunoId, mensalidadeId);
-            String qrCodeBase64 = mensalidadeService.gerarQrCodeBase64(mensalidade.getPixCopiaECola());
-
-            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_COBRANCA, "Cobrança PIX gerada com sucesso.");
-            redirectAttributes.addFlashAttribute("mensalidadePixCopiaCola", mensalidade.getPixCopiaECola());
-            redirectAttributes.addFlashAttribute("mensalidadePixQrBase64", qrCodeBase64);
-            redirectAttributes.addFlashAttribute("mensalidadePixId", mensalidade.getId());
-            redirectAttributes.addFlashAttribute("mensalidadePixAlunoId", alunoId);
-            redirectAttributes.addFlashAttribute("mensalidadePixStatus", mensalidade.getStatus() == null ? StatusMensalidade.PENDENTE.name() : mensalidade.getStatus().name());
-        } catch (IllegalArgumentException | IllegalStateException ex) {
-            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_COBRANCA, ex.getMessage());
-        }
-
-        return REDIRECT_MENSALIDADES_PANEL;
-    }
-
     @PostMapping("/admin/mensalidades")
     public String criarMensalidade(
         @RequestParam("alunoId") UUID alunoId,
@@ -577,7 +549,7 @@ public class DashboardController {
             LocalDate vencimento = parseData(dataVencimento);
             Mensalidade mensalidade = mensalidadeService.criarMensalidade(alunoId, valorMonetario, vencimento);
 
-            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_CRIACAO, "Mensalidade criada com sucesso. Gere o QR Code para cobrança.");
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_CRIACAO, "Mensalidade criada com sucesso. Aguarde o envio do comprovante para validar o pagamento.");
             redirectAttributes.addFlashAttribute("mensalidadeCriadaAlunoId", alunoId);
             redirectAttributes.addFlashAttribute("mensalidadeCriadaId", mensalidade.getId());
         } catch (IllegalArgumentException ex) {
@@ -646,6 +618,76 @@ public class DashboardController {
         }
 
         return REDIRECT_MENSALIDADES_PANEL;
+    }
+
+    @PostMapping("/admin/mensalidades/aprovar-comprovante")
+    public String aprovarComprovanteMensalidade(
+        @RequestParam("mensalidadeId") UUID mensalidadeId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+            mensalidadeService.aprovarComprovantePagamento(mensalidadeId);
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_FORM,
+                "Comprovante aprovado. Mensalidade atualizada como PAGO.");
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_MENSALIDADES_PANEL;
+    }
+
+    @PostMapping("/admin/mensalidades/rejeitar-comprovante")
+    public String rejeitarComprovanteMensalidade(
+        @RequestParam("mensalidadeId") UUID mensalidadeId,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+            mensalidadeService.rejeitarComprovantePagamento(mensalidadeId);
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_FORM,
+                "Comprovante rejeitado. Aluno poderá enviar novamente.");
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_MENSALIDADE_FORM, ex.getMessage());
+        }
+
+        return REDIRECT_MENSALIDADES_PANEL;
+    }
+
+    @GetMapping("/admin/mensalidades/comprovantes/{mensalidadeId}")
+    public ResponseEntity<Resource> baixarComprovanteMensalidade(@PathVariable("mensalidadeId") UUID mensalidadeId) {
+        try {
+            ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+            Mensalidade mensalidade = mensalidadeService.listarMensalidadesFinanceiro().stream()
+                .filter(item -> mensalidadeId.equals(item.getId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Mensalidade não encontrada."));
+
+            String nomeArquivo = normalizarTextoOpcional(mensalidade.getComprovanteArquivo());
+            if (nomeArquivo.isBlank()) {
+                throw new IllegalArgumentException("Nenhum comprovante encontrado para esta mensalidade.");
+            }
+
+            Path caminhoArquivo = fileUploadService.getCaminhoCompleto(nomeArquivo);
+            if (!Files.exists(caminhoArquivo)) {
+                throw new IllegalArgumentException("Arquivo de comprovante não encontrado.");
+            }
+
+            Resource recurso = new UrlResource(caminhoArquivo.toUri());
+            String contentType = Files.probeContentType(caminhoArquivo);
+
+            return ResponseEntity.ok()
+                .contentType(contentType == null ? MediaType.APPLICATION_OCTET_STREAM : MediaType.parseMediaType(contentType))
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                    ContentDisposition.attachment().filename(nomeArquivo).build().toString())
+                .body(recurso);
+        } catch (MalformedURLException ex) {
+            return ResponseEntity.badRequest().build();
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.notFound().build();
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     @GetMapping("/admin/notas/boletim/pdf")

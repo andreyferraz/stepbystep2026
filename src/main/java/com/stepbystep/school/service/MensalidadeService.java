@@ -1,33 +1,20 @@
 package com.stepbystep.school.service;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
-import javax.imageio.ImageIO;
-
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
-import com.google.zxing.BarcodeFormat;
-import com.google.zxing.MultiFormatWriter;
-import com.google.zxing.WriterException;
-import com.google.zxing.client.j2se.MatrixToImageWriter;
-import com.google.zxing.common.BitMatrix;
 import com.stepbystep.school.enums.StatusMensalidade;
+import com.stepbystep.school.enums.StatusComprovantePagamento;
 import com.stepbystep.school.model.Mensalidade;
 import com.stepbystep.school.repository.MensalidadeRepository;
 import com.stepbystep.school.util.ValidationUtils;
@@ -37,34 +24,17 @@ public class MensalidadeService {
 
     private static final String CAMPO_ID_ALUNO = "ID do aluno";
     private static final String CAMPO_ID_MENSALIDADE = "ID da mensalidade";
-    private static final String CAMPO_TXID_PIX = "TXID PIX";
     private static final String MSG_MENSALIDADE_NAO_ENCONTRADA = "Mensalidade não encontrada com ID: ";
-    private static final String PIX_REFERENCE_LABEL_ESTATICO = "***";
 
     private final AlunoService alunoService;
     private final MensalidadeRepository mensalidadeRepository;
-    private final MercadoPagoPixApiService mercadoPagoPixApiService;
-
-    @Value("${pix.chave:00000000000}")
-    private String pixChave;
-
-    @Value("${pix.recebedor:STEP BY STEP SCHOOL}")
-    private String pixRecebedor;
-
-    @Value("${pix.cidade:SAO PAULO}")
-    private String pixCidade;
-
-    @Value("${mercadopago.api.enabled:true}")
-    private boolean mercadoPagoApiEnabled;
 
     public MensalidadeService(
         AlunoService alunoService,
-        MensalidadeRepository mensalidadeRepository,
-        MercadoPagoPixApiService mercadoPagoPixApiService
+        MensalidadeRepository mensalidadeRepository
     ) {
         this.alunoService = alunoService;
         this.mensalidadeRepository = mensalidadeRepository;
-        this.mercadoPagoPixApiService = mercadoPagoPixApiService;
     }
 
     public List<Mensalidade> listarMensalidadesPorAluno(UUID alunoId) {
@@ -117,6 +87,10 @@ public class MensalidadeService {
             .toList();
     }
 
+    public List<Mensalidade> listarComprovantesPendentes() {
+        return mensalidadeRepository.findByComprovanteStatusOrderByComprovanteDataEnvioAsc(StatusComprovantePagamento.PENDENTE);
+    }
+
     public List<Mensalidade> listarMensalidadesEmAtraso(List<Mensalidade> mensalidades, LocalDate hoje) {
         ValidationUtils.validarCampoObrigatorio(hoje, "Data de referência");
         return mensalidades.stream()
@@ -166,50 +140,6 @@ public class MensalidadeService {
         return (int) Math.round((pagas * 100.0) / mensalidades.size());
     }
 
-    public Mensalidade gerarPix(UUID alunoId, UUID mensalidadeId) {
-        ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
-        ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
-        alunoService.obterAlunoPorId(alunoId);
-
-        Mensalidade mensalidade = mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)
-                .orElseThrow(() -> new IllegalArgumentException(MSG_MENSALIDADE_NAO_ENCONTRADA + mensalidadeId));
-
-        if (mensalidade.getStatus() == StatusMensalidade.PAGO) {
-            throw new IllegalStateException("Não é possível gerar PIX para mensalidade já paga");
-        }
-
-        if (mensalidade.getStatus() == null) {
-            mensalidade.setStatus(StatusMensalidade.PENDENTE);
-        }
-
-        String txid = gerarTxidMensalidade(mensalidade.getId());
-        if (mercadoPagoApiEnabled) {
-            MercadoPagoPixApiService.DynamicPixPayload payload = mercadoPagoPixApiService
-                .criarCobrancaPix(mensalidade, txid);
-            mensalidade.setPixCopiaECola(payload.pixCopiaECola());
-            mensalidade.setPixTxid(payload.txid());
-        } else {
-            mensalidade.setPixCopiaECola(gerarPixCopiaECola(mensalidade.getValor()));
-            mensalidade.setPixTxid(txid);
-        }
-        mensalidade = mensalidadeRepository.save(mensalidade);
-
-        return mensalidade;
-    }
-
-    public String gerarQrCodeBase64(String pixCopiaECola) {
-        ValidationUtils.validarCampoStringObrigatorio(pixCopiaECola, "Payload PIX");
-        try {
-            BitMatrix matrix = new MultiFormatWriter().encode(pixCopiaECola, BarcodeFormat.QR_CODE, 300, 300);
-            BufferedImage image = MatrixToImageWriter.toBufferedImage(matrix);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write(image, "PNG", outputStream);
-            return Base64.getEncoder().encodeToString(outputStream.toByteArray());
-        } catch (WriterException | IOException e) {
-            throw new IllegalStateException("Não foi possível gerar o QR Code do PIX", e);
-        }
-    }
-
     public Mensalidade confirmarPagamento(UUID alunoId, UUID mensalidadeId) {
         ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
         ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
@@ -232,9 +162,58 @@ public class MensalidadeService {
                 .orElseThrow(() -> new IllegalArgumentException(MSG_MENSALIDADE_NAO_ENCONTRADA + mensalidadeId));
 
         mensalidade.setStatus(StatusMensalidade.PAGO);
+        mensalidade.setComprovanteStatus(StatusComprovantePagamento.APROVADO);
         LocalDate dataBase = dataPagamento == null ? LocalDate.now() : dataPagamento;
         mensalidade.setDataPagamento(dataBase.atTime(LocalDateTime.now().toLocalTime()));
 
+        return mensalidadeRepository.save(mensalidade);
+    }
+
+    public Mensalidade enviarComprovantePagamento(UUID alunoId, UUID mensalidadeId, String comprovanteArquivo, String observacaoAluno) {
+        ValidationUtils.validarCampoObrigatorio(alunoId, CAMPO_ID_ALUNO);
+        ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+        ValidationUtils.validarCampoStringObrigatorio(comprovanteArquivo, "Arquivo do comprovante");
+        alunoService.obterAlunoPorId(alunoId);
+
+        Mensalidade mensalidade = mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)
+            .orElseThrow(() -> new IllegalArgumentException(MSG_MENSALIDADE_NAO_ENCONTRADA + mensalidadeId));
+
+        if (mensalidade.getStatus() == StatusMensalidade.PAGO) {
+            throw new IllegalStateException("Esta mensalidade já está paga.");
+        }
+
+        mensalidade.setComprovanteArquivo(comprovanteArquivo.trim());
+        mensalidade.setComprovanteObservacaoAluno(observacaoAluno == null ? "" : observacaoAluno.trim());
+        mensalidade.setComprovanteDataEnvio(LocalDateTime.now());
+        mensalidade.setComprovanteStatus(StatusComprovantePagamento.PENDENTE);
+
+        return mensalidadeRepository.save(mensalidade);
+    }
+
+    public Mensalidade aprovarComprovantePagamento(UUID mensalidadeId) {
+        ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+
+        Mensalidade mensalidade = mensalidadeRepository.findById(mensalidadeId)
+            .orElseThrow(() -> new IllegalArgumentException(MSG_MENSALIDADE_NAO_ENCONTRADA + mensalidadeId));
+
+        mensalidade.setStatus(StatusMensalidade.PAGO);
+        mensalidade.setDataPagamento(LocalDateTime.now());
+        mensalidade.setComprovanteStatus(StatusComprovantePagamento.APROVADO);
+
+        return mensalidadeRepository.save(mensalidade);
+    }
+
+    public Mensalidade rejeitarComprovantePagamento(UUID mensalidadeId) {
+        ValidationUtils.validarCampoObrigatorio(mensalidadeId, CAMPO_ID_MENSALIDADE);
+
+        Mensalidade mensalidade = mensalidadeRepository.findById(mensalidadeId)
+            .orElseThrow(() -> new IllegalArgumentException(MSG_MENSALIDADE_NAO_ENCONTRADA + mensalidadeId));
+
+        if (mensalidade.getStatus() == StatusMensalidade.PAGO) {
+            throw new IllegalStateException("Não é possível rejeitar comprovante de mensalidade já paga.");
+        }
+
+        mensalidade.setComprovanteStatus(StatusComprovantePagamento.REJEITADO);
         return mensalidadeRepository.save(mensalidade);
     }
 
@@ -312,83 +291,6 @@ public class MensalidadeService {
         }
 
         mensalidadeRepository.delete(mensalidade);
-    }
-
-    public Mensalidade confirmarPagamentoPorTxid(String txid, LocalDateTime dataPagamento) {
-        ValidationUtils.validarCampoStringObrigatorio(txid, CAMPO_TXID_PIX);
-
-        Mensalidade mensalidade = mensalidadeRepository.findByPixTxid(txid.trim().toUpperCase(Locale.ROOT))
-                .orElseThrow(() -> new IllegalArgumentException("Mensalidade não encontrada para o TXID informado."));
-
-        if (mensalidade.getStatus() == StatusMensalidade.PAGO) {
-            return mensalidade;
-        }
-
-        mensalidade.setStatus(StatusMensalidade.PAGO);
-        mensalidade.setDataPagamento(dataPagamento == null ? LocalDateTime.now() : dataPagamento);
-        return mensalidadeRepository.save(mensalidade);
-    }
-
-    private String gerarPixCopiaECola(BigDecimal valor) {
-        ValidationUtils.validarCampoObrigatorio(valor, "Valor da mensalidade");
-        if (valor.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new IllegalArgumentException("Valor da mensalidade deve ser maior que zero");
-        }
-
-        // Para QR estático por chave PIX, usar "***" evita rejeição por PSP tentando validar cobrança dinâmica inexistente.
-        String referenceLabel = PIX_REFERENCE_LABEL_ESTATICO;
-
-        String merchantAccountInfo = campo("00", "br.gov.bcb.pix") + campo("01", pixChave);
-        String payloadSemCrc = campo("00", "01")
-                + campo("26", merchantAccountInfo)
-                + campo("52", "0000")
-                + campo("53", "986")
-                + campo("54", valor.setScale(2, RoundingMode.HALF_UP).toPlainString())
-                + campo("58", "BR")
-                + campo("59", limitarTexto(pixRecebedor, 25))
-                + campo("60", limitarTexto(pixCidade, 15))
-                + campo("62", campo("05", referenceLabel))
-                + "6304";
-
-        String crc = calcularCrc16(payloadSemCrc);
-        return payloadSemCrc + crc;
-    }
-
-    private String gerarTxidMensalidade(UUID mensalidadeId) {
-        String txidBase = mensalidadeId.toString().replace("-", "").toUpperCase(Locale.ROOT);
-        return limitarTexto(txidBase, 25);
-    }
-
-    private String campo(String id, String valor) {
-        int tamanhoUtf8 = valor.getBytes(StandardCharsets.UTF_8).length;
-        String tamanho = String.format("%02d", tamanhoUtf8);
-        return id + tamanho + valor;
-    }
-
-    private String limitarTexto(String valor, int tamanhoMaximo) {
-        String normalizado = valor == null ? "" : valor.trim().toUpperCase(Locale.ROOT);
-        if (normalizado.length() > tamanhoMaximo) {
-            return normalizado.substring(0, tamanhoMaximo);
-        }
-        return normalizado;
-    }
-
-    private String calcularCrc16(String payload) {
-        int polinomio = 0x1021;
-        int resultado = 0xFFFF;
-        byte[] bytes = payload.getBytes(StandardCharsets.UTF_8);
-        for (byte b : bytes) {
-            resultado ^= (b & 0xFF) << 8;
-            for (int i = 0; i < 8; i++) {
-                if ((resultado & 0x8000) != 0) {
-                    resultado = (resultado << 1) ^ polinomio;
-                } else {
-                    resultado <<= 1;
-                }
-                resultado &= 0xFFFF;
-            }
-        }
-        return String.format("%04X", resultado);
     }
 
 }

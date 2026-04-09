@@ -40,7 +40,6 @@ public class SecurityConfig {
                     "/pre-inscricao",
                     "/login",
                     "/acesso-negado",
-                    "/api/webhooks/**",
                     "/css/**",
                     "/js/**",
                     "/img/**",
@@ -60,7 +59,7 @@ public class SecurityConfig {
                 .permitAll()
             )
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/webhooks/**", "/pre-inscricao")
+                .ignoringRequestMatchers("/pre-inscricao")
             )
             .exceptionHandling(ex -> ex
                 .accessDeniedPage("/acesso-negado")

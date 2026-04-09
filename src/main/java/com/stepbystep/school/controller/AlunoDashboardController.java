@@ -25,8 +25,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.stepbystep.school.enums.StatusComprovantePagamento;
 import com.stepbystep.school.enums.StatusMensalidade;
 import com.stepbystep.school.model.Aluno;
 import com.stepbystep.school.model.MaterialEstudo;
@@ -53,6 +57,7 @@ public class AlunoDashboardController {
     private static final String ALUNO_DASHBOARD_MENSALIDADE_PADRAO = "Nenhuma cobrança pendente.";
     private static final String ALUNO_DASHBOARD_BOLETIM_MEDIA_PADRAO = "--";
     private static final String ALUNO_DASHBOARD_BOLETIM_FALTAS_PADRAO = "Sem faltas registradas.";
+    private static final String FEEDBACK_FINANCEIRO = "alunoFinanceiroFeedback";
 
     private static final Locale LOCALE_PT_BR = Locale.forLanguageTag("pt-BR");
     private static final DateTimeFormatter FORMATO_DATA_PADRAO = DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -77,6 +82,7 @@ public class AlunoDashboardController {
         String nomeAlunoLogado = extrairPrimeiroNomeAluno(usuarioLogado);
         AlunoDashboardResumo resumoDashboard = montarResumoAlunoDashboard(usuarioLogado, materiaisTurma, notasAluno);
         AlunoBoletimResumo boletimResumo = montarResumoBoletim(notasAluno, bimestreFiltro);
+        List<AlunoFinanceiroMensalidadeView> mensalidadesFinanceiro = listarMensalidadesFinanceiroAluno(usuarioLogado);
 
         model.addAttribute("isDashboard", true);
         model.addAttribute("alunoContaSemVinculo", usuarioLogado != null && usuarioLogado.getAluno() == null);
@@ -94,7 +100,43 @@ public class AlunoDashboardController {
         model.addAttribute("alunoBoletimFaltasResumo", boletimResumo.faltasResumo());
         model.addAttribute("alunoBoletimLancamentos", boletimResumo.lancamentos());
         model.addAttribute("alunoBoletimBimestreSelecionado", bimestreFiltro);
+        model.addAttribute("alunoMensalidadesFinanceiro", mensalidadesFinanceiro);
         return "aluno/dashboard";
+    }
+
+    @PostMapping("/aluno/mensalidades/enviar-comprovante")
+    public String enviarComprovantePagamento(
+        @RequestParam("mensalidadeId") UUID mensalidadeId,
+        @RequestParam("comprovante") MultipartFile comprovante,
+        @RequestParam(name = "observacao", required = false) String observacao,
+        Principal principal,
+        RedirectAttributes redirectAttributes
+    ) {
+        try {
+            Usuario usuarioLogado = buscarUsuarioLogado(principal);
+            if (usuarioLogado == null || usuarioLogado.getAluno() == null || usuarioLogado.getAluno().getId() == null) {
+                throw new IllegalArgumentException("Conta de aluno sem vínculo. Procure a secretaria.");
+            }
+
+            if (comprovante == null || comprovante.isEmpty()) {
+                throw new IllegalArgumentException("Selecione um comprovante para envio.");
+            }
+
+            String nomeArquivo = fileUploadService.salvarComprovante(comprovante);
+            mensalidadeService.enviarComprovantePagamento(
+                usuarioLogado.getAluno().getId(),
+                mensalidadeId,
+                nomeArquivo,
+                observacao
+            );
+
+            redirectAttributes.addFlashAttribute(FEEDBACK_FINANCEIRO,
+                "Comprovante enviado com sucesso. Aguarde a validação da secretaria.");
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            redirectAttributes.addFlashAttribute(FEEDBACK_FINANCEIRO, ex.getMessage());
+        }
+
+        return "redirect:/aluno/dashboard?painel=financeiro";
     }
 
     @GetMapping("/aluno/materiais/arquivo/{materialId}")
@@ -408,6 +450,54 @@ public class AlunoDashboardController {
         return valorFormatado + " vence em " + diasParaVencer + " dia(s).";
     }
 
+    private List<AlunoFinanceiroMensalidadeView> listarMensalidadesFinanceiroAluno(Usuario usuarioLogado) {
+        if (usuarioLogado == null || usuarioLogado.getAluno() == null || usuarioLogado.getAluno().getId() == null) {
+            return List.of();
+        }
+
+        return mensalidadeService.listarMensalidadesPorAluno(usuarioLogado.getAluno().getId()).stream()
+            .sorted(Comparator.comparing(Mensalidade::getDataVencimento, Comparator.nullsLast(Comparator.naturalOrder())))
+            .map(this::montarMensalidadeFinanceiroView)
+            .toList();
+    }
+
+    private AlunoFinanceiroMensalidadeView montarMensalidadeFinanceiroView(Mensalidade mensalidade) {
+        String competencia = mensalidade.getDataVencimento() == null
+            ? "Competência não definida"
+            : mensalidade.getDataVencimento().format(DateTimeFormatter.ofPattern("MM/yyyy"));
+
+        String vencimento = mensalidade.getDataVencimento() == null
+            ? "Vencimento não definido"
+            : mensalidade.getDataVencimento().format(FORMATO_DATA_PADRAO);
+
+        String valor = formatarMoeda(mensalidade.getValor());
+        String statusPagamento = mensalidade.getStatus() == null ? "PENDENTE" : mensalidade.getStatus().name();
+
+        String statusComprovante;
+        if (mensalidade.getComprovanteStatus() == StatusComprovantePagamento.PENDENTE) {
+            statusComprovante = "Comprovante em análise";
+        } else if (mensalidade.getComprovanteStatus() == StatusComprovantePagamento.REJEITADO) {
+            statusComprovante = "Comprovante rejeitado";
+        } else if (mensalidade.getComprovanteStatus() == StatusComprovantePagamento.APROVADO) {
+            statusComprovante = "Comprovante aprovado";
+        } else {
+            statusComprovante = "Sem comprovante enviado";
+        }
+
+        boolean permiteEnvioComprovante = mensalidade.getStatus() != StatusMensalidade.PAGO
+            && mensalidade.getComprovanteStatus() != StatusComprovantePagamento.PENDENTE;
+
+        return new AlunoFinanceiroMensalidadeView(
+            mensalidade.getId(),
+            competencia,
+            valor,
+            vencimento,
+            statusPagamento,
+            statusComprovante,
+            permiteEnvioComprovante
+        );
+    }
+
     private String normalizarTextoOpcional(String valor) {
         return valor == null ? "" : valor.trim();
     }
@@ -460,6 +550,17 @@ public class AlunoDashboardController {
         String presencaResumo,
         String dataResumo,
         String descricao
+    ) {
+    }
+
+    private record AlunoFinanceiroMensalidadeView(
+        UUID id,
+        String competencia,
+        String valor,
+        String vencimento,
+        String statusPagamento,
+        String statusComprovante,
+        boolean permiteEnvioComprovante
     ) {
     }
 }

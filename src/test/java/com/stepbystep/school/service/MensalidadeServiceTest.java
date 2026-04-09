@@ -1,7 +1,6 @@
 package com.stepbystep.school.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -11,7 +10,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -59,10 +57,6 @@ class MensalidadeServiceTest {
                 .status(StatusMensalidade.PENDENTE)
                 .aluno(Aluno.builder().id(alunoId).nome("Aluno Teste").build())
                 .build();
-
-        setPrivateField(mensalidadeService, "pixChave", "12345678900");
-        setPrivateField(mensalidadeService, "pixRecebedor", "STEP BY STEP SCHOOL");
-        setPrivateField(mensalidadeService, "pixCidade", "SAO PAULO");
     }
 
     @Nested
@@ -90,100 +84,6 @@ class MensalidadeServiceTest {
 
             assertTrue(ex.getMessage().contains("ID do aluno"));
             verify(mensalidadeRepository, never()).findByAlunoIdOrderByDataVencimentoAsc(any());
-        }
-    }
-
-    @Nested
-    @DisplayName("gerarPix")
-    class GerarPix {
-
-        @Test
-        @DisplayName("Deve gerar payload PIX quando mensalidade está pendente")
-        void deveGerarPixQuandoMensalidadePendente() {
-            when(alunoService.obterAlunoPorId(alunoId)).thenReturn(Aluno.builder().id(alunoId).build());
-            when(mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)).thenReturn(Optional.of(mensalidade));
-            when(mensalidadeRepository.save(any(Mensalidade.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-            Mensalidade retorno = mensalidadeService.gerarPix(alunoId, mensalidadeId);
-
-            assertNotNull(retorno.getPixCopiaECola());
-            assertTrue(retorno.getPixCopiaECola().startsWith("000201"));
-            verify(mensalidadeRepository, times(1)).save(mensalidade);
-        }
-
-        @Test
-        @DisplayName("Não deve regenerar PIX quando já existe payload")
-        void naoDeveRegenerarPixQuandoJaExistePayload() {
-            mensalidade.setPixCopiaECola("000201260014br.gov.bcb.pix");
-            when(alunoService.obterAlunoPorId(alunoId)).thenReturn(Aluno.builder().id(alunoId).build());
-            when(mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)).thenReturn(Optional.of(mensalidade));
-
-            Mensalidade retorno = mensalidadeService.gerarPix(alunoId, mensalidadeId);
-
-            assertEquals("000201260014br.gov.bcb.pix", retorno.getPixCopiaECola());
-            verify(mensalidadeRepository, never()).save(any());
-        }
-
-        @Test
-        @DisplayName("Deve lançar exceção quando mensalidade está paga")
-        void deveLancarExcecaoQuandoMensalidadePaga() {
-            mensalidade.setStatus(StatusMensalidade.PAGO);
-            when(alunoService.obterAlunoPorId(alunoId)).thenReturn(Aluno.builder().id(alunoId).build());
-            when(mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)).thenReturn(Optional.of(mensalidade));
-
-            IllegalStateException ex = assertThrows(IllegalStateException.class,
-                    () -> mensalidadeService.gerarPix(alunoId, mensalidadeId));
-
-            assertTrue(ex.getMessage().contains("já paga"));
-            verify(mensalidadeRepository, never()).save(any());
-        }
-
-        @Test
-        @DisplayName("Deve lançar exceção quando mensalidade não encontrada")
-        void deveLancarExcecaoQuandoMensalidadeNaoEncontrada() {
-            when(alunoService.obterAlunoPorId(alunoId)).thenReturn(Aluno.builder().id(alunoId).build());
-            when(mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)).thenReturn(Optional.empty());
-
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> mensalidadeService.gerarPix(alunoId, mensalidadeId));
-
-            assertTrue(ex.getMessage().contains("Mensalidade não encontrada"));
-        }
-
-        @Test
-        @DisplayName("Deve lançar exceção quando valor da mensalidade é inválido")
-        void deveLancarExcecaoQuandoValorMensalidadeInvalido() {
-            mensalidade.setValor(BigDecimal.ZERO);
-            when(alunoService.obterAlunoPorId(alunoId)).thenReturn(Aluno.builder().id(alunoId).build());
-            when(mensalidadeRepository.findByIdAndAlunoId(mensalidadeId, alunoId)).thenReturn(Optional.of(mensalidade));
-
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> mensalidadeService.gerarPix(alunoId, mensalidadeId));
-
-            assertTrue(ex.getMessage().contains("maior que zero"));
-        }
-    }
-
-    @Nested
-    @DisplayName("gerarQrCodeBase64")
-    class GerarQrCodeBase64 {
-
-        @Test
-        @DisplayName("Deve gerar QR Code em Base64")
-        void deveGerarQrCodeEmBase64() {
-            String base64 = mensalidadeService.gerarQrCodeBase64("000201010212");
-
-            assertNotNull(base64);
-            assertFalse(base64.isBlank());
-        }
-
-        @Test
-        @DisplayName("Deve lançar exceção quando payload PIX é inválido")
-        void deveLancarExcecaoQuandoPayloadPixInvalido() {
-            IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
-                    () -> mensalidadeService.gerarQrCodeBase64("  "));
-
-            assertTrue(ex.getMessage().contains("Payload PIX"));
         }
     }
 
@@ -272,13 +172,4 @@ class MensalidadeServiceTest {
         }
     }
 
-    private void setPrivateField(Object target, String fieldName, Object value) {
-        try {
-            Field field = target.getClass().getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(target, value);
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException("Não foi possível configurar campo privado para teste", e);
-        }
-    }
 }

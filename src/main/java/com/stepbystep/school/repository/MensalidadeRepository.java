@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.stepbystep.school.enums.StatusComprovantePagamento;
 import com.stepbystep.school.model.Mensalidade;
 
 public interface MensalidadeRepository extends JpaRepository<Mensalidade, UUID> {
@@ -14,6 +15,6 @@ public interface MensalidadeRepository extends JpaRepository<Mensalidade, UUID> 
 
 	Optional<Mensalidade> findByIdAndAlunoId(UUID mensalidadeId, UUID alunoId);
 
-	Optional<Mensalidade> findByPixTxid(String pixTxid);
+	List<Mensalidade> findByComprovanteStatusOrderByComprovanteDataEnvioAsc(StatusComprovantePagamento comprovanteStatus);
 
 }
