@@ -62,19 +62,22 @@
                     <h2>Materiais da turma</h2>
                 </header>
                 <div class="student-list">
-                    <div class="student-list-item">
+                    <div class="student-list-item" th:each="material : ${alunoMateriaisTurma}">
                         <div>
-                            <h3>Workbook Unit 05 (PDF)</h3>
-                            <p>Prática de vocabulário e exercícios de leitura.</p>
+                            <h3 th:text="${material.titulo}">Título do material</h3>
+                            <p th:text="${material.descricao}">Descrição do material.</p>
+                            <small th:text="${material.dataUpload != null ? #temporals.format(material.dataUpload, 'dd/MM/yyyy HH:mm') : ''}">01/01/2026 09:00</small>
                         </div>
-                        <a href="#" class="student-action-link">Baixar</a>
+                        <a class="student-action-link"
+                           th:href="@{/aluno/materiais/arquivo/{materialId}(materialId=${material.id})}">
+                            Baixar
+                        </a>
                     </div>
-                    <div class="student-list-item">
+                    <div class="student-list-item" th:if="${#lists.isEmpty(alunoMateriaisTurma)}">
                         <div>
-                            <h3>Listening - Unit 05 (Áudio)</h3>
-                            <p>Treino de compreensão para a próxima aula.</p>
+                            <h3>Nenhum material disponível</h3>
+                            <p>Assim que sua turma receber novos arquivos, eles aparecerão aqui.</p>
                         </div>
-                        <a href="#" class="student-action-link">Ouvir</a>
                     </div>
                 </div>
             </article>
