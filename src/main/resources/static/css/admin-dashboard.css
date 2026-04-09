@@ -86,6 +86,27 @@ body.admin-body {
     color: rgba(214, 232, 248, 0.9);
 }
 
+.admin-nav-label-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.admin-nav-label-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.admin-nav-label-icon svg {
+    width: 16px;
+    height: 16px;
+    display: block;
+}
+
 .admin-nav-link {
     border: 1px solid transparent;
     border-radius: 10px;
