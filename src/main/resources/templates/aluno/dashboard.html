@@ -39,19 +39,19 @@
                 <div class="student-overview-grid">
                     <section class="student-card">
                         <h3>Próxima aula</h3>
-                        <p>Quinta-feira, 19:00</p>
+                        <p th:text="${alunoProximaAulaResumo}">Turma ainda não definida.</p>
                     </section>
                     <section class="student-card">
                         <h3>Material novo</h3>
-                        <p>2 PDFs e 1 áudio disponíveis.</p>
+                        <p th:text="${alunoMaterialNovoResumo}">Nenhum material disponível no momento.</p>
                     </section>
                     <section class="student-card">
                         <h3>Frequência</h3>
-                        <p>92% no último bimestre.</p>
+                        <p th:text="${alunoFrequenciaResumo}">Sem registros de presença.</p>
                     </section>
                     <section class="student-card">
                         <h3>Mensalidade</h3>
-                        <p>Vencimento em 10 dias.</p>
+                        <p th:text="${alunoMensalidadeResumo}">Nenhuma cobrança pendente.</p>
                     </section>
                 </div>
             </article>
