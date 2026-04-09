@@ -492,7 +492,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 callbackSucesso(payload.url);
             })
             .catch(function () {
-                window.alert("Nao foi possivel enviar a imagem para o conteúdo.");
+                window.alert("Não foi possível enviar a imagem para o conteúdo.");
             });
     }
 
@@ -962,29 +962,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else if (feedbackTarget === "materialFormFeedback") {
                     feedback.textContent = "Material preparado para cadastro. Integre este formulário ao backend para salvar e publicar no portal do aluno.";
                 } else if (feedbackTarget === "notasFormFeedback") {
-                    feedback.textContent = "Lancamento de nota e presenca preparado. Integre este formulario ao backend para atualizar diario e boletim.";
+                    feedback.textContent = "Lançamento de nota e presença preparado. Integre este formulário ao backend para atualizar diário e boletim.";
                 } else if (feedbackTarget === "mensalidadeFormFeedback") {
-                    feedback.textContent = "Pagamento registrado em modo estatico. Integre este formulario ao backend para atualizar status da mensalidade e salvar a baixa.";
+                    feedback.textContent = "Pagamento registrado em modo estático. Integre este formulário ao backend para atualizar status da mensalidade e salvar a baixa.";
                 } else if (feedbackTarget === "inadimplenciaLembreteFeedback") {
-                    feedback.textContent = "Lembrete preparado em modo estatico. Integre ao backend para enviar a mensagem e registrar o historico de contato.";
+                    feedback.textContent = "Lembrete preparado em modo estático. Integre ao backend para enviar a mensagem e registrar o histórico de contato.";
                 } else if (feedbackTarget === "inadimplenciaAcordoFeedback") {
-                    feedback.textContent = "Acordo preparado em modo estatico. Integre ao backend para salvar parcelas, vencimentos e saldo devedor atualizado.";
+                    feedback.textContent = "Acordo preparado em modo estático. Integre ao backend para salvar parcelas, vencimentos e saldo devedor atualizado.";
                 } else if (feedbackTarget === "preInscricaoFormFeedback") {
-                    feedback.textContent = "Lead preparado para cadastro em modo estatico. Integre ao backend para persistir a pre-inscricao e iniciar o fluxo comercial.";
+                    feedback.textContent = "Lead preparado para cadastro em modo estático. Integre ao backend para persistir a pré-inscrição e iniciar o fluxo comercial.";
                 } else if (feedbackTarget === "preInscricaoContatoFeedback") {
-                    feedback.textContent = "Contato do lead preparado em modo estatico. Integre ao backend para salvar historico e atualizar status automaticamente.";
+                    feedback.textContent = "Contato do lead preparado em modo estático. Integre ao backend para salvar histórico e atualizar status automaticamente.";
                 } else if (feedbackTarget === "blogFormFeedback") {
-                    feedback.textContent = "Postagem preparada em modo estatico. Integre ao backend para salvar e publicar no blog da escola.";
+                    feedback.textContent = "Postagem preparada em modo estático. Integre ao backend para salvar e publicar no blog da escola.";
                 } else if (feedbackTarget === "blogEditFeedback") {
-                    feedback.textContent = "Edicao de postagem preparada em modo estatico. Integre ao backend para versionar e atualizar o conteudo publicado.";
+                    feedback.textContent = "Edição de postagem preparada em modo estático. Integre ao backend para versionar e atualizar o conteúdo publicado.";
                 } else if (feedbackTarget === "livroFormFeedback") {
-                    feedback.textContent = "Obra literaria preparada em modo estatico. Integre ao backend para salvar dados e upload da imagem de capa.";
+                    feedback.textContent = "Obra literária preparada em modo estático. Integre ao backend para salvar dados e upload da imagem de capa.";
                 } else if (feedbackTarget === "livroEditFeedback") {
-                    feedback.textContent = "Edicao da obra preparada em modo estatico. Integre ao backend para atualizar catalogo, capa e link de compra.";
+                    feedback.textContent = "Edição da obra preparada em modo estático. Integre ao backend para atualizar catálogo, capa e link de compra.";
                 } else if (feedbackTarget === "galeriaFormFeedback") {
-                    feedback.textContent = "Foto preparada para upload em modo estatico. Integre ao backend para armazenar o arquivo e atualizar a galeria.";
+                    feedback.textContent = "Foto preparada para upload em modo estático. Integre ao backend para armazenar o arquivo e atualizar a galeria.";
                 } else if (feedbackTarget === "galeriaEditFeedback") {
-                    feedback.textContent = "Edicao de foto preparada em modo estatico. Integre ao backend para salvar metadados e substituir a imagem quando necessario.";
+                    feedback.textContent = "Edição de foto preparada em modo estático. Integre ao backend para salvar metadados e substituir a imagem quando necessário.";
                 } else {
                     feedback.textContent = "Aluno e credenciais de acesso preparados para cadastro. Integre este formulário ao backend para persistir no banco.";
                 }

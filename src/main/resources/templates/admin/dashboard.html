@@ -229,9 +229,9 @@
                         </tr>
                         <tr th:each="turma : ${turmas}">
                             <td th:text="${turma.nome}">Nome da turma</td>
-                            <td th:text="${turma.nivelAtual != null ? turma.nivelAtual : '-'}">Nivel</td>
+                            <td th:text="${turma.nivelAtual != null ? turma.nivelAtual : '-'}">Nível</td>
                             <td th:text="${turma.vagasOcupadas + '/' + turma.totalVagas}">0/0</td>
-                            <td th:text="${turma.diasSemana + ' ' + turma.horario}">Dias e horario</td>
+                            <td th:text="${turma.diasSemana + ' ' + turma.horario}">Dias e horário</td>
                             <td>
                                 <span class="status-chip"
                                     th:classappend="${(turma.totalVagas > 0 and turma.vagasOcupadas >= turma.totalVagas) ? ' warn' : ' success'}"
@@ -300,7 +300,7 @@
 
                 <form class="materiais-toolbar" th:action="@{/admin/dashboard}" action="/admin/dashboard" method="get">
                     <input type="hidden" name="panel" value="materiais">
-                    <input type="search" class="admin-search" name="materialBusca" th:value="${materialBusca}" placeholder="Pesquisar por titulo, descricao ou turma">
+                    <input type="search" class="admin-search" name="materialBusca" th:value="${materialBusca}" placeholder="Pesquisar por título, descrição ou turma">
                     <select class="materiais-filter" name="materialTurmaId" aria-label="Filtrar por turma">
                         <option value="">Todas as turmas</option>
                         <option th:each="turma : ${turmas}"
@@ -337,10 +337,10 @@
                     <section class="materiais-list" aria-label="Lista de materiais por turma">
                         <article class="material-card" th:each="material : ${materiaisEstudo}">
                             <header>
-                                <h3 th:text="${material.titulo}">Titulo do material</h3>
+                                <h3 th:text="${material.titulo}">Título do material</h3>
                                 <span class="status-chip success">Publicado</span>
                             </header>
-                            <p th:text="${material.descricao}">Descricao do material.</p>
+                            <p th:text="${material.descricao}">Descrição do material.</p>
                             <div class="material-meta">
                                 <span th:text="'Turma: ' + ${(material.turma != null ? material.turma.nome : 'Sem turma')}">Turma: Sem turma</span>
                                 <span th:text="'Arquivo: ' + ${material.urlArquivo}">Arquivo: arquivo.pdf</span>
@@ -369,12 +369,12 @@
                     <aside class="materiais-side" aria-label="Resumo de materiais">
                         <article class="admin-card materiais-side-card">
                             <header class="admin-card-header">
-                                <h3>Ultimos uploads</h3>
+                                <h3>Últimos uploads</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="materiais-timeline">
                                     <li th:each="material, iter : ${materiaisEstudo}" th:if="${iter.index < 5}">
-                                        <strong th:text="${material.titulo}">Titulo do material</strong>
+                                        <strong th:text="${material.titulo}">Título do material</strong>
                                         <span th:text="${material.dataUpload != null ? #temporals.format(material.dataUpload, 'dd/MM/yyyy HH:mm') : '-'}">-</span>
                                     </li>
                                     <li th:if="${#lists.isEmpty(materiaisEstudo)}">
@@ -416,7 +416,7 @@
 
                 <div class="modal-body">
                     <div class="modal-field">
-                        <label for="materialTitulo">Titulo do material</label>
+                        <label for="materialTitulo">Título do material</label>
                         <input id="materialTitulo" name="titulo" type="text" placeholder="Ex.: Workbook Unit 5" required>
                     </div>
 
@@ -444,7 +444,7 @@
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Ao salvar, o arquivo sera armazenado e o material aparecera automaticamente na lista.</small>
+                        <small class="modal-help-text">Ao salvar, o arquivo será armazenado e o material aparecerá automaticamente na lista.</small>
                     </div>
                 </div>
 
@@ -818,7 +818,7 @@
                         <strong th:text="${mensalidadesAtrasadas}">0</strong>
                     </article>
                     <article class="mensalidades-metric-card">
-                        <p>Taxa de adimplencia</p>
+                        <p>Taxa de adimplência</p>
                         <strong th:text="${mensalidadesTaxaAdimplencia + '%'}">0%</strong>
                     </article>
                 </div>
@@ -888,7 +888,7 @@
 
                             <div class="pagination">
                                 <button type="button">Anterior</button>
-                                <span>Pagina 1 de 6</span>
+                                <span>Página 1 de 6</span>
                                 <button type="button">Proxima</button>
                             </div>
                         </div>
@@ -906,7 +906,7 @@
                                         <span th:text="${'Vence em ' + #temporals.format(mensalidade.dataVencimento, 'dd/MM') + ' - R$ ' + (mensalidade.valor != null ? #numbers.formatDecimal(mensalidade.valor, 1, 2) : '0,00')}">Vence em 16/03 - R$ 320,00</span>
                                     </li>
                                     <li th:if="${#lists.isEmpty(mensalidadesProximosVencimentos)}">
-                                        <strong>Sem vencimentos proximos</strong>
+                                        <strong>Sem vencimentos próximos</strong>
                                         <span>Nenhuma mensalidade pendente com vencimento a partir de hoje.</span>
                                     </li>
                                 </ul>
@@ -915,7 +915,7 @@
 
                         <article class="admin-card mensalidades-block">
                             <header class="admin-card-header">
-                                <h3>Resumo de cobrancas</h3>
+                                <h3>Resumo de cobranças</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="mensalidades-list">
@@ -1088,8 +1088,8 @@
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <label for="mensalidadeObservacao">Observacoes</label>
-                        <textarea id="mensalidadeObservacao" name="observacoes" rows="3" placeholder="Informacoes adicionais sobre a baixa manual."></textarea>
+                        <label for="mensalidadeObservacao">Observações</label>
+                        <textarea id="mensalidadeObservacao" name="observacoes" rows="3" placeholder="Informações adicionais sobre a baixa manual."></textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
@@ -1207,7 +1207,7 @@
                         </div>
                     </article>
 
-                    <aside class="inadimplencia-side" aria-label="Resumo de inadimplencia">
+                    <aside class="inadimplencia-side" aria-label="Resumo de inadimplência">
                         <article class="admin-card inadimplencia-block">
                             <header class="admin-card-header">
                                 <h3>Resumo da carteira</h3>
@@ -1303,7 +1303,7 @@
                             <option value="">Selecione</option>
                             <option value="whatsapp">WhatsApp</option>
                             <option value="email">E-mail</option>
-                            <option value="telefone">Ligacao</option>
+                            <option value="telefone">Ligação</option>
                         </select>
                     </div>
 
@@ -1319,11 +1319,11 @@
 
                     <div class="modal-field modal-field-full">
                         <label for="inadimplenciaMensagemLembrete">Mensagem</label>
-                        <textarea id="inadimplenciaMensagemLembrete" name="mensagem" rows="4" placeholder="Mensagem de lembrete para envio ao responsavel."></textarea>
+                        <textarea id="inadimplenciaMensagemLembrete" name="mensagem" rows="4" placeholder="Mensagem de lembrete para envio ao responsável."></textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">O lembrete e registrado no backend para controle de cobranca. Integre um gateway (WhatsApp/E-mail) para envio automatico.</small>
+                        <small class="modal-help-text">O lembrete é registrado no backend para controle de cobrança. Integre um gateway (WhatsApp/E-mail) para envio automático.</small>
                     </div>
                 </div>
 
@@ -1352,7 +1352,7 @@
                             <option value="" th:text="${#lists.isEmpty(inadimplenciaCarteira) ? 'Nenhum aluno em atraso' : 'Selecione'}">Selecione</option>
                             <option th:each="item : ${inadimplenciaCarteira}"
                                 th:value="${item.alunoId}"
-                                th:text="${item.alunoNome + ' - ' + item.titulosEmAtraso + ' titulo(s)'}">
+                                th:text="${item.alunoNome + ' - ' + item.titulosEmAtraso + ' título(s)'}">
                                 Aluno
                             </option>
                         </select>
@@ -1409,7 +1409,7 @@
 
                     <div class="modal-field modal-field-full">
                         <label for="inadimplenciaObservacaoAcordo">Observações</label>
-                        <textarea id="inadimplenciaObservacaoAcordo" name="observacoes" rows="3" placeholder="Condicoes combinadas, desconto aplicado e detalhes do compromisso."></textarea>
+                        <textarea id="inadimplenciaObservacaoAcordo" name="observacoes" rows="3" placeholder="Condições combinadas, desconto aplicado e detalhes do compromisso."></textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
@@ -1429,10 +1429,10 @@
         <article class="admin-card">
             <div class="admin-card-content">
                 <div class="section-head">
-                    <h2>Gestao de Pre-inscricoes</h2>
+                    <h2>Gestão de Pré-inscrições</h2>
                     <div class="preinscricoes-actions">
                         <button type="button" class="admin-secondary-btn" data-open-modal="preinscricao-contato">Registrar contato</button>
-                        <button type="button" class="admin-primary-btn" data-open-modal="preinscricao-nova">Nova pre-inscricao</button>
+                        <button type="button" class="admin-primary-btn" data-open-modal="preinscricao-nova">Nova pré-inscrição</button>
                     </div>
                 </div>
 
@@ -1569,7 +1569,7 @@
     <dialog class="modal-overlay" data-modal="preinscricao-nova" aria-labelledby="modalNovaPreInscricaoTitulo">
         <div class="modal-card modal-card-wide">
             <div class="modal-head">
-                <h3 id="modalNovaPreInscricaoTitulo">Nova pre-inscricao</h3>
+                <h3 id="modalNovaPreInscricaoTitulo">Nova pré-inscrição</h3>
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
@@ -1624,7 +1624,7 @@
 
                     <div class="modal-field modal-field-full">
                         <label for="preInscricaoMensagem">Mensagem do lead</label>
-                        <textarea id="preInscricaoMensagem" name="mensagem" rows="4" placeholder="Interesse, horario preferencial e observacoes da familia."></textarea>
+                        <textarea id="preInscricaoMensagem" name="mensagem" rows="4" placeholder="Interesse, horário preferencial e observações da família."></textarea>
                     </div>
 
                 </div>
@@ -1661,7 +1661,7 @@
                         <select id="preInscricaoCanalContato" name="canal" required>
                             <option value="">Selecione</option>
                             <option value="whatsapp">WhatsApp</option>
-                            <option value="ligacao">Ligacao</option>
+                            <option value="ligacao">Ligação</option>
                             <option value="email">E-mail</option>
                         </select>
                     </div>
@@ -1675,7 +1675,7 @@
                     </div>
 
                     <div class="modal-field">
-                        <label for="preInscricaoDataRetorno">Data do proximo retorno</label>
+                        <label for="preInscricaoDataRetorno">Data do próximo retorno</label>
                         <input id="preInscricaoDataRetorno" name="proximoRetorno" type="date">
                     </div>
 
@@ -1686,11 +1686,11 @@
 
                     <div class="modal-field modal-field-full">
                         <label for="preInscricaoResumoContato">Resumo do contato</label>
-                        <textarea id="preInscricaoResumoContato" name="resumo" rows="3" placeholder="Interesse confirmado, duvidas, horario de visita e proximos passos."></textarea>
+                        <textarea id="preInscricaoResumoContato" name="resumo" rows="3" placeholder="Interesse confirmado, dúvidas, horário de visita e próximos passos."></textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <small class="modal-help-text">Fluxo estatico para demonstracao. Integre ao backend para registrar historico e atualizar o status do lead.</small>
+                        <small class="modal-help-text">Fluxo estático para demonstração. Integre ao backend para registrar histórico e atualizar o status do lead.</small>
                     </div>
                 </div>
 
@@ -1718,7 +1718,7 @@
 
                 <form class="blog-toolbar" th:action="@{/admin/dashboard}" method="get">
                     <input type="hidden" name="panel" value="blog">
-                    <input type="search" class="admin-search" name="blogBusca" th:value="${blogBusca}" placeholder="Pesquisar por titulo, autor ou palavra-chave">
+                    <input type="search" class="admin-search" name="blogBusca" th:value="${blogBusca}" placeholder="Pesquisar por título, autor ou palavra-chave">
                     <select class="blog-filter" name="blogStatus" aria-label="Filtrar por status da postagem">
                         <option value="" th:selected="${#strings.isEmpty(blogStatus)}">Todos os status</option>
                         <option value="publicado" th:selected="${blogStatus == 'publicado'}">Publicado</option>
@@ -1727,7 +1727,7 @@
                     </select>
                     <select class="blog-filter" name="blogCategoria" aria-label="Filtrar por categoria">
                         <option value="" th:selected="${#strings.isEmpty(blogCategoria)}">Todas as categorias</option>
-                        <option value="dicas" th:selected="${blogCategoria == 'dicas'}">Dicas de ingles</option>
+                        <option value="dicas" th:selected="${blogCategoria == 'dicas'}">Dicas de inglês</option>
                         <option value="eventos" th:selected="${blogCategoria == 'eventos'}">Eventos</option>
                         <option value="escola" th:selected="${blogCategoria == 'escola'}">Vida na escola</option>
                     </select>
@@ -1756,13 +1756,13 @@
                 <div class="blog-grid">
                     <article class="admin-card blog-block">
                         <header class="admin-card-header">
-                            <h3>Calendario editorial</h3>
+                            <h3>Calendário editorial</h3>
                         </header>
                         <div class="admin-card-content">
                             <table class="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>Titulo</th>
+                                        <th>Título</th>
                                         <th>Categoria</th>
                                         <th>Autor</th>
                                         <th>Data</th>
@@ -1775,7 +1775,7 @@
                                         <td colspan="6">Nenhuma postagem encontrada com os filtros selecionados.</td>
                                     </tr>
                                     <tr th:each="postagem : ${blogPostagens}">
-                                        <td th:text="${postagem.titulo}">Titulo</td>
+                                        <td th:text="${postagem.titulo}">Título</td>
                                         <td th:text="${#strings.isEmpty(postagem.categoria) ? '-' : postagem.categoria}">Categoria</td>
                                         <td th:text="${#strings.isEmpty(postagem.autor) ? '-' : postagem.autor}">Autor</td>
                                         <td th:text="${postagem.dataPublicacao != null ? #temporals.format(postagem.dataPublicacao, 'dd/MM/yyyy') : '-'}">Data</td>
@@ -1814,7 +1814,7 @@
                                         <span>Publique posts para acompanhar destaques.</span>
                                     </li>
                                     <li th:each="postagem : ${blogTopPostagens}">
-                                        <strong th:text="${postagem.titulo}">Titulo</strong>
+                                        <strong th:text="${postagem.titulo}">Título</strong>
                                         <span th:text="${'Publicado em ' + (postagem.dataPublicacao != null ? #temporals.format(postagem.dataPublicacao, 'dd/MM/yyyy') : '-')}">Publicado em -</span>
                                     </li>
                                 </ul>
@@ -1823,7 +1823,7 @@
 
                         <article class="admin-card blog-block">
                             <header class="admin-card-header">
-                                <h3>Proximas publicacoes</h3>
+                                <h3>Próximas publicações</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="blog-list">
@@ -1832,7 +1832,7 @@
                                         <span>Use o status agendado para organizar o calendário.</span>
                                     </li>
                                     <li th:each="postagem : ${blogProximasPublicacoes}">
-                                        <strong th:text="${(postagem.dataPublicacao != null ? #temporals.format(postagem.dataPublicacao, 'dd/MM') : '--/--') + ' - ' + postagem.titulo}">Data - titulo</strong>
+                                        <strong th:text="${(postagem.dataPublicacao != null ? #temporals.format(postagem.dataPublicacao, 'dd/MM') : '--/--') + ' - ' + postagem.titulo}">Data - título</strong>
                                         <span>Status: agendado.</span>
                                     </li>
                                 </ul>
@@ -1856,15 +1856,15 @@
 
                 <div class="modal-body">
                     <div class="modal-field modal-field-full">
-                        <label for="blogTitulo">Titulo</label>
-                        <input id="blogTitulo" name="titulo" type="text" placeholder="Ex.: 5 jogos para praticar vocabulario em casa" required>
+                        <label for="blogTitulo">Título</label>
+                        <input id="blogTitulo" name="titulo" type="text" placeholder="Ex.: 5 jogos para praticar vocabulário em casa" required>
                     </div>
 
                     <div class="modal-field">
                         <label for="blogCategoria">Categoria</label>
                         <select id="blogCategoria" name="categoria" required>
                             <option value="">Selecione</option>
-                            <option value="dicas">Dicas de ingles</option>
+                            <option value="dicas">Dicas de inglês</option>
                             <option value="eventos">Eventos</option>
                             <option value="escola">Vida na escola</option>
                         </select>
@@ -1876,7 +1876,7 @@
                     </div>
 
                     <div class="modal-field">
-                        <label for="blogDataPublicacao">Data de publicacao</label>
+                        <label for="blogDataPublicacao">Data de publicação</label>
                         <input id="blogDataPublicacao" name="dataPublicacao" type="date" required>
                     </div>
 
@@ -1908,7 +1908,7 @@
 
                         <div id="blogConteudoEditor" class="blog-rich-editor" contenteditable="true" aria-label="Editor de conteúdo da postagem" data-editor-textarea="blogConteudo"></div>
                         <input id="blogConteudoImageUpload" type="file" accept="image/*" hidden>
-                        <textarea id="blogConteudo" name="conteudo" rows="6" placeholder="Escreva aqui o conteudo da postagem..." required hidden></textarea>
+                        <textarea id="blogConteudo" name="conteudo" rows="6" placeholder="Escreva aqui o conteúdo da postagem..." required hidden></textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
@@ -1940,15 +1940,15 @@
                     </div>
 
                     <div class="modal-field modal-field-full">
-                        <label for="blogEditarTitulo">Titulo</label>
-                        <input id="blogEditarTitulo" name="titulo" type="text" value="Especial de Pascoa: atividades para o Kids" required>
+                        <label for="blogEditarTitulo">Título</label>
+                        <input id="blogEditarTitulo" name="titulo" type="text" value="Especial de Páscoa: atividades para o Kids" required>
                     </div>
 
                     <div class="modal-field">
                         <label for="blogEditarCategoria">Categoria</label>
                         <select id="blogEditarCategoria" name="categoria" required>
                             <option value="eventos" selected>Eventos</option>
-                            <option value="dicas">Dicas de ingles</option>
+                            <option value="dicas">Dicas de inglês</option>
                             <option value="escola">Vida na escola</option>
                         </select>
                     </div>
@@ -1959,7 +1959,7 @@
                     </div>
 
                     <div class="modal-field">
-                        <label for="blogEditarDataPublicacao">Data de publicacao</label>
+                        <label for="blogEditarDataPublicacao">Data de publicação</label>
                         <input id="blogEditarDataPublicacao" name="dataPublicacao" type="date">
                     </div>
 
@@ -1984,7 +1984,7 @@
 
                     <div class="modal-field modal-field-full">
                         <label for="blogEditarConteudo">Conteudo</label>
-                        <textarea id="blogEditarConteudo" name="conteudo" rows="6" required>Conteudo em revisao para publicacao no especial de Pascoa, com foco em vocabulario tematico e atividades praticas para os alunos Kids.</textarea>
+                        <textarea id="blogEditarConteudo" name="conteudo" rows="6" required>Conteúdo em revisão para publicação no especial de Páscoa, com foco em vocabulário temático e atividades práticas para os alunos Kids.</textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
@@ -1994,7 +1994,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
-                    <button type="submit" class="admin-primary-btn">Salvar alteracoes</button>
+                    <button type="submit" class="admin-primary-btn">Salvar alterações</button>
                 </div>
             </form>
         </div>
@@ -2016,14 +2016,14 @@
 
                 <form class="livros-toolbar" th:action="@{/admin/dashboard}" action="/admin/dashboard" method="get">
                     <input type="hidden" name="panel" value="livros">
-                    <input type="search" class="admin-search" name="livroBusca" th:value="${livroBusca}" placeholder="Pesquisar por titulo, sinopse, link ou ano">
+                    <input type="search" class="admin-search" name="livroBusca" th:value="${livroBusca}" placeholder="Pesquisar por título, sinopse, link ou ano">
                     <button type="submit" class="admin-primary-btn">Pesquisar</button>
                     <a th:if="${!#strings.isEmpty(livroBusca)}" th:href="@{/admin/dashboard(panel='livros')}" href="/admin/dashboard?panel=livros" class="admin-secondary-btn">Limpar</a>
                 </form>
 
                 <div class="livros-metric-grid">
                     <article class="livros-metric-card">
-                        <p>Obras no catalogo</p>
+                        <p>Obras no catálogo</p>
                         <strong th:text="${livrosTotal}">0</strong>
                     </article>
                     <article class="livros-metric-card">
@@ -2043,13 +2043,13 @@
                 <div class="livros-grid">
                     <article class="admin-card livros-block">
                         <header class="admin-card-header">
-                            <h3>Catalogo literario</h3>
+                            <h3>Catálogo literário</h3>
                         </header>
                         <div class="admin-card-content">
                             <table class="admin-table">
                                 <thead>
                                     <tr>
-                                        <th>Titulo</th>
+                                        <th>Título</th>
                                         <th>Ano</th>
                                         <th>Sinopse</th>
                                         <th>Link de compra</th>
@@ -2058,10 +2058,10 @@
                                 </thead>
                                 <tbody>
                                     <tr th:if="${#lists.isEmpty(livros)}">
-                                        <td colspan="5">Nenhuma obra literaria cadastrada.</td>
+                                        <td colspan="5">Nenhuma obra literária cadastrada.</td>
                                     </tr>
                                     <tr th:each="livro : ${livros}">
-                                        <td th:text="${livro.titulo}">Titulo</td>
+                                        <td th:text="${livro.titulo}">Título</td>
                                         <td th:text="${livro.anoLancamento}">0</td>
                                         <td th:text="${#strings.abbreviate(livro.sinopse, 90)}">Sinopse</td>
                                         <td>
@@ -2094,15 +2094,15 @@
                         </div>
                     </article>
 
-                    <aside class="livros-side" aria-label="Resumo de obras literarias">
+                    <aside class="livros-side" aria-label="Resumo de obras literárias">
                         <article class="admin-card livros-block">
                             <header class="admin-card-header">
-                                <h3>Ultimas obras do catalogo</h3>
+                                <h3>Últimas obras do catálogo</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="livros-list">
                                     <li th:each="livro, iter : ${livros}" th:if="${iter.index < 3}">
-                                        <strong th:text="${livro.titulo}">Titulo</strong>
+                                        <strong th:text="${livro.titulo}">Título</strong>
                                         <span th:text="${'Ano de lancamento: ' + livro.anoLancamento}">Ano de lancamento: -</span>
                                     </li>
                                     <li th:if="${#lists.isEmpty(livros)}">
@@ -2120,7 +2120,7 @@
                             <div class="admin-card-content">
                                 <ul class="livros-list">
                                     <li th:each="livro : ${livros}" th:if="${#strings.isEmpty(livro.linkCompra)}">
-                                        <strong th:text="${livro.titulo}">Titulo</strong>
+                                        <strong th:text="${livro.titulo}">Título</strong>
                                         <span>Adicionar link de compra para facilitar conversao.</span>
                                     </li>
                                     <li th:if="${livrosSemLinkCompra == 0}">
@@ -2139,7 +2139,7 @@
     <dialog class="modal-overlay" data-modal="livro-novo" aria-labelledby="modalNovoLivroTitulo">
         <div class="modal-card modal-card-wide">
             <div class="modal-head">
-                <h3 id="modalNovoLivroTitulo">Nova obra literaria</h3>
+                <h3 id="modalNovoLivroTitulo">Nova obra literária</h3>
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
@@ -2148,8 +2148,8 @@
 
                 <div class="modal-body">
                     <div class="modal-field modal-field-full">
-                        <label for="livroTitulo">Titulo</label>
-                        <input id="livroTitulo" name="titulo" type="text" placeholder="Ex.: O Pequeno Principe" required>
+                        <label for="livroTitulo">Título</label>
+                        <input id="livroTitulo" name="titulo" type="text" placeholder="Ex.: O Pequeno Príncipe" required>
                     </div>
 
                     <div class="modal-field">
@@ -2159,7 +2159,7 @@
 
                     <div class="modal-field modal-field-full">
                         <label for="livroSinopse">Sinopse</label>
-                        <textarea id="livroSinopse" name="sinopse" rows="4" placeholder="Resumo da obra para exibicao no catalogo." required></textarea>
+                        <textarea id="livroSinopse" name="sinopse" rows="4" placeholder="Resumo da obra para exibição no catálogo." required></textarea>
                     </div>
 
                     <div class="modal-field modal-field-full">
@@ -2185,7 +2185,7 @@
     <dialog class="modal-overlay" data-modal="livro-editar" aria-labelledby="modalEditarLivroTitulo">
         <div class="modal-card modal-card-wide">
             <div class="modal-head">
-                <h3 id="modalEditarLivroTitulo">Editar obra literaria</h3>
+                <h3 id="modalEditarLivroTitulo">Editar obra literária</h3>
                 <button type="button" class="modal-close" data-close-modal aria-label="Fechar">x</button>
             </div>
 
@@ -2195,7 +2195,7 @@
 
                 <div class="modal-body">
                     <div class="modal-field modal-field-full">
-                        <label for="livroEditarTitulo">Titulo</label>
+                        <label for="livroEditarTitulo">Título</label>
                         <input id="livroEditarTitulo" name="titulo" type="text" required>
                     </div>
 
@@ -2222,7 +2222,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
-                    <button type="submit" class="admin-primary-btn">Salvar alteracoes</button>
+                    <button type="submit" class="admin-primary-btn">Salvar alterações</button>
                 </div>
             </form>
         </div>
@@ -2316,13 +2316,13 @@
                     <aside class="galeria-side" aria-label="Resumo da galeria">
                         <article class="admin-card galeria-side-card">
                             <header class="admin-card-header">
-                                <h3>Ultimos uploads</h3>
+                                <h3>Últimos uploads</h3>
                             </header>
                             <div class="admin-card-content">
                                 <ul class="galeria-list">
                                     <li th:each="foto, iter : ${galeriaFotos}" th:if="${iter.index < 3}">
                                         <strong th:text="${foto.legenda}">Legenda</strong>
-                                        <span th:text="${foto.dataUpload != null ? 'Upload em ' + #temporals.format(foto.dataUpload, 'dd/MM/yyyy') : 'Data nao informada'}">Upload em 01/01/2026</span>
+                                        <span th:text="${foto.dataUpload != null ? 'Upload em ' + #temporals.format(foto.dataUpload, 'dd/MM/yyyy') : 'Data não informada'}">Upload em 01/01/2026</span>
                                     </li>
                                     <li th:if="${#lists.isEmpty(galeriaFotos)}">
                                         <strong>Sem uploads recentes</strong>
@@ -2464,7 +2464,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="admin-secondary-btn" data-close-modal>Cancelar</button>
-                    <button type="submit" class="admin-primary-btn">Salvar alteracoes</button>
+                    <button type="submit" class="admin-primary-btn">Salvar alterações</button>
                 </div>
             </form>
         </div>
@@ -2763,7 +2763,7 @@
                 </div>
 
                 <div class="modal-field">
-                    <label for="visualizarAlunoNivel">Nivel</label>
+                    <label for="visualizarAlunoNivel">Nível</label>
                     <input id="visualizarAlunoNivel" type="text" readonly>
                 </div>
 
@@ -2793,7 +2793,7 @@
                 </div>
 
                 <div class="modal-field modal-field-full">
-                    <label for="visualizarAlunoObservacoes">Observacoes</label>
+                    <label for="visualizarAlunoObservacoes">Observações</label>
                     <textarea id="visualizarAlunoObservacoes" rows="3" readonly></textarea>
                 </div>
             </div>

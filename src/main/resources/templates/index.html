@@ -7,14 +7,14 @@
 <main>
     <section id="topo" class="hero" th:style="|background-image: linear-gradient(105deg, rgba(15,58,95,0.86), rgba(29,95,146,0.7)), url('@{/img/banner.png}');|">
         <div class="hero-content">
-            <p class="hero-eyebrow">Step By Step Escola de Ingles</p>
-            <h1>Ingles que transforma, historias que inspiram</h1>
+            <p class="hero-eyebrow">Step By Step Escola de Inglês</p>
+            <h1>Inglês que transforma, histórias que inspiram</h1>
             <p class="hero-subtitle">
-                Aprendizagem acolhedora, metodologia ativa e conteudo que conecta o aluno
-                ao ingles real para viver, estudar e conquistar novas oportunidades.
+                Aprendizagem acolhedora, metodologia ativa e conteúdo que conecta o aluno
+                ao inglês real para viver, estudar e conquistar novas oportunidades.
             </p>
             <div class="hero-actions">
-                <a class="hero-btn hero-btn-primary" href="#pre-inscricao">Fazer Pre-Inscricao</a>
+                <a class="hero-btn hero-btn-primary" href="#pre-inscricao">Fazer Pré-Inscrição</a>
                 <a class="hero-btn hero-btn-secondary" href="#livros">Conhecer os Livros</a>
             </div>
         </div>
@@ -24,11 +24,11 @@
         <div class="about-grid">
             <article class="about-teacher">
                 <p class="section-kicker">Sobre a Escola e Metodologia</p>
-                <h2>Quem e a Teacher</h2>
+                <h2>Quem é a Teacher</h2>
                 <p>
-                    Teacher com formacao em Letras Ingles e mais de 10 anos de experiencia em sala de aula,
-                    com foco em desenvolvimento da fluencia, pronuncia e confianca para comunicacao real.
-                    A metodologia combina pratica guiada, conversacao contextual e acompanhamento individual.
+                    Teacher com formação em Letras Inglês e mais de 10 anos de experiência em sala de aula,
+                    com foco em desenvolvimento da fluência, pronúncia e confiança para comunicação real.
+                    A metodologia combina prática guiada, conversação contextual e acompanhamento individual.
                 </p>
             </article>
 
@@ -43,7 +43,7 @@
                         </svg>
                     </div>
                     <h3>Turmas Reduzidas</h3>
-                    <p>Atencao personalizada para acelerar aprendizado e corrigir pontos-chave.</p>
+                    <p>Atenção personalizada para acelerar aprendizado e corrigir pontos-chave.</p>
                 </article>
 
                 <article class="diff-card">
@@ -54,8 +54,8 @@
                             <path d="M8 12h5"></path>
                         </svg>
                     </div>
-                    <h3>Foco em Conversacao</h3>
-                    <p>Aulas com situacoes reais para falar ingles com seguranca no dia a dia.</p>
+                    <h3>Foco em Conversação</h3>
+                    <p>Aulas com situações reais para falar inglês com segurança no dia a dia.</p>
                 </article>
 
                 <article class="diff-card">
@@ -67,8 +67,8 @@
                             <path d="M9 12h7"></path>
                         </svg>
                     </div>
-                    <h3>Material Proprio</h3>
-                    <p>Conteudo exclusivo, organizado por nivel e objetivo de cada turma.</p>
+                    <h3>Material Próprio</h3>
+                    <p>Conteúdo exclusivo, organizado por nível e objetivo de cada turma.</p>
                 </article>
 
                 <article class="diff-card">
@@ -77,8 +77,8 @@
                             <path d="M12 3l2.7 5.4 6 .9-4.4 4.2 1 5.9-5.3-2.8-5.3 2.8 1-5.9L3.3 9.3l6-.9L12 3z"></path>
                         </svg>
                     </div>
-                    <h3>Metodo Humanizado</h3>
-                    <p>Acompanhamento proximo para desenvolver autonomia e manter motivacao.</p>
+                    <h3>Método Humanizado</h3>
+                    <p>Acompanhamento próximo para desenvolver autonomia e manter motivação.</p>
                 </article>
             </div>
         </div>
@@ -89,11 +89,11 @@
             <p class="section-kicker">O Espaco da Escritora</p>
             <h2>Vitrine de Livros</h2>
             <p>
-                Obras que unem ensino e inspiracao, carregadas automaticamente a partir do catalogo.
+                Obras que unem ensino e inspiração, carregadas automaticamente a partir do catálogo.
             </p>
         </div>
 
-        <div class="books-grid" aria-label="Catalogo de livros da teacher">
+        <div class="books-grid" aria-label="Catálogo de livros da teacher">
             <article class="book-card" th:each="livro, iter : ${livrosHome}">
                 <div class="book-cover" th:classappend="${' book-cover-' + ((iter.index % 4) + 1) + (!#strings.isEmpty(livro.urlCapa) ? ' has-image' : '')}" aria-hidden="true">
                     <img th:if="${!#strings.isEmpty(livro.urlCapa)}"
@@ -103,7 +103,7 @@
                          alt="Capa do livro">
                     <span th:if="${#strings.isEmpty(livro.urlCapa)}" th:text="${'Book ' + #numbers.formatInteger(iter.index + 1, 2)}">Book 01</span>
                 </div>
-                <h3 th:text="${livro.titulo}">Titulo do livro</h3>
+                <h3 th:text="${livro.titulo}">Título do livro</h3>
                 <p th:text="${#strings.abbreviate(livro.sinopse, 120)}">Sinopse do livro.</p>
                 <div class="book-actions">
                     <a class="book-btn"
@@ -119,10 +119,10 @@
                 <div class="book-cover book-cover-1" aria-hidden="true">
                     <span>Books</span>
                 </div>
-                <h3>Catalogo em atualizacao</h3>
-                <p>As obras literarias publicadas aparecerao aqui automaticamente em breve.</p>
+                <h3>Catálogo em atualização</h3>
+                <p>As obras literárias publicadas aparecerão aqui automaticamente em breve.</p>
                 <div class="book-actions">
-                    <a class="book-btn" th:href="@{/livros}" href="/livros">Visitar pagina de livros</a>
+                    <a class="book-btn" th:href="@{/livros}" href="/livros">Visitar página de livros</a>
                 </div>
             </article>
         </div>
@@ -131,18 +131,18 @@
     <section id="blog" class="blog-news">
         <div class="blog-header">
             <p class="section-kicker">Blog da Teacher</p>
-            <h2>Ultimas Noticias</h2>
+            <h2>Últimas Notícias</h2>
             <p>
-                Conteudos recentes com dicas de ingles, bastidores da escola e orientacoes
+                Conteúdos recentes com dicas de inglês, bastidores da escola e orientações
                 para evoluir nos estudos de forma constante.
             </p>
         </div>
 
-        <div class="blog-grid" aria-label="Tres ultimas noticias do blog">
+        <div class="blog-grid" aria-label="Três últimas notícias do blog">
             <article class="blog-card" th:if="${ultimasPostagensBlog != null}" th:each="postagem : ${ultimasPostagensBlog}">
                 <img th:src="${postagem.urlImagemCapa != null and !#strings.isEmpty(postagem.urlImagemCapa) ? postagem.urlImagemCapa : '/img/banner.png'}" alt="Capa da postagem">
                 <div class="blog-card-content">
-                    <h3 th:text="${postagem.titulo}">Titulo da postagem</h3>
+                    <h3 th:text="${postagem.titulo}">Título da postagem</h3>
                     <p th:text="${postagem.resumo}">Resumo da postagem.</p>
                     <a class="blog-btn" th:href="@{/blog/{slug}(slug=${postagem.slug})}">Leia mais</a>
                 </div>
@@ -151,8 +151,8 @@
             <article class="blog-card" th:if="${ultimasPostagensBlog == null or #lists.isEmpty(ultimasPostagensBlog)}">
                 <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Blog da Teacher">
                 <div class="blog-card-content">
-                    <h3>Em breve: novas publicacoes</h3>
-                    <p>As postagens mais recentes do Blog da Teacher aparecerao aqui automaticamente.</p>
+                    <h3>Em breve: novas publicações</h3>
+                    <p>As postagens mais recentes do Blog da Teacher aparecerão aqui automaticamente.</p>
                     <a class="blog-btn" th:href="@{/blog}" href="/blog">Ir para o blog</a>
                 </div>
             </article>
@@ -162,8 +162,8 @@
     <section id="pre-inscricao" class="lead-section">
         <div class="lead-grid">
             <div class="lead-copy">
-                <p class="section-kicker">Pre-Inscricao</p>
-                <h2>Comece sua jornada no ingles hoje</h2>
+                <p class="section-kicker">Pré-Inscrição</p>
+                <h2>Comece sua jornada no inglês hoje</h2>
                 <p>
                     Preencha os dados abaixo para demonstrar seu interesse. Em breve, entraremos em contato
                     para orientar a melhor turma para o seu momento.
@@ -183,19 +183,19 @@
                 </div>
 
                 <div class="form-field">
-                    <label for="lead-nivel">Nivel de Ingles</label>
+                    <label for="lead-nivel">Nível de Inglês</label>
                     <select id="lead-nivel" name="nivel" required>
-                        <option value="" disabled selected>Selecione seu nivel</option>
+                        <option value="" disabled selected>Selecione seu nível</option>
                         <option value="iniciante">Iniciante</option>
-                        <option value="basico">Basico</option>
-                        <option value="intermediario">Intermediario</option>
-                        <option value="avancado">Avancado</option>
+                        <option value="basico">Básico</option>
+                        <option value="intermediario">Intermediário</option>
+                        <option value="avancado">Avançado</option>
                     </select>
                 </div>
 
                 <div class="form-field form-field-full">
-                    <label for="lead-duvidas">Duvidas</label>
-                    <textarea id="lead-duvidas" name="duvidas" rows="4" placeholder="Escreva aqui suas duvidas ou objetivos..."></textarea>
+                    <label for="lead-duvidas">Dúvidas</label>
+                    <textarea id="lead-duvidas" name="duvidas" rows="4" placeholder="Escreva aqui suas dúvidas ou objetivos..."></textarea>
                 </div>
 
                 <button class="lead-submit" type="submit">Enviar Interesse</button>
@@ -218,11 +218,11 @@
     <section id="galeria" class="gallery-section">
         <div class="gallery-header">
             <p class="section-kicker">Galeria</p>
-            <h2>Ultimas Fotos da Escola</h2>
+            <h2>Últimas Fotos da Escola</h2>
             <p>Momentos recentes das aulas e atividades que fazem parte da nossa jornada.</p>
         </div>
 
-        <div class="gallery-grid" aria-label="Ultimas quatro fotos adicionadas">
+        <div class="gallery-grid" aria-label="Últimas quatro fotos adicionadas">
             <figure class="gallery-card" th:each="foto, iter : ${galeriaHome}">
                 <img th:src="${!#strings.isEmpty(foto.urlImagem) ? foto.urlImagem : '/img/banner.png'}"
                      src="/img/banner.png"

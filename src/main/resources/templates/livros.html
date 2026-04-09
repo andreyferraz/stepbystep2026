@@ -32,7 +32,7 @@
 
             <div class="book-feature-content">
                 <div class="book-feature-heading">
-                    <h2 th:text="${livro.titulo}">Titulo do livro</h2>
+                    <h2 th:text="${livro.titulo}">Título do livro</h2>
                     <span class="book-year" th:text="${livro.anoLancamento}">2024</span>
                 </div>
 
@@ -53,7 +53,7 @@
                         Comprar
                     </a>
                     <a class="book-btn book-btn-secondary" th:href="@{/contato}" href="/contato">
-                        Solicitar informacoes
+                        Solicitar informações
                     </a>
                 </div>
             </div>
@@ -62,17 +62,17 @@
         <article class="book-feature" th:if="${livros == null or #lists.isEmpty(livros)}">
             <figure class="book-feature-cover">
                 <img th:src="@{/img/banner.png}" src="/img/banner.png"
-                     alt="Catalogo de livros em atualizacao">
+                     alt="Catálogo de livros em atualização">
             </figure>
 
             <div class="book-feature-content">
                 <div class="book-feature-heading">
-                    <h2>Catalogo em atualizacao</h2>
+                    <h2>Catálogo em atualização</h2>
                     <span class="book-year">-</span>
                 </div>
 
                 <p class="book-feature-lead">
-                    Novas obras serao exibidas aqui automaticamente assim que forem cadastradas no painel administrativo.
+                    Novas obras serão exibidas aqui automaticamente assim que forem cadastradas no painel administrativo.
                 </p>
 
                 <div class="book-feature-actions">

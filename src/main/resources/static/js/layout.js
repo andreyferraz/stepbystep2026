@@ -257,18 +257,18 @@
                 if (!resposta.ok) {
                     var mensagemErro = dados && dados.mensagem
                         ? dados.mensagem
-                        : 'Nao foi possivel processar sua pre-inscricao. Tente novamente.';
+                        : 'Não foi possível processar sua pré-inscrição. Tente novamente.';
                     mostrarFeedback(mensagemErro, false);
                     return;
                 }
 
                 var mensagemSucesso = dados && dados.mensagem
                     ? dados.mensagem
-                    : 'Pre-inscricao enviada com sucesso. Em breve entraremos em contato.';
+                    : 'Pré-inscrição enviada com sucesso. Em breve entraremos em contato.';
                 mostrarFeedback(mensagemSucesso, true);
                 form.reset();
             } catch (_) {
-                mostrarFeedback('Falha de conexao. Verifique sua internet e tente novamente.', false);
+                mostrarFeedback('Falha de conexão. Verifique sua internet e tente novamente.', false);
             } finally {
                 submitButton.disabled = false;
                 submitButton.textContent = 'Enviar Interesse';
