@@ -8,16 +8,16 @@
         <div class="metric-grid">
             <article class="metric-card metric-blue">
                 <h3>Total de alunos ativos</h3>
-                <strong>248</strong>
+                <strong th:text="${overviewAlunosAtivosQtd}">0</strong>
             </article>
             <article class="metric-card metric-green">
                 <h3>Mensalidades recebidas no mês</h3>
-                <strong>R$ 38.420</strong>
+                <strong th:text="${mensalidadesRecebidoMesFmt}">R$ 0,00</strong>
             </article>
             <article class="metric-card metric-red">
                 <h3>Mensalidades em atraso</h3>
-                <strong>17</strong>
-                <a href="#">Ver devedores</a>
+                <strong th:text="${mensalidadesAtrasadas}">0</strong>
+                <a th:href="@{/admin/dashboard(panel='inadimplencia')}" href="/admin/dashboard?panel=inadimplencia">Ver devedores</a>
             </article>
             <article class="metric-card metric-yellow">
                 <h3>Pré-inscrições pendentes</h3>
@@ -28,7 +28,7 @@
         <div class="admin-summary-grid">
             <article class="admin-card">
                 <header class="admin-card-header">
-                    <h2>Últimos alunos matriculados</h2>
+                    <h2>Alunos cadastrados</h2>
                 </header>
                 <div class="admin-card-content">
                     <table class="admin-table">
@@ -36,28 +36,21 @@
                             <tr>
                                 <th>Aluno</th>
                                 <th>Turma</th>
-                                <th>Data</th>
+                                <th>Contato</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Ana Clara</td>
-                                <td>Kids 1</td>
-                                <td>10/03/2026</td>
-                                <td><span class="status-chip success">Ativo</span></td>
+                            <tr th:if="${#lists.isEmpty(overviewAlunosPreview)}">
+                                <td colspan="4">Nenhum aluno cadastrado ainda.</td>
                             </tr>
-                            <tr>
-                                <td>João Pedro</td>
-                                <td>Teens 2</td>
-                                <td>09/03/2026</td>
-                                <td><span class="status-chip success">Ativo</span></td>
-                            </tr>
-                            <tr>
-                                <td>Maria Luísa</td>
-                                <td>Adults 1</td>
-                                <td>07/03/2026</td>
-                                <td><span class="status-chip success">Ativo</span></td>
+                            <tr th:each="usuario : ${overviewAlunosPreview}">
+                                <td th:text="${usuario.nome}">Nome</td>
+                                <td th:text="${usuario.aluno != null and usuario.aluno.turma != null ? usuario.aluno.turma.nome : '-'}">-</td>
+                                <td th:text="${usuario.aluno != null and !#strings.isEmpty(usuario.aluno.telefone) ? usuario.aluno.telefone : '-'}">-</td>
+                                <td>
+                                    <span class="status-chip" th:classappend="${usuario.ativo} ? ' success' : ' warn'" th:text="${usuario.ativo} ? 'Ativo' : 'Inativo'">Ativo</span>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -79,23 +72,17 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>Gabriel Souza</td>
-                                <td>15/03/2026</td>
-                                <td>R$ 290</td>
-                                <td><span class="status-chip warn">A vencer</span></td>
+                            <tr th:if="${#lists.isEmpty(mensalidadesProximosVencimentos)}">
+                                <td colspan="4">Nenhum vencimento futuro encontrado.</td>
                             </tr>
-                            <tr>
-                                <td>Isabela Rocha</td>
-                                <td>16/03/2026</td>
-                                <td>R$ 320</td>
-                                <td><span class="status-chip warn">A vencer</span></td>
-                            </tr>
-                            <tr>
-                                <td>Matheus Lima</td>
-                                <td>17/03/2026</td>
-                                <td>R$ 280</td>
-                                <td><span class="status-chip warn">A vencer</span></td>
+                            <tr th:each="mensalidade : ${mensalidadesProximosVencimentos}">
+                                <td th:text="${mensalidade.aluno != null ? mensalidade.aluno.nome : '-'}">Aluno</td>
+                                <td th:text="${mensalidade.dataVencimento != null ? #temporals.format(mensalidade.dataVencimento, 'dd/MM/yyyy') : '-'}">-</td>
+                                <td th:text="${'R$ ' + (mensalidade.valor != null ? #numbers.formatDecimal(mensalidade.valor, 1, 2) : '0,00')}">R$ 0,00</td>
+                                <td>
+                                    <span class="status-chip warn"
+                                          th:text="${mensalidade.dataVencimento != null and mensalidade.dataVencimento.isEqual(T(java.time.LocalDate).now()) ? 'Vence hoje' : 'A vencer'}">A vencer</span>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

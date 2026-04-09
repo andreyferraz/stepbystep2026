@@ -154,6 +154,8 @@ public class DashboardController {
         UUID galeriaCategoriaIdFiltrada = parseUuidOpcional(galeriaCategoriaId);
 
         List<Usuario> usuariosAlunos = listarUsuariosAlunosFiltrados(alunoBuscaNormalizada);
+        long overviewAlunosAtivosQtd = usuariosAlunos.stream().filter(Usuario::isAtivo).count();
+        List<Usuario> overviewAlunosPreview = usuariosAlunos.stream().limit(3).toList();
 
         List<MaterialEstudo> materiaisEstudo = materialEstudoService
             .listarMateriaisFiltrados(materialBusca, materialTurmaIdFiltrada);
@@ -230,6 +232,8 @@ public class DashboardController {
         model.addAttribute("isDashboard", true);
         model.addAttribute("turmas", turmaService.listarTurmasFiltradas(turmaBusca));
         model.addAttribute("usuariosAlunos", usuariosAlunos);
+        model.addAttribute("overviewAlunosAtivosQtd", overviewAlunosAtivosQtd);
+        model.addAttribute("overviewAlunosPreview", overviewAlunosPreview);
         model.addAttribute("materiaisEstudo", materiaisEstudo);
         model.addAttribute("alunoBusca", textoFiltro(alunoBusca));
         model.addAttribute("turmaBusca", textoFiltro(turmaBusca));
