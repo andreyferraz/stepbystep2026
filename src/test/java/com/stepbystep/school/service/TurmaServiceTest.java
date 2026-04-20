@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.stepbystep.school.model.Turma;
+import com.stepbystep.school.enums.NivelAtual;
 import com.stepbystep.school.repository.TurmaRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,11 +46,13 @@ class TurmaServiceTest {
     void setUp() {
         turmaId = UUID.randomUUID();
         turmaValida = Turma.builder()
-                .id(turmaId)
-                .nome("Turma Kids")
-                .horario("14:00")
-                .diasSemana("Segunda e Quarta")
-                .build();
+            .id(turmaId)
+            .nome("Turma Kids")
+            .horario("14:00")
+            .diasSemana("Segunda e Quarta")
+            .nivelAtual(NivelAtual.INICIANTE)
+            .totalVagas(20)
+            .build();
     }
 
     @Nested
@@ -59,11 +62,13 @@ class TurmaServiceTest {
         @Test
         @DisplayName("Deve criar turma com sucesso e normalizar campos")
         void deveCriarTurmaComSucessoENormalizarCampos() {
-            Turma novaTurma = Turma.builder()
+                Turma novaTurma = Turma.builder()
                     .id(UUID.randomUUID())
                     .nome("  Turma Teens  ")
                     .horario("  19:00  ")
                     .diasSemana("  Terca e Quinta  ")
+                    .nivelAtual(NivelAtual.INICIANTE)
+                    .totalVagas(20)
                     .build();
 
             when(turmaRepository.save(any(Turma.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -137,18 +142,22 @@ class TurmaServiceTest {
         @Test
         @DisplayName("Deve editar turma existente com sucesso")
         void deveEditarTurmaExistenteComSucesso() {
-            Turma turmaExistente = Turma.builder()
+                Turma turmaExistente = Turma.builder()
                     .id(turmaId)
                     .nome("Turma Antiga")
                     .horario("08:00")
                     .diasSemana("Segunda")
+                    .nivelAtual(NivelAtual.INICIANTE)
+                    .totalVagas(20)
                     .build();
 
-            Turma dadosAtualizados = Turma.builder()
+                Turma dadosAtualizados = Turma.builder()
                     .id(UUID.randomUUID())
                     .nome("  Turma Atualizada  ")
                     .horario("  10:00  ")
                     .diasSemana("  Terca e Quinta  ")
+                    .nivelAtual(NivelAtual.INICIANTE)
+                    .totalVagas(20)
                     .build();
 
             when(turmaRepository.findById(turmaId)).thenReturn(Optional.of(turmaExistente));

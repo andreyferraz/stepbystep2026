@@ -420,9 +420,11 @@ class MaterialEstudoServiceTest {
         @Test
         @DisplayName("Deve excluir material com sucesso")
         void deveExcluirMaterialComSucesso() {
+            when(materialEstudoRepository.findById(materialId)).thenReturn(Optional.of(materialValido));
+
             assertDoesNotThrow(() -> materialEstudoService.excluirMaterialEstudo(materialId));
 
-            verify(materialEstudoRepository, times(1)).deleteById(materialId);
+            verify(materialEstudoRepository, times(1)).delete(materialValido);
         }
 
         @Test
