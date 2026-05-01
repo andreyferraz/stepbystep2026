@@ -16,7 +16,7 @@
         </div>
 
         <figure class="inner-hero-media">
-            <img th:src="@{/img/banner.png}" src="/img/banner.png"
+            <img th:src="@{/img/banner.webp}" src="/img/banner.webp"
                  alt="Teacher escrevendo e organizando conteúdos do blog">
         </figure>
     </section>
@@ -35,7 +35,7 @@
             <div class="blog-list-grid" aria-label="Lista de postagens do blog">
                 <article class="post-card" th:if="${postagens != null}" th:each="postagem : ${postagens}">
                     <a class="post-card-media" th:href="@{/blog/{slug}(slug=${postagem.slug})}">
-                            <img th:src="${postagem.urlImagemCapa != null and !#strings.isEmpty(postagem.urlImagemCapa) ? postagem.urlImagemCapa : '/img/banner.png'}"
+                            <img th:src="${postagem.urlImagemCapa != null and !#strings.isEmpty(postagem.urlImagemCapa) ? postagem.urlImagemCapa : '/img/banner.webp'}"
                                 alt="Capa da postagem do blog">
                     </a>
 

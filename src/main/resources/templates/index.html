@@ -5,7 +5,7 @@
     <title>Step By Step</title>
 </head>
 <main>
-    <section id="topo" class="hero" th:style="|background-image: linear-gradient(105deg, rgba(15,58,95,0.86), rgba(29,95,146,0.7)), url('@{/img/banner.png}');|">
+    <section id="topo" class="hero" th:style="|background-image: linear-gradient(105deg, rgba(15,58,95,0.86), rgba(29,95,146,0.7)), url('@{/img/banner.webp}');|">
         <div class="hero-content">
             <p class="hero-eyebrow">Step By Step Escola de Inglês</p>
             <h1>Inglês que transforma, histórias que inspiram</h1>
@@ -98,7 +98,7 @@
                 <div class="book-cover" th:classappend="${' book-cover-' + ((iter.index % 4) + 1) + (!#strings.isEmpty(livro.urlCapa) ? ' has-image' : '')}" aria-hidden="true">
                     <img th:if="${!#strings.isEmpty(livro.urlCapa)}"
                          th:src="${livro.urlCapa}"
-                         src="/img/banner.png"
+                         src="/img/banner.webp"
                          th:alt="${'Capa do livro ' + livro.titulo}"
                          alt="Capa do livro">
                     <span th:if="${#strings.isEmpty(livro.urlCapa)}" th:text="${'Book ' + #numbers.formatInteger(iter.index + 1, 2)}">Book 01</span>
@@ -140,7 +140,7 @@
 
         <div class="blog-grid" aria-label="Três últimas notícias do blog">
             <article class="blog-card" th:if="${ultimasPostagensBlog != null}" th:each="postagem : ${ultimasPostagensBlog}">
-                <img th:src="${postagem.urlImagemCapa != null and !#strings.isEmpty(postagem.urlImagemCapa) ? postagem.urlImagemCapa : '/img/banner.png'}" alt="Capa da postagem">
+                <img th:src="${postagem.urlImagemCapa != null and !#strings.isEmpty(postagem.urlImagemCapa) ? postagem.urlImagemCapa : '/img/banner.webp'}" alt="Capa da postagem">
                 <div class="blog-card-content">
                     <h3 th:text="${postagem.titulo}">Título da postagem</h3>
                     <p th:text="${postagem.resumo}">Resumo da postagem.</p>
@@ -149,7 +149,7 @@
             </article>
 
             <article class="blog-card" th:if="${ultimasPostagensBlog == null or #lists.isEmpty(ultimasPostagensBlog)}">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Blog da Teacher">
+                <img th:src="@{/img/banner.webp}" src="/img/banner.webp" alt="Blog da Teacher">
                 <div class="blog-card-content">
                     <h3>Em breve: novas publicações</h3>
                     <p>As postagens mais recentes do Blog da Teacher aparecerão aqui automaticamente.</p>
@@ -224,14 +224,14 @@
 
         <div class="gallery-grid" aria-label="Últimas quatro fotos adicionadas">
             <figure class="gallery-card" th:each="foto, iter : ${galeriaHome}">
-                <img th:src="${!#strings.isEmpty(foto.urlImagem) ? foto.urlImagem : '/img/banner.png'}"
-                     src="/img/banner.png"
+                <img th:src="${!#strings.isEmpty(foto.urlImagem) ? foto.urlImagem : '/img/banner.webp'}"
+                     src="/img/banner.webp"
                      th:alt="${#strings.isEmpty(foto.legenda) ? 'Foto da galeria Step By Step' : foto.legenda}"
                      th:classappend="${' photo-pos-' + ((iter.index % 4) + 1)}">
             </figure>
 
             <figure class="gallery-card" th:if="${galeriaHome == null or #lists.isEmpty(galeriaHome)}">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png" alt="Momentos da escola" class="photo-pos-1">
+                <img th:src="@{/img/banner.webp}" src="/img/banner.webp" alt="Momentos da escola" class="photo-pos-1">
             </figure>
         </div>
     </section>

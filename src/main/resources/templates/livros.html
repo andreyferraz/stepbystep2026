@@ -24,8 +24,8 @@
     <section class="books-showcase">
         <article class="book-feature" th:each="livro, iter : ${livros}" th:classappend="${iter.index % 2 == 1 ? ' is-reverse' : ''}">
             <figure class="book-feature-cover">
-                <img th:src="${!#strings.isEmpty(livro.urlCapa) ? livro.urlCapa : '/img/banner.png'}"
-                     src="/img/banner.png"
+                <img th:src="${!#strings.isEmpty(livro.urlCapa) ? livro.urlCapa : '/img/banner.webp'}"
+                     src="/img/banner.webp"
                      th:alt="${'Capa do livro ' + livro.titulo}"
                      alt="Capa do livro">
             </figure>
@@ -61,7 +61,7 @@
 
         <article class="book-feature" th:if="${livros == null or #lists.isEmpty(livros)}">
             <figure class="book-feature-cover">
-                <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                <img th:src="@{/img/banner.webp}" src="/img/banner.webp"
                      alt="Catálogo de livros em atualização">
             </figure>
 
