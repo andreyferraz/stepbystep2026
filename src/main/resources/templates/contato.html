@@ -83,6 +83,7 @@
                 </p>
 
                 <form class="contact-form" id="contactForm" action="#" method="post" onsubmit="return sendToWhatsApp(event)">
+                    <div id="contactMessage" aria-live="polite" style="display:none"></div>
                     <div class="contact-form-grid">
                         <div class="contact-field full">
                             <label for="nome">Nome Completo</label>
@@ -131,9 +132,7 @@
                         const mensagem = document.getElementById('mensagem')?.value || '';
 
                         // Formatação estilizada para WhatsApp:
-                        // - emojis para cada campo (usando escapes Unicode para evitar problemas de encoding)
                         // - negrito nos rótulos usando *asteriscos* (WhatsApp)
-                        // Mensagem sem emojis, apenas rótulos em negrito (WhatsApp)
                         let text = `Olá! Tenho interesse e deixo minha mensagem.` + "\n\n" +
                             `*Nome:* ${nome}` + "\n" +
                             `*E-mail:* ${email}` + "\n" +
@@ -144,7 +143,24 @@
                         const phone = '5527998114846'; // número do botão WhatsApp existente
                         const url = `https://wa.me/${phone}?text=` + encodeURIComponent(text);
                         window.open(url, '_blank');
+
+                        // Limpar o formulário e mostrar mensagem de sucesso
+                        const form = document.getElementById('contactForm');
+                        if (form) form.reset();
+                        showMessage('Mensagem preparada no WhatsApp. Abra o app e confirme o envio.', 'success');
                         return false;
+                    }
+
+                    function showMessage(msg, type) {
+                        const container = document.getElementById('contactMessage');
+                        if (!container) return;
+                        container.style.display = 'block';
+                        container.className = 'contact-message ' + (type === 'error' ? 'error' : 'success');
+                        container.textContent = msg;
+                        // esconder após 6 segundos
+                        setTimeout(() => {
+                            container.style.display = 'none';
+                        }, 6000);
                     }
                 </script>
             </section>
