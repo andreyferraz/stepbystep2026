@@ -94,16 +94,25 @@
     text-decoration: none;
     padding: 12px 18px;
     border-radius: 12px;
-    font-weight: 800;
-    color: #fff;
-    background: linear-gradient(135deg, #15803d, #166534);
-    transition: transform 180ms ease, filter 180ms ease;
+    font-weight: 900;
+    color: transparent;
+    /* white gradient for text (first layer) + green gradient for button background (second layer) */
+    background-image: linear-gradient(180deg, #ffffff 0%, #f3f4f6 100%), linear-gradient(135deg, #0f7a3a, #0e5b2b);
+    background-repeat: no-repeat;
+    background-size: 100% 100%, 100% 100%;
+    -webkit-background-clip: text, padding-box;
+    background-clip: text, padding-box;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.16);
+    box-shadow: 0 8px 20px rgba(15, 120, 58, 0.12), inset 0 -2px 0 rgba(0,0,0,0.06);
+    transition: transform 180ms ease, filter 180ms ease, box-shadow 180ms ease;
 }
 
 .contact-whatsapp-btn:hover,
 .contact-whatsapp-btn:focus-visible {
     transform: translateY(-1px);
-    filter: brightness(1.04);
+    filter: brightness(1.08);
+    box-shadow: 0 10px 28px rgba(15, 120, 58, 0.16), inset 0 -2px 0 rgba(0,0,0,0.06);
     outline: none;
 }
 
