@@ -35,7 +35,7 @@
     justify-content: space-between;
     background:
         linear-gradient(145deg, rgba(14, 56, 94, 0.92), rgba(29, 95, 146, 0.86)),
-        url("/img/banner.png") center / cover no-repeat;
+        url("/img/banner.webp") center / cover no-repeat;
     color: #ffffff;
 }
 

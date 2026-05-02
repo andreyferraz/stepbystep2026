@@ -16,7 +16,7 @@
         </div>
 
         <figure class="inner-hero-media">
-            <img th:src="@{/img/banner.png}" src="/img/banner.png"
+            <img th:src="@{/img/banner.webp}" src="/img/banner.webp"
                  alt="Momentos especiais da escola e dos alunos">
         </figure>
     </section>
@@ -51,9 +51,9 @@
                     th:attr="
                         data-category=${foto.categoriaChave},
                         data-title=${#strings.isEmpty(foto.legenda) ? 'Registro da escola' : foto.legenda},
-                        data-image=${!#strings.isEmpty(foto.urlImagem) ? foto.urlImagem : '/img/banner.png'}">
+                        data-image=${!#strings.isEmpty(foto.urlImagem) ? foto.urlImagem : '/img/banner.webp'}">
                 <button type="button" class="gallery-card" data-gallery-open>
-                    <img th:src="${!#strings.isEmpty(foto.urlImagem) ? foto.urlImagem : '/img/banner.png'}" src="/img/banner.png"
+                    <img th:src="${!#strings.isEmpty(foto.urlImagem) ? foto.urlImagem : '/img/banner.webp'}" src="/img/banner.webp"
                          th:alt="${#strings.isEmpty(foto.legenda) ? 'Foto da galeria da escola' : foto.legenda}"
                          alt="Foto da galeria"
                          loading="lazy">
@@ -67,9 +67,9 @@
                 </button>
             </figure>
 
-            <figure class="gallery-item" data-gallery-item data-category="all" data-title="Galeria em atualização" data-image="/img/banner.png" th:if="${galeriaFotos == null or #lists.isEmpty(galeriaFotos)}">
+            <figure class="gallery-item" data-gallery-item data-category="all" data-title="Galeria em atualização" data-image="/img/banner.webp" th:if="${galeriaFotos == null or #lists.isEmpty(galeriaFotos)}">
                 <button type="button" class="gallery-card" data-gallery-open>
-                    <img th:src="@{/img/banner.png}" src="/img/banner.png"
+                    <img th:src="@{/img/banner.webp}" src="/img/banner.webp"
                          alt="Galeria em atualização"
                          loading="lazy">
                     <figcaption>
@@ -94,7 +94,7 @@
             </button>
 
             <figure class="gallery-lightbox-figure">
-                <img src="/img/banner.png" alt="" data-gallery-lightbox-image>
+                <img src="/img/banner.webp" alt="" data-gallery-lightbox-image>
                 <figcaption data-gallery-lightbox-caption>Legenda da imagem</figcaption>
             </figure>
 
