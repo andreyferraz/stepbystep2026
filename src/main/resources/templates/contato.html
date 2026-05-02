@@ -82,7 +82,7 @@
                     Se preferir, mande sua mensagem diretamente por aqui.
                 </p>
 
-                <form class="contact-form" action="#" method="post">
+                <form class="contact-form" id="contactForm" action="#" method="post" onsubmit="return sendToWhatsApp(event)">
                     <div class="contact-form-grid">
                         <div class="contact-field full">
                             <label for="nome">Nome Completo</label>
@@ -120,6 +120,33 @@
                         Enviar Mensagem
                     </button>
                 </form>
+
+                <script>
+                    function sendToWhatsApp(e) {
+                        e.preventDefault();
+                        const nome = document.getElementById('nome')?.value || '';
+                        const email = document.getElementById('email')?.value || '';
+                        const telefone = document.getElementById('telefone')?.value || '';
+                        const assunto = document.getElementById('assunto')?.value || '';
+                        const mensagem = document.getElementById('mensagem')?.value || '';
+
+                        // Formatação estilizada para WhatsApp:
+                        // - emojis para cada campo (usando escapes Unicode para evitar problemas de encoding)
+                        // - negrito nos rótulos usando *asteriscos* (WhatsApp)
+                        // Mensagem sem emojis, apenas rótulos em negrito (WhatsApp)
+                        let text = `Olá! Tenho interesse e deixo minha mensagem.` + "\n\n" +
+                            `*Nome:* ${nome}` + "\n" +
+                            `*E-mail:* ${email}` + "\n" +
+                            `*Telefone:* ${telefone}` + "\n" +
+                            `*Assunto:* ${assunto}` + "\n\n" +
+                            `*Mensagem:*` + "\n" + `${mensagem}`;
+
+                        const phone = '5527998114846'; // número do botão WhatsApp existente
+                        const url = `https://wa.me/${phone}?text=` + encodeURIComponent(text);
+                        window.open(url, '_blank');
+                        return false;
+                    }
+                </script>
             </section>
         </div>
     </section>
